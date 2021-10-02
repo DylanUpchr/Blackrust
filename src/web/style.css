@@ -1,0 +1,48 @@
+body{
+	height: 100%;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#main-card{
+	height: 360px;
+	width: 640px;
+	background-color: gray;
+    padding: 0;
+    margin: 0;
+    display: flex;
+	align-content: center;
+	flex-direction: column;
+}
+#main-card * {
+	width: 100%;
+	text-align: center;
+}
+#main-card nav {
+	height: 10%;
+	background-color: darkgray;
+}
+#main-card #widget-container {
+	height: 90%;
+	background-color: lightgray;
+}
+#main-card .widget {
+	height: 100%;
+	background-color: lightgray;
+	display: none;
+    padding: 0;
+    margin: 0;
+    align-items: center;
+    justify-content: center;
+}
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  align-content: center;
+  flex-direction: row;
+}

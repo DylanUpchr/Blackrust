@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="style.css" />
+    <script src="functions.js">
+      setTime()
+    </script>
+  </head>
+  <body onload="init()">
+    <div id="main-card">
+      <nav>
+        <ul>
+          <li onclick="showWidget('login-widget')">Login</li>
+          <li onclick="showWidget('time-widget')">Time</li>
+          <li onclick="showWidget('net-widget')">Network</li>
+        </ul>
+      </nav>
+      <div id="widget-container">
+        <span class="widget" id="login-widget">
+			<form id="login-form">
+				<input id="username-field" class="login-input" placeholder="Username">
+				<input id="password-field" class="login-input" placeholder="Password">
+				<input type="button" class="login-input" onclick="attemptLogin()" value="Login">
+			</form>
+		</span>
+        <span class="widget" id="time-widget"></span>
+        <span class="widget" id="net-widget"> Network </span>
+      </div>
+    </div>
+  </body>
+</html>
