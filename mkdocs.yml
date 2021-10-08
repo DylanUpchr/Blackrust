@@ -1,3 +1,5 @@
 site_name: Blackrust v0 - Travail de semestre
 theme:
   name: readthedocs
+plugins:
+    - with-pdf
