@@ -8,7 +8,7 @@ Ce projet est un client léger qui a comme but de réduire la taille et le coût
 
 Blackrust v0 is a multi-architecture program for linux that , at the startup of the computer, will offer a remote desktop session via many protocols aswell as an offline local desktop.
 
-This projet is a thin client, which aims to reduce the size and cost of the many machines given to employees in a company. These thin clients will connect to a centralized server where the users workspace will be and will offer greater processing power.
+This project is a thin client, which aims to reduce the size and cost of the many machines given to employees in a company. These thin clients will connect to a centralized server where the users workspace will be and will offer greater processing power.
 ## Objectifs
 Logiciel qui permet de:
 
@@ -91,10 +91,14 @@ Ce programme est propriétaire et distribué sous des licenses EULA propres à l
 - Nombre d'outils imposant et possiblement intimidant pour l'utilisateur moyen.
 
 ### [ThinLinc](https://www.cendio.com/)
+ThinLinc est un environnement d'accès distant complet basé sur le VNC qui utilise l'authentification par tunnel SSH avec les entreprise comme publique cible. 
 
+Ils proposent une soultion propriétaire qui utilise des librairies open source, afin d'avoir un système client/serveur pour les clients légers interne et même du télétravail selon la configuration réseau. Ils font partie de la concurrence à ce projet car ils se situent dans le même domaine et remplissent le même cas d'utilisation mais ils proposent un écosystème d'accès distant complet alors que Blackrust est un client polyvalent pour les installations basiques de RDP/VNC/SSH/XDMCP.
 
 ### [Citrix](https://www.citrix.com/)
+Citrix est un environnement d'accès distant complet basé sur le RDP/RDS qui propose de meilleurs performances que le RDP/RDS basique avec les entreprise comme publique cible. 
 
+Ils proposent une soultion propriétaire qui utilise des librairies open source, afin d'avoir un système client/serveur pour les clients légers interne et même du télétravail selon la configuration réseau. Ils font partie de la concurrence à ce projet car ils se situent dans le même domaine et remplissent le même cas d'utilisation mais ils proposent un écosystème d'accès distant complet alors que Blackrust est un client polyvalent pour les installations basiques de RDP/VNC/SSH/XDMCP.
 ## Analyse système
 ![Analyse système](./img/blackrust-systems-analysis.png)
 ## Analyse heuristique
