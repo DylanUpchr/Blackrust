@@ -96,9 +96,9 @@ Ce programme est propriétaire et distribué sous des licenses EULA propres à l
 ### [Citrix](https://www.citrix.com/)
 
 ## Analyse système
-![Analyse système](./blackrust-systems-analysis.png)
+![Analyse système](./img/blackrust-systems-analysis.png)
 ## Analyse heuristique
-![Analyse heuristique](./blackrust-mind-map.png)
+![Analyse heuristique](./img/blackrust-mind-map.png)
 ## Glossaire
 #### Serveur d'affichage
 Un serveur d'affichage est un programme qui peut exploiter les ressources de rendu graphique pour afficher des applications graphiques.

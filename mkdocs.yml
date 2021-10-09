@@ -1,8 +1,10 @@
 site_name: Blackrust v0 - Travail de semestre
 site_author: Dylan Upchurch
 copyright: Copyright &copy; 2021 Dylan Upchurch
+repo_url: https://github.com/DylanUpchr/Blackrust
+repo_name: Github
 theme:
   name: readthedocs
 plugins:
     - with-pdf:
-        cover_subtitle: Technical documentation that just works
+        cover_subtitle: Client légér polyvalent
