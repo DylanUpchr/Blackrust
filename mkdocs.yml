@@ -7,4 +7,4 @@ theme:
   name: readthedocs
 plugins:
     - with-pdf:
-        cover_subtitle: Client légér polyvalent
+        cover_subtitle: Client léger polyvalent

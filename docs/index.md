@@ -57,7 +57,7 @@ Logiciel qui permet de:
 ### [Remmina](https://remmina.org/)
 Remmina est un client de desktop remote pour linux écrit en C et qui utilise la librairie GTK+ pour se connecter à plusieurs types de sessions distants tels que  SSH, VNC, RDP, NX, XDMCP et même des interfaces HTTP/HTTPS qu'on retrouve sur des routeurs.
 
-Ce logiciel rempli le même besoin et on ressemble beaucoup à ce projet mais il y a une différence principale entre les deux. Blackrust sera disponible dès le lancement du client, et prendera directement en charge le lancment du session distant ou du session locale selon le choix de l'utilisateur. Remmina est une application GTK+ qui est lancé sur le bureau donc intrinsiquement utilise plus de ressources que Blackrust.
+Ce logiciel remplit le même besoin et on ressemble beaucoup à ce projet mais il y a une différence principale entre les deux. Blackrust sera disponible dès le lancement du client, et prendra directement en charge le lancement de la session distant ou de la session locale selon le choix de l'utilisateur. Remmina est une application GTK+ qui est lancée sur le bureau donc intrinsèquement utilise plus de ressources que Blackrust.
 
 Ce programme est gratuit, open source et sous la license Copyleft.
 
@@ -71,18 +71,18 @@ Ce programme est gratuit, open source et sous la license Copyleft.
 - Doit être lancé depuis le bureau Linux
 
 ### [MobaXterm](https://mobaxterm.mobatek.net/)
-MobaXTerm est un client d'accès distant (SSH, telnet, rlogin, Mosh, RDP, VNC et XDMCP), terminal avec serveur Xorg integré, et une compilation d'outils sytème (CygUtils liste materiel/processus ainsi qu'un package manager) et réseau (Serveurs HTTP/telnet/FTP/NFS/VNC/Cron, tunnels SSH, SSH Keygen, netstat, WakeOnLAN, nmap, CygUtils packet capture).
+MobaXTerm est un client d'accès distant (SSH, telnet, rlogin, Mosh, RDP, VNC et XDMCP), terminal avec serveur Xorg intégré, et une compilation d'outils système (CygUtils liste matériel/processus ainsi qu'un package manager) et réseau (Serveurs HTTP/telnet/FTP/NFS/VNC/Cron, tunnels SSH, SSH Keygen, netstat, WakeOnLAN, nmap, CygUtils packet capture).
 
 En plus de tout cela il propose quelques jeux simples et un éditeur de texte. MobaXterm est un environnement de bureau linux complet sur Windows et va bien au-delà de la portée de l'accès distant sur laquel Blackrust se concentre.
 
-Il existe une versions gratuite pour l'utilisation personnelle ainsi qu'une version payante avec d'avantage de fonctionnalités pour les utilisateurs professionelles
+Il existe une version gratuite pour l'utilisation personnelle ainsi qu'une version payante avec davantage de fonctionnalités pour les utilisateurs professionels
 
-Ce programme est propriétaire et distribué sous des licenses EULA propres à l'entreprise qui l'a développé, Mobatek.
+Ce programme est propriétaire et distribué sous des licences EULA propres à l'entreprise qui l'a développé, Mobatek.
 
 #### Avantages
 - Environnement de bureau linux complet (accès distant, outils, jeux) sur Windows 
 - Système modulaire de plugins pour les outils
-- Nombre d'outils convenable pour un utilisateur experimenté / développeur
+- Nombre d'outils convenable pour un utilisateur expérimenté / développeur
 - Propriétaire
 
 #### Inconvenients
@@ -91,12 +91,12 @@ Ce programme est propriétaire et distribué sous des licenses EULA propres à l
 - Nombre d'outils imposant et possiblement intimidant pour l'utilisateur moyen.
 
 ### [ThinLinc](https://www.cendio.com/)
-ThinLinc est un environnement d'accès distant complet basé sur le VNC qui utilise l'authentification par tunnel SSH avec les entreprise comme publique cible. 
+ThinLinc est un environnement d'accès distant complet basé sur le VNC qui utilise l'authentification par tunnel SSH avec les entreprises comme publique cible. 
 
-Ils proposent une soultion propriétaire qui utilise des librairies open source, afin d'avoir un système client/serveur pour les clients légers interne et même du télétravail selon la configuration réseau. Ils font partie de la concurrence à ce projet car ils se situent dans le même domaine et remplissent le même cas d'utilisation mais ils proposent un écosystème d'accès distant complet alors que Blackrust est un client polyvalent pour les installations basiques de RDP/VNC/SSH/XDMCP.
+Ils proposent une solution propriétaire qui utilise des librairies open source, afin d'avoir un système client/serveur pour les clients légers interne et même du télétravail selon la configuration réseau. Ils font partie de la concurrence à ce projet car ils se situent dans le même domaine et remplissent le même cas d'utilisation mais ils proposent un écosystème d'accès distant complet alors que Blackrust est un client polyvalent pour les installations basiques de RDP/VNC/SSH/XDMCP.
 
 ### [Citrix](https://www.citrix.com/)
-Citrix est un environnement d'accès distant complet basé sur le RDP/RDS qui propose de meilleurs performances que le RDP/RDS basique avec les entreprise comme publique cible. 
+Citrix est un environnement d'accès distant complet basé sur le RDP/RDS qui propose de meilleures performances que le RDP/RDS basique avec les entreprise comme publique cible. 
 
 Ils proposent une soultion propriétaire qui utilise des librairies open source, afin d'avoir un système client/serveur pour les clients légers interne et même du télétravail selon la configuration réseau. Ils font partie de la concurrence à ce projet car ils se situent dans le même domaine et remplissent le même cas d'utilisation mais ils proposent un écosystème d'accès distant complet alors que Blackrust est un client polyvalent pour les installations basiques de RDP/VNC/SSH/XDMCP.
 ## Analyse système
@@ -108,7 +108,7 @@ Ils proposent une soultion propriétaire qui utilise des librairies open source,
 Un serveur d'affichage est un programme qui peut exploiter les ressources de rendu graphique pour afficher des applications graphiques.
 
 #### Authentification PAM
-PAM, ou Pluggable Authentication Modules, est un mechanisme dans les systèmes d'exploitation UNIX et UNIX-like qui propose des APIs pour l'authentification de bas niveau.
+PAM, ou Pluggable Authentification Modules, est un mécanisme dans les systèmes d'exploitation UNIX et UNIX-like qui propose des APIs pour l'authentification de bas niveau.
 
 Linux PAM, évolué du UNIX PAM, propose l'authentification de compte locale, LDAP ou de lecteurs d'empreinte digitale.
 
@@ -116,4 +116,4 @@ Linux PAM, évolué du UNIX PAM, propose l'authentification de compte locale, LD
 Un Window Manager est un programme qui affiche des applications graphiques dans des fenêtres et gère leur disposition.
 
 #### Display Manager
-Un Display Manager est un programme qui, après le lancement du serveur d'affichage (tel X11 ou Wayland), se charge de l'authenification PAM et de lancer un Window Manager
+Un Display Manager est un programme qui, après le lancement du serveur d'affichage (tel X11 ou Wayland), se charge de l'authentification PAM et de lancer un Window Manager
