@@ -6,7 +6,7 @@ Ce projet est un client léger qui a comme but de réduire la taille et le coût
 
 ---
 
-Blackrust v0 is a multi-architecture program for linux that , at the startup of the computer, will offer a remote desktop session via many protocols aswell as an offline local desktop.
+Blackrust v0 is a multi-architecture program for linux that, at the startup of the computer, will offer a remote desktop session via many protocols aswell as an offline local desktop.
 
 This project is a thin client, which aims to reduce the size and cost of the many machines given to employees in a company. These thin clients will connect to a centralized server where the users workspace will be and will offer greater processing power.
 ## Objectifs
