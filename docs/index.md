@@ -103,6 +103,17 @@ Ils proposent une soultion propriétaire qui utilise des librairies open source,
 ![Analyse système](./img/blackrust-systems-analysis.png)
 ## Analyse heuristique
 ![Analyse heuristique](./img/blackrust-mind-map.png)
+
+## Documentation à fournir
+- Documentation utilisateur
+- Documentation administrateur
+- Rapport de travail
+- Journal de bord
+
+## Livrables
+- Code source Rust du projet
+- Documentation
+
 ## Glossaire
 #### Serveur d'affichage
 Un serveur d'affichage est un programme qui peut exploiter les ressources de rendu graphique pour afficher des applications graphiques.
