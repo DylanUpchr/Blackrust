@@ -6,7 +6,11 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-web-view = { version = "0.7" }
+web-view = "*"
+#xrandr = "*"
+serde = "*"
+serde_derive = "*"
+serde_json = "*"
 
 [[bin]]
 name = "blackrust"
