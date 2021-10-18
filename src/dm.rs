@@ -9,7 +9,7 @@ fn main() {
 }
 
 fn open_webview() {
-//let monitors = XHandle::open().unwrap().monitors().unwrap();
+	//let monitors = XHandle::open().unwrap().monitors().unwrap();
 
 	//println!("{:?}", monitors);
 	//let y = monitors[0].height_px;
@@ -17,8 +17,7 @@ fn open_webview() {
 	//println!("{}x{}", x, y);
 
 	let html = combined_html_css_js();
-	web_view::builder()
-		.title("Fullscreen example")
+	let mut webview = web_view::builder()
 		.content(Content::Html(html))
 		.size(800, 600)
 		.frameless(true)
@@ -28,11 +27,17 @@ fn open_webview() {
 			use Cmd::*;
 			match serde_json::from_str(arg).unwrap() {
 				Init => (println!("init")),
+				Debug { value } => (println!("{}", value))
 			}
 			Ok(())
 		})
-		.run()
+		.build()
 		.unwrap();
+		/*.run()
+		.unwrap();*/
+		let hostname = hostname::get().unwrap();
+		webview.eval(&format!("setHostname({:?})", hostname)).unwrap();
+		webview.run().unwrap();
 }
 
 fn combined_html_css_js() -> String {
@@ -55,4 +60,5 @@ fn inline_script(s: &str) -> String {
 #[serde(tag = "cmd", rename_all = "camelCase")]
 pub enum Cmd {
     Init,
+	Debug { value: String}
 }

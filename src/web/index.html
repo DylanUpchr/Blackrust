@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
     <script src="functions.js"></script>
-</head>
-<body>
+  </head>
+  <body onload="init()">
+    <img id="backgroundImg" src="img/placeholder-image.png" alt="background image">
     <div id="mainCard">
         <nav id="topBar">
-            <span id="hostname">Hostname</span>
-            <span id="time">12:30:00</span>
-            <span id="settings">settings</span>
+            <span id="hostname" style="margin-left: 8px;"><h2>Hostname</h2></span>
+            <span id="time"><h2>00:00:00</h2></span>
+            <span id="settings" style="margin-right: 8px;"><h2>settings</h2></span>
         </nav>   
         <div id="cardContent">
-            <!--Connection components-->
+            <img id="bannerImg" src="img/placeholder-image.png" alt="banner image">
         </div>
     </div>
 </body>

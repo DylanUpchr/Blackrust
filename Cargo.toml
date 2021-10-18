@@ -11,6 +11,7 @@ web-view = "*"
 serde = "*"
 serde_derive = "*"
 serde_json = "*"
+hostname = "^0.3"
 
 [[bin]]
 name = "blackrust"
