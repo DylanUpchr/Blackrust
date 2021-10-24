@@ -12,17 +12,10 @@ fn main() {
 }
 
 fn open_webview() {
-	//let monitors = XHandle::open().unwrap().monitors().unwrap();
-
-	//println!("{:?}", monitors);
-	//let y = monitors[0].height_px;
-	//let x = monitors[0].width_px * monitors.len() as i32;
-	//println!("{}x{}", x, y);
-
 	let html = combined_html_css_js();
 	let mut webview = web_view::builder()
 		.content(Content::Html(html))
-		.size(800, 600)
+		.size(1260, 720)
 		.frameless(true)
 		.debug(true)
 		.user_data("")
@@ -36,11 +29,10 @@ fn open_webview() {
 		})
 		.build()
 		.unwrap();
-		/*.run()
-		.unwrap();*/
-		let hostname = hostname::get().unwrap();
-		webview.eval(&format!("setHostname({:?})", hostname)).unwrap();
-		webview.run().unwrap();
+
+	let hostname = hostname::get().unwrap();
+	webview.eval(&format!("setHostname({:?})", hostname)).unwrap();
+	webview.run().unwrap();
 }
 
 fn combined_html_css_js() -> String {
@@ -51,6 +43,7 @@ fn combined_html_css_js() -> String {
 		inline_script(include_str!("web/functions.js"))
 	)
 }
+
 fn base64_encode_images(html: &str) -> String {
 	let web_dir_prefix = "./src/web/";
     let re = Regex::new(r"(\./img/.*\.png)").unwrap();
@@ -60,6 +53,7 @@ fn base64_encode_images(html: &str) -> String {
     });
 	return result.to_string();
 }
+
 fn inline_style(s: &str) -> String {
 	format!(r#"<style type="text/css">{}</style>"#, s)
 }
@@ -67,6 +61,7 @@ fn inline_style(s: &str) -> String {
 fn inline_script(s: &str) -> String {
 	format!(r#"<script type="text/javascript">{}</script>"#, s)
 }
+
 #[derive(Deserialize)]
 #[serde(tag = "cmd", rename_all = "camelCase")]
 pub enum Cmd {
