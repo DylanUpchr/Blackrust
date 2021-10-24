@@ -1,7 +1,10 @@
 #[macro_use]
 extern crate serde_derive;
 extern crate serde_json;
+extern crate image_base64;
 use web_view::*;
+use regex::Regex;
+use regex::Captures;
 //use xrandr::*;
 
 fn main() {
@@ -43,12 +46,20 @@ fn open_webview() {
 fn combined_html_css_js() -> String {
 	format!(
 		"{}{}{}",
-		include_str!("web/index.html"),
+		base64_encode_images(include_str!("web/index.html")),
 		inline_style(include_str!("web/style.css")),
 		inline_script(include_str!("web/functions.js"))
 	)
 }
-
+fn base64_encode_images(html: &str) -> String {
+	let web_dir_prefix = "./src/web/";
+    let re = Regex::new(r"(\./img/.*\.png)").unwrap();
+    let result = re.replace_all(html, |caps: &Captures| {
+		println!("{}", &caps[0]);
+        format!("{}", image_base64::to_base64(&format!("{}{}", web_dir_prefix, &caps[0])))
+    });
+	return result.to_string();
+}
 fn inline_style(s: &str) -> String {
 	format!(r#"<style type="text/css">{}</style>"#, s)
 }

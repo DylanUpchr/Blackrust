@@ -16,7 +16,6 @@ function setTime() {
 }
 
 function setHostname(hostname){
-	invoke({cmd: 'debug', value: hostname});
     document.getElementById("hostname").innerHTML = "<h2>" + hostname + "</h2>";
 }
 
