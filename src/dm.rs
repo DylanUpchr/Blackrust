@@ -10,6 +10,7 @@ extern crate image_base64;
 use web_view::*;
 use regex::Regex;
 use regex::Captures;
+mod config_mgr;
 
 /**
  * Name:	main
@@ -18,6 +19,7 @@ use regex::Captures;
  * Returns:	None
  */
 fn main() {
+	let mut webview: WebView<&str>;
 	open_webview();
 }
 
@@ -27,7 +29,7 @@ fn main() {
  * Args:	None
  * Returns:	None
  */
-fn open_webview() {
+fn open_webview()/* -> &'static WebView<'static, &'static str>*/ {
 	let html = combined_html_css_js();
 	let mut webview = web_view::builder()
 		.content(Content::Html(html))
@@ -39,7 +41,10 @@ fn open_webview() {
 			use Cmd::*;
 			match serde_json::from_str(arg).unwrap() {
 				Init => (println!("init")),
-				Debug { value } => (println!("{}", value))
+				Debug { value } => (println!("{}", value)),
+				Connect { ip_fqdn, protocol, config} => (),
+				QueryProfile { query } => (),
+				LoadProfile { profile } => () 
 			}
 			Ok(())
 		})
@@ -106,5 +111,8 @@ fn inline_script(js: &str) -> String {
 //Enum defining commands that JS can invoke
 pub enum Cmd {
     Init,
-	Debug { value: String }
+	Debug { value: String },
+	Connect { ip_fqdn: String, protocol: String, config: String},
+	QueryProfile { query: String },
+	LoadProfile { profile: String }
 }

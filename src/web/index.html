@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!--<link rel="stylesheet" href="style.css" />
-    <script src="functions.js"></script>-->
+    <link rel="stylesheet" href="style.css" />
+    <script src="functions.js"></script>
   </head>
   <body onload="init()">
     <img id="backgroundImg" src="./img/placeholder-image.png" alt="background image">
@@ -17,6 +17,23 @@
         </nav>   
         <div id="cardContent">
             <img id="bannerImg" src="./img/placeholder-image.png" alt="banner image">
+            <div id="connectionSelect">
+                <select name="protocol" id="inputProtocol">
+                    <option>RDP</option>
+                    <option>XDMCP</option>
+                    <option>VNC</option>
+                    <option>SSH - X11 Forwarding</option>
+                </select>
+                <span id="inputProfileSelect">
+                    <input type="text" name="ip_fqdn" id="inputIpFqdn">
+                    <select name="profile" id="inputProfile">
+                        <option>test</option>
+                    </select>
+                </span>
+                <button id="inputConnect">Connect</button>
+                <button id="inputConnectionSettings">Connection settings</button>
+                <input type="hidden" name="inputConnectionSettingsValue">
+            </div>
         </div>
     </div>
 </body>

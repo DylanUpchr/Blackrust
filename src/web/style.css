@@ -43,6 +43,10 @@ body {
 #topBar span h2{
     margin: 0px;
 }
+#cardContent{
+    width: 100%;
+    height: calc(100% - 50px - 16px);
+}
 #backgroundImg{
     width: 100%;
     height: 100%;
@@ -55,3 +59,47 @@ body {
     height: 150px;
     background-color: gray;
 }
+/*.valid{
+    border: solid green 2px;
+    box-shadow: green 0px 0px 15px;
+}
+.invalid{
+    border: solid red 2px;
+    box-shadow: red 0px 0px 15px;
+}*/
+#inputProfileSelect {
+    position: relative;
+    width: 200px;
+    display: inline-block;
+  }
+  
+  #inputProfileSelect select {
+    width: 100%;
+  }
+  
+  #inputProfileSelect > * {
+    box-sizing: border-box;
+    height: 1.5em;
+  }
+  
+  #inputProfileSelect input {
+    position: absolute;
+    width: calc(100% - 20px);
+  }
+  #connectionSelect {
+      width: 100%;
+      height: calc(100% - 150px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+  /*.dropdown-menu {
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .dropdown-menu-open {
+    max-height: 200px;
+    transition: all 0.3s ease;
+  }*/
