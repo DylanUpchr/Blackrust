@@ -1,5 +1,5 @@
 function invoke(arg) {
-	//window.webkit.messageHandlers.external.postMessage(JSON.stringify(arg));
+	window.webkit.messageHandlers.external.postMessage(JSON.stringify(arg));
 }
 
 function init() {
@@ -7,19 +7,9 @@ function init() {
 	invoke({cmd: 'init'});
 	let inputIpFqdn = document.getElementById("inputIpFqdn");
 	let inputProfile = document.getElementById("inputProfile");
-	inputIpFqdn.addEventListener(
-		"input", 
+	inputIpFqdn.addEventListener("input", 
 		function(e){
-			/*if(inputIpFqdn.classList.contains("valid") || inputIpFqdn.classList.contains("invalid")){
-				if(validateIpFqdn(e.target.value)){
-					inputIpFqdn.classList.replace("invalid", "valid");
-				} else {
-					inputIpFqdn.classList.replace("valid", "invalid");
-				}
-			} else {
-				inputIpFqdn.classList.add((validateIpFqdn(e.target.value) ? "valid" : "invalid"));
-			}*/
-			//inputProfile.toggleClass('dropdown-menu-open');
+			invoke({cmd: 'queryProfiles', query: e.target.value});
 		});
 	document.getElementById("inputConnect").addEventListener("click", function(e){});
 	document.getElementById("inputConnectionSettings").addEventListener("click", function(e){});
@@ -65,4 +55,8 @@ function validateIpFqdn(value){
 	console.log(HostnameMatches);
 
 	return (IpMatches != null || HostnameMatches != null)
+}
+
+function loadQueriedProfiles(profiles){
+	invoke({cmd: 'debug', value: "Received result: " + JSON.stringify(profiles)});
 }

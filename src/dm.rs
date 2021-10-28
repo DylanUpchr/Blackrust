@@ -19,8 +19,9 @@ mod config_mgr;
  * Returns:	None
  */
 fn main() {
-	let mut webview: WebView<&str>;
-	open_webview();
+	let webview: WebView<'static, &'static str>;
+	webview = open_webview();
+	webview.run().unwrap();
 }
 
 /**
@@ -29,21 +30,23 @@ fn main() {
  * Args:	None
  * Returns:	None
  */
-fn open_webview()/* -> &'static WebView<'static, &'static str>*/ {
+fn open_webview() -> WebView<'static, &'static str> {
 	let html = combined_html_css_js();
-	let mut webview = web_view::builder()
+	let mut webview: WebView<'static, &'static str>;
+	webview = web_view::builder()
 		.content(Content::Html(html))
 		.size(1280, 720)
 		.frameless(true)
 		.debug(true)
 		.user_data("")
-		.invoke_handler(|_webview, arg| {
+		.invoke_handler(|webview, arg| {
 			use Cmd::*;
 			match serde_json::from_str(arg).unwrap() {
 				Init => (println!("init")),
 				Debug { value } => (println!("{}", value)),
 				Connect { ip_fqdn, protocol, config} => (),
-				QueryProfile { query } => (),
+				//QueryProfiles { query } => (println!("Received results: {:?}", config_mgr::get_profiles(query))),
+				QueryProfiles { query } => (webview.eval(&format!("loadQueriedProfiles({:?})", config_mgr::get_profiles(query).unwrap()))?),
 				LoadProfile { profile } => () 
 			}
 			Ok(())
@@ -53,7 +56,7 @@ fn open_webview()/* -> &'static WebView<'static, &'static str>*/ {
 
 	let hostname = hostname::get().unwrap();
 	webview.eval(&format!("setHostname({:?})", hostname)).unwrap();
-	webview.run().unwrap();
+	return webview;
 }
 
 /**
@@ -113,6 +116,6 @@ pub enum Cmd {
     Init,
 	Debug { value: String },
 	Connect { ip_fqdn: String, protocol: String, config: String},
-	QueryProfile { query: String },
+	QueryProfiles { query: String },
 	LoadProfile { profile: String }
 }
