@@ -1,6 +1,6 @@
-/**
+/** File
  * Author:		Dylan Upchurch
- * Date:		2021-10-24
+ * Date:		2021-10-28
  * Desc:		Blackrust main crate (main entry point and opens webview)
  */
 #[macro_use]
@@ -12,7 +12,7 @@ use regex::Regex;
 use regex::Captures;
 mod config_mgr;
 
-/**
+/** Function
  * Name:	main
  * Purpose:	Main entry point for program
  * Args:	None
@@ -24,7 +24,7 @@ fn main() {
 	webview.run().unwrap();
 }
 
-/**
+/** Function
  * Name:	open_webview
  * Purpose:	Defines webview and opens it
  * Args:	None
@@ -58,7 +58,7 @@ fn open_webview() -> WebView<'static, &'static str> {
 	return webview;
 }
 
-/**
+/** Function
  * Name:	combined_html_css_js
  * Purpose:	Combines formatted HTML, CSS and JS all in one string
  * Args:	None
@@ -73,7 +73,7 @@ fn combined_html_css_js() -> String {
 	)
 }
 
-/**
+/** Function
  * Name:	base64_encode_images
  * Purpose:	Encode all references to images in an HTML webpage to base64 by path
  * Args:	(&str) HTML webpage with image paths in src attributes
@@ -88,7 +88,7 @@ fn base64_encode_images(html: &str) -> String {
 	return result.to_string();
 }
 
-/**
+/** Function
  * Name:	inline_style
  * Purpose:	Surround CSS styles in HTML tag for inclusion in webpage
  * Args:	(&str) CSS code
@@ -98,7 +98,7 @@ fn inline_style(css: &str) -> String {
 	format!(r#"<style type="text/css">{}</style>"#, css)
 }
 
-/**
+/** Function
  * Name:	inline_script
  * Purpose:	Surround JS styles in HTML tag for inclusion in webpage
  * Args:	(&str) JS code
