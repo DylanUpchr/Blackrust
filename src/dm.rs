@@ -45,9 +45,8 @@ fn open_webview() -> WebView<'static, &'static str> {
 				Init => (println!("init")),
 				Debug { value } => (println!("{}", value)),
 				Connect { ip_fqdn, protocol, config} => (),
-				//QueryProfiles { query } => (println!("Received results: {:?}", config_mgr::get_profiles(query))),
-				QueryProfiles { query } => (webview.eval(&format!("loadQueriedProfiles({:?})", config_mgr::get_profiles(query).unwrap()))?),
-				LoadProfile { profile } => () 
+				QueryProfiles { query } => (webview.eval(&format!("loadQueriedProfiles({})", config_mgr::get_profiles(query).unwrap()))?),
+				LoadProfile { id } => () 
 			}
 			Ok(())
 		})
@@ -117,5 +116,5 @@ pub enum Cmd {
 	Debug { value: String },
 	Connect { ip_fqdn: String, protocol: String, config: String},
 	QueryProfiles { query: String },
-	LoadProfile { profile: String }
+	LoadProfile { id: String }
 }
