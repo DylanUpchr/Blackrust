@@ -3,7 +3,7 @@
  * Date:		2021-10-28
  * Desc:		Blackrust configuration manager crate (Profile/settings management)
  */
-use blackrust_lib::*;
+use blackrust_lib::Structs::*;
 
 /** Function
  * Name:    get_profiles
