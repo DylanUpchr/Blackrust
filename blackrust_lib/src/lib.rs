@@ -7,13 +7,14 @@
 pub mod Structs{
     use uuid::Uuid;
     use std::fmt;
-    
+    use serde_derive::{Serialize, Deserialize};
+
     /** Struct
     * Name:	        Protocol
     * Purpose:      Protocol object
     * Properties:   (String) name: Name of protocol
     */
-    #[derive(Debug)]
+    #[derive(Debug, Serialize, Deserialize, Clone)]
     pub struct Protocol{
         name: String
     }
@@ -27,7 +28,7 @@ pub mod Structs{
     *               (Protocol) protocol: Remote protocol
     *               (String) conn_settings: Extra settings for connection
     */
-    #[derive(Debug)]
+    #[derive(Debug, Serialize, Deserialize, Clone)]
     pub struct Profile{
         id: String,
         name: String,
@@ -39,10 +40,10 @@ pub mod Structs{
     /** Struct
     * Name:	        Profiles
     * Purpose:      Profile Vector wrapper
-    * Properties:   (Vec<Profile>) anonymous profile vector
+    * Properties:   (Vec<Profile>) profileVec: profile vector
     */
-    #[derive(Debug)]
-    pub struct Profiles(pub Vec<Profile>);
+    #[derive(Debug, Serialize, Deserialize)]
+    pub struct Profiles{profileVec: Vec<Profile>}
 
     impl Profile{
 
@@ -76,6 +77,34 @@ pub mod Structs{
                 ip_fqdn: ip_fqdn,
                 protocol: protocol,
                 conn_settings: conn_settings
+            }
+        }
+    }
+    impl Profiles {
+
+        /** Function
+         * Name:	new
+         * Purpose:	Default constructor for Profiles object
+         * Args:	None
+         * Returns:	Profiles object
+         */
+        pub fn new() -> Profiles{
+            return Profiles{
+                profileVec: vec![]
+            }
+        }
+
+        /** Function
+         * Name:	push
+         * Purpose:	Clones profileVec and returns new object with added profile
+         * Args:	(&Profiles) Reference to Profiles object on which push was called
+         * Returns:	Profiles object
+         */
+        pub fn push(&self, profile: Profile) -> Profiles{
+            let mut newProfileVec = self.profileVec.to_vec();
+            newProfileVec.push(profile);
+            return Profiles{
+                profileVec: newProfileVec
             }
         }
     }
@@ -120,17 +149,28 @@ pub mod Structs{
          * Returns:	(Result) Formatted JSON string
          */
         fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-            //Dynamically create JSON profile object array from Vec
-            self.0.iter().enumerate().fold(Ok(()), |result, profile| {  //Fold executes a closure on all objects of a collection
-                result.and_then(|_| writeln!(f, r#"{}"{}": {}{}"#, //Write each object inside object array
-                    (if profile.0 == 0 {"{"} else {""}), //Either opening curly bracket or empty string
-                    profile.0, //Object index
-                    profile.1, //Object JSON
-                    (if self.0.len() - 1 == profile.0 {"}"} else {","}))) //Either comma seperating objects or closing curly bracket
-            })
+            if self.profileVec.len() > 0{
+                //Dynamically create JSON profile object array from Vec
+                self.profileVec.iter().enumerate().fold(Ok(()), |result, profile| {  //Fold executes a closure on all objects of a collection
+                    result.and_then(|_| write!(f, r#"{}"{}": {}{}"#, //Write each object inside object array
+                        (if profile.0 == 0 {"{"} else {""}), //Either opening curly bracket or empty string
+                        profile.0, //Object index
+                        profile.1, //Object JSON
+                        (if self.profileVec.len() - 1 == profile.0 {"}"} else {","}))) //Either comma seperating objects or closing curly bracket
+                })
+            } else {
+                //Return empty JSON object if Vec contains no profiles
+                write!(f, "{{}}")
+            }
         }
     }
 }
 pub mod File{
-
+    use std::fs;
+    pub fn read_file(path: &str) -> String{
+        fs::read_to_string(path).expect("Issue with reading the requested file.")
+    }
+    pub fn write_file(path: &str, toml: &str){
+        fs::write(path, toml).expect("Issue with writing to the requested file.")
+    }
 }
