@@ -30,9 +30,9 @@ pub mod Structs{
     */
     #[derive(Debug, Serialize, Deserialize, Clone)]
     pub struct Profile{
-        id: String,
-        name: String,
-        ip_fqdn: String,
+        pub id: String,
+        pub name: String,
+        pub ip_fqdn: String,
         protocol: Protocol,
         conn_settings: String
     }
@@ -40,10 +40,10 @@ pub mod Structs{
     /** Struct
     * Name:	        Profiles
     * Purpose:      Profile Vector wrapper
-    * Properties:   (Vec<Profile>) profileVec: profile vector
+    * Properties:   (Vec<Profile>) profile_vec: profile vector
     */
     #[derive(Debug, Serialize, Deserialize)]
-    pub struct Profiles{profileVec: Vec<Profile>}
+    pub struct Profiles{pub profile_vec: Vec<Profile>}
 
     impl Profile{
 
@@ -90,22 +90,33 @@ pub mod Structs{
          */
         pub fn new() -> Profiles{
             return Profiles{
-                profileVec: vec![]
+                profile_vec: vec![]
             }
         }
 
         /** Function
          * Name:	push
-         * Purpose:	Clones profileVec and returns new object with added profile
+         * Purpose:	Clones profile_vec and returns new object with added profile
          * Args:	(&Profiles) Reference to Profiles object on which push was called
          * Returns:	Profiles object
          */
         pub fn push(&self, profile: Profile) -> Profiles{
-            let mut newProfileVec = self.profileVec.to_vec();
-            newProfileVec.push(profile);
+            let mut newprofile_vec = self.profile_vec.to_vec();
+            newprofile_vec.push(profile);
             return Profiles{
-                profileVec: newProfileVec
+                profile_vec: newprofile_vec
             }
+        }
+    }
+    impl std::iter::FromIterator<Profile> for Profiles{
+        fn from_iter<I: IntoIterator<Item=Profile>>(iter: I) -> Self {
+            let profiles = Profiles::new();
+    
+            for i in iter {
+                profiles.push(i);
+            }
+    
+            profiles
         }
     }
     impl fmt::Display for Protocol {
@@ -149,14 +160,14 @@ pub mod Structs{
          * Returns:	(Result) Formatted JSON string
          */
         fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-            if self.profileVec.len() > 0{
+            if self.profile_vec.len() > 0{
                 //Dynamically create JSON profile object array from Vec
-                self.profileVec.iter().enumerate().fold(Ok(()), |result, profile| {  //Fold executes a closure on all objects of a collection
+                self.profile_vec.iter().enumerate().fold(Ok(()), |result, profile| {  //Fold executes a closure on all objects of a collection
                     result.and_then(|_| write!(f, r#"{}"{}": {}{}"#, //Write each object inside object array
                         (if profile.0 == 0 {"{"} else {""}), //Either opening curly bracket or empty string
                         profile.0, //Object index
                         profile.1, //Object JSON
-                        (if self.profileVec.len() - 1 == profile.0 {"}"} else {","}))) //Either comma seperating objects or closing curly bracket
+                        (if self.profile_vec.len() - 1 == profile.0 {"}"} else {","}))) //Either comma seperating objects or closing curly bracket
                 })
             } else {
                 //Return empty JSON object if Vec contains no profiles

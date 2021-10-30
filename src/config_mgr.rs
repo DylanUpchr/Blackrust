@@ -14,13 +14,12 @@ use blackrust_lib::File;
  */
 pub fn get_profiles(query: String) -> Result<Profiles, String> {
     println!("Received query: {}", query);
-    let mut results = load_all_profiles()?;
-    results = results.push(Profile::new());
-    results = results.push(Profile::new());
-    temp_save_profiles(&results);
-    //return Err("Error".to_string());
-    println!("Returned results: {}", results);
-    return Ok(results);
+    let mut profiles: Profiles = load_all_profiles()?;
+    profiles.profile_vec = profiles.profile_vec.into_iter()
+        .filter(|profile| {profile.name.contains(&query) || profile.ip_fqdn.contains(&query)})
+        .collect();
+    println!("Returned results: {}", profiles);
+    return Ok(profiles);
 }
 
 /** Function
@@ -30,7 +29,7 @@ pub fn get_profiles(query: String) -> Result<Profiles, String> {
  * Returns:	(Result) Profiles object or error string
  */
 pub fn load_all_profiles() -> Result<Profiles, String>{
-    let toml = &File::read_file("/etc/blackrust/data/profiles.toml");
+    let toml = &File::read_file(&format!("{}/{}", crate::DATA_PATH, crate::PROFILES_FILENAME));
     let profiles: Profiles;
     if toml == "" {
         profiles = Profiles::new();
@@ -39,7 +38,7 @@ pub fn load_all_profiles() -> Result<Profiles, String>{
     }
     return Ok(profiles);
 }
-fn temp_save_profiles(profiles: &Profiles){
+fn save_profiles(profiles: &Profiles){
     let toml = toml::Value::try_from(&profiles).unwrap();
-    File::write_file("/etc/blackrust/data/profiles.toml", &format!("{}", toml));
+    File::write_file(&format!("{}/{}", crate::DATA_PATH, crate::PROFILES_FILENAME), &format!("{}", toml));
 }
