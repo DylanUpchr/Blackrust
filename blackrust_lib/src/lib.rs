@@ -4,11 +4,21 @@
  * Desc:		Blackrust common library
  */ 
 
-pub mod Structs{
+pub mod Profile{
     use uuid::Uuid;
     use std::fmt;
     use serde_derive::{Serialize, Deserialize};
 
+    /** Enum
+     * Name:    PortProtocol
+     * Members: TCP: Transmission Control Protocol 
+     *          UDP: User Datagram Protocol
+     */
+    #[derive(Debug, Serialize, Deserialize, Clone)]
+    pub enum PortProtocol{
+        TCP,
+        UDP
+    }
     /** Struct
     * Name:	        Protocol
     * Purpose:      Protocol object
@@ -16,7 +26,9 @@ pub mod Structs{
     */
     #[derive(Debug, Serialize, Deserialize, Clone)]
     pub struct Protocol{
-        name: String
+        name: String,
+        port: i32,
+        port_protocol: PortProtocol
     }
 
     /** Struct
@@ -55,10 +67,10 @@ pub mod Structs{
          */
         pub fn new() -> Profile{
             return Profile::new4(
-                String::from("test"), 
-                String::from("test"), 
-                Protocol{name: String::from("test")},
-                String::from("test"));
+                String::from("Empty profile"), 
+                String::from(""), 
+                Protocol{name: String::from("RDP"), port: 3389, port_protocol: PortProtocol::TCP},
+                String::from(""));
         }
 
         /** Function
