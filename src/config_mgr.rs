@@ -16,7 +16,7 @@ pub fn get_profiles(query: String) -> Result<Profiles, String> {
     println!("Received query: {}", query);
     let mut profiles: Profiles = load_all_profiles()?;
     profiles.profile_vec = profiles.profile_vec.into_iter()
-        .filter(|profile| {profile.name.contains(&query) || profile.ip_fqdn.contains(&query)})
+        .filter(|profile| {profile.name.to_lowercase().contains(&query.to_lowercase()) || profile.ip_fqdn.to_lowercase().contains(&query.to_lowercase())})
         .collect();
     println!("Returned results: {}", profiles);
     return Ok(profiles);
