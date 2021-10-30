@@ -108,17 +108,6 @@ pub mod Structs{
             }
         }
     }
-    impl std::iter::FromIterator<Profile> for Profiles{
-        fn from_iter<I: IntoIterator<Item=Profile>>(iter: I) -> Self {
-            let profiles = Profiles::new();
-    
-            for i in iter {
-                profiles.push(i);
-            }
-    
-            profiles
-        }
-    }
     impl fmt::Display for Protocol {
         
         /** Function
