@@ -38,7 +38,7 @@ pub fn load_all_profiles() -> Result<Profiles, String>{
     }
     return Ok(profiles);
 }
-fn save_profiles(profiles: &Profiles){
+pub fn save_profiles(profiles: &Profiles){
     let toml = toml::Value::try_from(&profiles).unwrap();
     File::write_file(&format!("{}/{}", crate::DATA_PATH, crate::PROFILES_FILENAME), &format!("{}", toml));
 }

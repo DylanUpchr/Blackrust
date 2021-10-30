@@ -130,7 +130,7 @@ pub mod Profile{
          * Returns:	(Result) Formatted JSON string
          */
         fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-            write!(f, r#"{{"name":"{}"}}"#, self.name)
+            write!(f, r#"{{"name":"{}", "port":"{}", "port_protocol":"{:?}"}}"#, self.name, self.port, self.port_protocol)
         }
     }
     impl fmt::Display for Profile {
