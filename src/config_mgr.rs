@@ -16,7 +16,10 @@ pub fn get_profiles(query: String) -> Result<Profiles, String> {
     println!("Received query: {}", query);
     let mut profiles: Profiles = load_all_profiles()?;
     profiles.profile_vec = profiles.profile_vec.into_iter()
-        .filter(|profile| {profile.name.to_lowercase().contains(&query.to_lowercase()) || profile.ip_fqdn.to_lowercase().contains(&query.to_lowercase())})
+        .filter(|profile| {
+            profile.name.to_lowercase().contains(&query.to_lowercase()) 
+            || profile.ip_fqdn.to_lowercase().contains(&query.to_lowercase())
+        })
         .collect();
     println!("Returned results: {}", profiles);
     return Ok(profiles);
@@ -38,6 +41,13 @@ pub fn load_all_profiles() -> Result<Profiles, String>{
     }
     return Ok(profiles);
 }
+
+/** Function
+ * Name:    save_profiles
+ * Purpose:	Saves Profiles object to default profiles file
+ * Args:	(&Profiles) Profiles object
+ * Returns:	None
+ */
 pub fn save_profiles(profiles: &Profiles){
     let toml = toml::Value::try_from(&profiles).unwrap();
     File::write_file(&format!("{}/{}", crate::DATA_PATH, crate::PROFILES_FILENAME), &format!("{}", toml));
