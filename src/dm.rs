@@ -12,10 +12,6 @@ use regex::Regex;
 use regex::Captures;
 mod config_mgr;
 
-//Constants
-const DATA_PATH: &str = "/etc/blackrust/data";
-const PROFILES_FILENAME: &str = "profiles.toml";
-
 /** Function
  * Name:	main
  * Purpose:	Main entry point for program

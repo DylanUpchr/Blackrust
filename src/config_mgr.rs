@@ -3,8 +3,9 @@
  * Date:		2021-10-28
  * Desc:		Blackrust configuration manager crate (Profile/settings management)
  */
-use blackrust_lib::Profile::*;
-use blackrust_lib::File;
+use blackrust_lib::profile::*;
+use blackrust_lib::file::*;
+use blackrust_lib::defaults;
 
 /** Function
  * Name:    get_profiles
@@ -32,7 +33,7 @@ pub fn get_profiles(query: String) -> Result<Profiles, String> {
  * Returns:	(Result) Profiles object or error string
  */
 pub fn load_all_profiles() -> Result<Profiles, String>{
-    let toml = &File::read_file(&format!("{}/{}", crate::DATA_PATH, crate::PROFILES_FILENAME));
+    let toml = &read_file(&format!("{}/{}", defaults::DATA_PATH, defaults::PROFILES_FILENAME));
     let profiles: Profiles;
     if toml == "" {
         profiles = Profiles::new();
@@ -50,5 +51,5 @@ pub fn load_all_profiles() -> Result<Profiles, String>{
  */
 pub fn save_profiles(profiles: &Profiles){
     let toml = toml::Value::try_from(&profiles).unwrap();
-    File::write_file(&format!("{}/{}", crate::DATA_PATH, crate::PROFILES_FILENAME), &format!("{}", toml));
+    write_file(&format!("{}/{}", defaults::DATA_PATH, defaults::PROFILES_FILENAME), &format!("{}", toml));
 }

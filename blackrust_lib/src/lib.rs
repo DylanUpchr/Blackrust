@@ -4,7 +4,7 @@
  * Desc:		Blackrust common library
  */ 
 
-pub mod Profile{
+pub mod profile{
     use uuid::Uuid;
     use std::fmt;
     use serde_derive::{Serialize, Deserialize};
@@ -19,7 +19,7 @@ pub mod Profile{
         TCP,
         UDP
     }
-    
+
     /** Struct
     * Name:	        Protocol
     * Purpose:      Protocol object
@@ -178,7 +178,7 @@ pub mod Profile{
         }
     }
 }
-pub mod File{
+pub mod file{
     use std::fs;
 
     /** Function
@@ -201,4 +201,9 @@ pub mod File{
     pub fn write_file(path: &str, content: &str){
         fs::write(path, content).expect("Issue with writing to the requested file.")
     }
+}
+pub mod defaults{
+    //Constants
+    pub const DATA_PATH: &str = "/etc/blackrust/data";
+    pub const PROFILES_FILENAME: &str = "profiles.toml";
 }
