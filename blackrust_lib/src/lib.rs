@@ -8,6 +8,7 @@ pub mod profile{
     use uuid::Uuid;
     use std::fmt;
     use serde_derive::{Serialize, Deserialize};
+    use crate::defaults;
 
     /** Enum
      * Name:    PortProtocol
@@ -68,10 +69,10 @@ pub mod profile{
          */
         pub fn new() -> Profile{
             return Profile::new4(
-                String::from("Empty profile"), 
-                String::from(""), 
-                Protocol{name: String::from("RDP"), port: 3389, port_protocol: PortProtocol::TCP},
-                String::from(""));
+                String::from(defaults::PROFILE_NAME), 
+                String::new(), 
+                Protocol{name: String::from(defaults::PROTOCOL_NAME), port: defaults::PROTOCOL_PORT, port_protocol: defaults::PROTOCOL_PORT_PROTOCOL},
+                String::new());
         }
 
         /** Function
@@ -203,7 +204,12 @@ pub mod file{
     }
 }
 pub mod defaults{
+    use crate::profile::PortProtocol;
     //Constants
     pub const DATA_PATH: &str = "/etc/blackrust/data";
     pub const PROFILES_FILENAME: &str = "profiles.toml";
+    pub const PROFILE_NAME: &str = "Empty profile";
+    pub const PROTOCOL_NAME: &str = "RDP";
+    pub const PROTOCOL_PORT: i32 = 3389;
+    pub const PROTOCOL_PORT_PROTOCOL: PortProtocol = PortProtocol::TCP;
 }
