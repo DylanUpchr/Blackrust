@@ -26,8 +26,7 @@ Logiciel qui permet de:
 ## Parties prenantes
 | Nom | Fonction |
 |-|-|
-| Francisco Garcia | Enseignant de suivie / Mandant |
-| Pascal Bonvin | Enseignant de suivie / Mandant |
+| Yannick Zeltner | Enseignant de suivie / Mandant |
 | Dylan Upchurch | Elève / Développeur / Mandataire |
 
 ## Environnement
@@ -54,11 +53,11 @@ Logiciel qui permet de:
 | Outil réseau (LAN/VPN) | NetworkManager |
 
 ## Exemples d'utilisation
-### Dans un cadre personelle:
+### Dans un cadre personel:
 Un cas d'utilisation personnel serait si l'on veut avoir un environnement de développement spécifique que l'on héberge à la maison sur un ordinateur puissant, et puis on veut utiliser cet environnement à l'extérieur sur un ordinateur portable bas de gamme. L'environnement de développement aura un serveur d'accès distant tel RDP ou VNC, et possiblement par le biais d'un VPN selon notre configuration. Le logiciel Blackrust pourra proposer de se connecter à cet environnement au démarrage de l'ordinateur portable qu'on soit en vacances ou dans le jardin chez nous.
 
 ---
-### Dans un cadre professionelle:
+### Dans un cadre professionel:
 Un cas d'utilisation professionnel serait si notre employeur nous met à disposition une infrastructure de bureau virtuel avec le protocole RDP derrière un VPN, puis nous fournit un ordinateur de petite taille ou un ordinateur portable avec le logiciel Blackrust installé. Le logiciel permet de garder le même espace de travail n'importe où on va dans le monde, qu'on soit au bureau ou en télétravail.
 
 ## Expérience utilisateur
