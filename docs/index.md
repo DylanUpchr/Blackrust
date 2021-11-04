@@ -61,6 +61,22 @@ Un cas d'utilisation personnel serait si l'on veut avoir un environnement de dé
 ### Dans un cadre professionelle:
 Un cas d'utilisation professionnel serait si notre employeur nous met à disposition une infrastructure de bureau virtuel avec le protocole RDP derrière un VPN, puis nous fournit un ordinateur de petite taille ou un ordinateur portable avec le logiciel Blackrust installé. Le logiciel permet de garder le même espace de travail n'importe où on va dans le monde, qu'on soit au bureau ou en télétravail.
 
+## Expérience utilisateur
+### Arrivée dans l'application
+Blackrust v0 est conçu pour être un Display Manager linux avec des fonctionnalités d'accès distant, du coup le programme sera un service de démarrage. Ceci entend que le programme sera la première application que l'utilisateur verra, et lui permettra de choisir une session locale ou une session sur un serveur distant.
+
+### Configuration de l'application
+Au besoin, l'utilisateur pourra adapter les réglages réseau à sa configuration, par exemple mettre une adresse fixe, changer la passerelle par défaut ou se connecter à un VPN. 
+
+### Connexion session distante
+L'utilisateur pourra soit faire une "connexion rapide", c'est-à-dire renseigner le protocole, l'IP/nom d'hôte et les options de connexion pour une connexion unique qui ne sera pas gardée, ou renseigner ces champs dans un profil sauvegardé pour que l'on puisse se reconnecter à nouveau avec aisance.
+
+### Connexion session locale
+L'utilisateur pourra également ouvrir un bureau local, au cas où il a besoin de travailler en hors-ligne ou affecter quelque chose sur la machine locale.
+
+## Hardware
+Le langage Rust permet de facilement compiler pour plusieurs architectures cible, donc ce logiciel pourrait être déployé sur des systèmes tel ARMv7, ARMv8 ou x86_64. Il reste à voir si toutes les dépendances du projet seraient satisfait sous ces différentes architectures et sous différentes distributions Linux. Une partie du travail de diplôme serait une analyse de compatibilité et de faire des benchmarks avec différentes combinaisons hardware (Raspberry Pi 4, Jetson Nano, etc.) et distribution Linux (Debian, Arch) sous différentes architectures (ARMv7, ARMv8 et x86_64).
+
 ## Analyse concurrencielle
 ### [Remmina](https://remmina.org/)
 Remmina est un client de desktop remote pour linux écrit en C et qui utilise la librairie GTK+ pour se connecter à plusieurs types de sessions distants tels que  SSH, VNC, RDP, NX, XDMCP, et même des interfaces HTTP/HTTPS qu'on retrouve sur des routeurs.
