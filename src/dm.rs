@@ -42,11 +42,13 @@ fn open_webview() -> WebView<'static, &'static str> {
 		.invoke_handler(|webview, arg| {
 			use Cmd::*;
 			match serde_json::from_str(arg).unwrap() {
-				Init => (println!("init")),
+				Init => ({
+					webview.eval(&format!("loadQueriedProfiles({})", config_mgr::get_profiles(String::new()).unwrap()))?;
+				}),
 				Debug { value } => (println!("{}", value)),
 				Connect { ip_fqdn, protocol, config} => (),
 				QueryProfiles { query } => (webview.eval(&format!("loadQueriedProfiles({})", config_mgr::get_profiles(query).unwrap()))?),
-				LoadProfile { id } => () 
+				LoadProfile { id } => (webview.eval(&format!("loadSelectedProfile({})", config_mgr::get_profile_by_id(id).unwrap()))?) 
 			}
 			Ok(())
 		})

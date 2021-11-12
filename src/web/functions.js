@@ -5,18 +5,29 @@ function invoke(arg) {
 function init() {
 	setTime();
 	invoke({cmd: 'init'});
-	let inputIpFqdn = document.getElementById("inputIpFqdn");
-	let inputProfile = document.getElementById("inputProfile");
-	inputIpFqdn.addEventListener("input", 
+
+	let inputProfileSelect = document.getElementById("inputProfileSelect");
+	let inputProfileSelectOptions = document.getElementById("inputProfileSelectOptions");
+	
+	document.getElementById("inputIpFqdn").addEventListener("input", 
 		function(e){
 			invoke({cmd: 'queryProfiles', query: e.target.value});
-		});
+		}
+	);
 	document.getElementById("inputConnect").addEventListener("click", function(e){});
 	document.getElementById("inputConnectionSettings").addEventListener("click", function(e){});
-	inputProfile.addEventListener(
-		"change", 
-		function(e){invoke({cmd: "loadProfile", profile: e.target.value})
-	});
+	inputProfileSelect.addEventListener(
+		"click", 
+		function(e){
+			if(inputProfileSelect.classList.contains("arrow-open")){
+				inputProfileSelect.classList.replace("arrow-open", "arrow-closed");
+				inputProfileSelectOptions.classList.replace("options-open", "options-closed");
+			} else {
+				inputProfileSelect.classList.replace("arrow-closed", "arrow-open");
+				inputProfileSelectOptions.classList.replace("options-closed", "options-open");
+			}
+		}
+	);
 }
 
 function setTime() {
@@ -51,12 +62,59 @@ function validateIpFqdn(value){
 	let validHostnameRegex = "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]+[a-zA-Z0-9])\.)+([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]+[A-Za-z0-9])$";
 	let IpMatches = value.match(validIpAddressRegex);
 	let HostnameMatches = value.match(validHostnameRegex);
-	console.log(IpMatches);
-	console.log(HostnameMatches);
 
 	return (IpMatches != null || HostnameMatches != null)
 }
 
 function loadQueriedProfiles(profiles){
-	invoke({cmd: 'debug', value: "Received result: " + JSON.stringify(profiles)});
+	let inputProfileSelectOptions = document.getElementById("inputProfileSelectOptions");
+	inputProfileSelectOptions.innerHTML = "";
+	if (Object.keys(profiles).length == 0) {
+		let div = document.createElement("div");
+		let text = document.createElement("i");
+
+		text.innerText = "No Profiles";
+		
+		div.appendChild(text);
+		inputProfileSelectOptions.appendChild(text);
+	} else {
+		for (let key in profiles) {
+			if (Object.hasOwnProperty.call(profiles, key)) {
+				let profile = profiles[key];
+				inputProfileSelectOptions.appendChild(genProfileSelectItemHTML(profile));
+			}
+		}
+	}
+}
+
+function genProfileSelectItemHTML(profile){
+	let div = document.createElement("div");
+	let name = document.createElement("span");
+	let ip_fqdn = document.createElement("span");
+	let protocol = document.createElement("span");
+
+	name.innerText = profile.name;
+	ip_fqdn.innerText = profile.ip_fqdn;
+	protocol.innerText = profile.protocol.name + " " + profile.protocol.port + " (" + profile.protocol.port_protocol + ")";
+
+	name.classList.add("profileName");
+	ip_fqdn.classList.add("profileIpFqdn");
+	protocol.classList.add("profileProtocol");
+
+	div.appendChild(name);
+	div.appendChild(ip_fqdn);
+	div.appendChild(protocol);
+
+	div.addEventListener(
+		"click", 
+		function(e){
+			invoke({cmd: 'loadProfile', id: profile.id});
+		}
+	);
+
+	return div;
+}
+
+function loadSelectedProfile(profile){
+	invoke({cmd: 'debug', value: JSON.stringify(profile)});
 }

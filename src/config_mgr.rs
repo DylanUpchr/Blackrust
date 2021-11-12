@@ -14,7 +14,6 @@ use blackrust_lib::defaults;
  * Returns:	(Result) Profiles object or error string
  */
 pub fn get_profiles(query: String) -> Result<Profiles, String> {
-    println!("Received query: {}", query);
     let mut profiles: Profiles = load_all_profiles()?;
     profiles.profile_vec = profiles.profile_vec.into_iter()
         .filter(|profile| {
@@ -22,8 +21,25 @@ pub fn get_profiles(query: String) -> Result<Profiles, String> {
             || profile.ip_fqdn.to_lowercase().contains(&query.to_lowercase())
         })
         .collect();
-    println!("Returned results: {}", profiles);
     return Ok(profiles);
+}
+
+/** Function
+ * Name:    get_profile_by_id
+ * Purpose:	Gets profile that has matching id
+ * Args:	(String) Id with which to filter profiles
+ * Returns:	(Result) Profile object or error string
+ */
+pub fn get_profile_by_id(id: String) -> Result<Profile, String> {
+    let profiles: Profiles = load_all_profiles()?;
+    let profile_result: Option<&Profile>;
+    profile_result = profiles.profile_vec.iter()
+                        .find(|profile: &_| profile.id == id);
+
+    match profile_result {
+        Some(profile) => (return Ok(profile.clone())),
+        None => (return Err(String::from("Could not find profile.")))
+    }
 }
 
 /** Function

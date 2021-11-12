@@ -24,11 +24,14 @@
                     <option>VNC</option>
                     <option>SSH - X11 Forwarding</option>
                 </select>
-                <span id="inputProfileSelect">
-                    <input type="text" name="ip_fqdn" id="inputIpFqdn">
-                    <select name="profile" id="inputProfile">
-                        <option>test</option>
-                    </select>
+                <span id="inputProfileWrapper">
+                    <span id="inputProfile">
+                      <input type="text" name="ip_fqdn" id="inputIpFqdn">
+                      <button id="inputProfileSelect" class="arrow-closed"></button>
+                      <div id="inputProfileSelectOptions" class="options-closed">
+                          <div><i>No profiles</i></div>
+                      </div>
+                    </span>
                 </span>
                 <button id="inputConnect">Connect</button>
                 <button id="inputConnectionSettings">Connection settings</button>

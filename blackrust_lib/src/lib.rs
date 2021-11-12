@@ -47,8 +47,8 @@ pub mod profile{
         pub id: String,
         pub name: String,
         pub ip_fqdn: String,
-        protocol: Protocol,
-        conn_settings: String
+        pub protocol: Protocol,
+        pub conn_settings: String
     }
 
     /** Struct
@@ -92,6 +92,17 @@ pub mod profile{
                 protocol: protocol,
                 conn_settings: conn_settings
             }
+        }
+
+        /** Function
+        * Name:	    clone
+        * Purpose:	Clone implementation for Profile object, 
+                    does deep clone by calling constructor with cloned fields
+        * Args:	    (&Profile) self: Profile to be cloned
+        * Returns:	Profile object
+        */
+        pub fn clone(&self) -> Self {
+            return Profile::new4(self.name.clone(), self.ip_fqdn.clone(), self.protocol.clone(), self.conn_settings.clone());
         }
     }
     impl Profiles {

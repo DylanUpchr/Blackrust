@@ -59,47 +59,71 @@ body {
     height: 150px;
     background-color: gray;
 }
-/*.valid{
-    border: solid green 2px;
-    box-shadow: green 0px 0px 15px;
+#inputProfileWrapper{
+  display: inl;
+  width: 250px;
+  height: 21px;
 }
-.invalid{
-    border: solid red 2px;
-    box-shadow: red 0px 0px 15px;
-}*/
-#inputProfileSelect {
-    position: relative;
-    width: 200px;
-    display: inline-block;
-  }
-  
-  #inputProfileSelect select {
-    width: 100%;
-  }
-  
-  #inputProfileSelect > * {
-    box-sizing: border-box;
-    height: 1.5em;
-  }
-  
-  #inputProfileSelect input {
-    position: absolute;
-    width: calc(100% - 20px);
-  }
-  #connectionSelect {
-      width: 100%;
-      height: calc(100% - 150px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-  }
-  /*.dropdown-menu {
-    max-height: 0;
-    overflow: hidden;
-    transition: all 0.3s ease;
-  }
-  
-  .dropdown-menu-open {
-    max-height: 200px;
-    transition: all 0.3s ease;
-  }*/
+#inputProfile{
+  display: block;
+  border: 1px solid gray;
+  border-radius: 5px;
+  width: auto;
+  height: auto;
+  padding-top: 2px;
+}
+#inputIpFqdn{
+  width: 86%;
+  border: none;
+  height: 20px;
+  margin-left: 2px;
+}
+#inputProfileSelect{
+  height: 20px;
+  width: 10%;
+  float: right;
+  padding: 0px;
+  background-color: white;
+  background-repeat: no-repeat;
+  border: none;
+  outline: 0;
+  background-size:
+    5px 5px,
+    5px 5px,
+    1px 1.5em;
+  background-position:
+    calc(50% - 2px) 50%,
+    calc(50% + 3px) 50%,
+    0% 50%;
+}
+#inputProfileSelectOptions{
+  width: calc(100% - 1px);
+  max-height: 100px;
+  border: 1px solid gray;
+  border-radius: 5px;
+  overflow: auto;
+  margin-right: 5px;
+}
+.arrow-open{
+  background-image:
+    linear-gradient(135deg, transparent 50%, gray 50%),
+    linear-gradient(45deg, gray 50%, transparent 50%),
+    linear-gradient(to right, #ccc, #ccc);
+}
+.arrow-closed{
+  background-image:
+    linear-gradient(45deg, transparent 50%, gray 50%),
+    linear-gradient(135deg, gray 50%, transparent 50%),
+    linear-gradient(to right, #ccc, #ccc);
+}
+.options-open{
+  height: auto;
+  opacity: 100;
+}
+.options-closed{
+  height: 0px;
+  opacity: 0;
+}
+.profile{
+  padding: 5px;
+}
