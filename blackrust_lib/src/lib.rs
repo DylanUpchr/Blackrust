@@ -92,17 +92,6 @@ pub mod profile{
                 conn_settings: conn_settings
             }
         }
-
-        /** Function
-        * Name:	    clone
-        * Purpose:	Clone implementation for Profile object, 
-                    does deep clone by calling constructor with cloned fields
-        * Args:	    (&Profile) self: Profile to be cloned
-        * Returns:	Profile object
-        */
-        pub fn clone(&self) -> Self {
-            return Profile::new4(self.name.clone(), self.ip_fqdn.clone(), self.protocol.clone(), self.conn_settings.clone());
-        }
     }
     impl Profiles {
 
