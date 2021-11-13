@@ -43,12 +43,34 @@ fn open_webview() -> WebView<'static, &'static str> {
 			use Cmd::*;
 			match serde_json::from_str(arg).unwrap() {
 				Init => ({
-					webview.eval(&format!("loadQueriedProfiles({})", config_mgr::get_profiles(String::new()).unwrap()))?;
+					webview.eval(
+						&format!("loadQueriedProfiles({})", 
+							serde_json::to_string(
+								&config_mgr::get_profiles(String::new()).unwrap()
+							).unwrap()
+						)
+					)?;
 				}),
 				Debug { value } => (println!("{}", value)),
 				Connect { ip_fqdn, protocol, config} => (),
-				QueryProfiles { query } => (webview.eval(&format!("loadQueriedProfiles({})", config_mgr::get_profiles(query).unwrap()))?),
-				LoadProfile { id } => (webview.eval(&format!("loadSelectedProfile({})", config_mgr::get_profile_by_id(id).unwrap()))?) 
+				QueryProfiles { query } => (
+					webview.eval(
+						&format!("loadQueriedProfiles({})", 
+							serde_json::to_string(
+								&config_mgr::get_profiles(query).unwrap()
+							).unwrap()
+						)
+					)?
+				),
+				LoadProfile { id } => (
+					webview.eval(
+						&format!("loadSelectedProfile({})", 
+							serde_json::to_string(
+								&config_mgr::get_profile_by_id(id).unwrap()
+							).unwrap()
+						)
+					)?
+				) 
 			}
 			Ok(())
 		})

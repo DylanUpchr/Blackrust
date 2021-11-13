@@ -6,7 +6,6 @@
 
 pub mod profile{
     use uuid::Uuid;
-    use std::fmt;
     use serde_derive::{Serialize, Deserialize};
     use crate::defaults;
 
@@ -130,62 +129,6 @@ pub mod profile{
             newprofile_vec.push(profile);
             return Profiles{
                 profile_vec: newprofile_vec
-            }
-        }
-    }
-    impl fmt::Display for Protocol {
-        
-        /** Function
-         * Name:    fmt
-         * Purpose:	JSON Display formatter
-         * Args:	(&Protocol) Object being formatted
-         *          (&mut fmt::Formatter) Formatter configuration 
-         * Returns:	(Result) Formatted JSON string
-         */
-        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-            write!(f, r#"{{"name":"{}", "port":"{}", "port_protocol":"{:?}"}}"#, self.name, self.port, self.port_protocol)
-        }
-    }
-    impl fmt::Display for Profile {
-
-        /** Function
-         * Name:    fmt
-         * Purpose:	JSON Display formatter
-         * Args:	(&Profile) Object being formatted
-         *          (&mut fmt::Formatter) Formatter configuration 
-         * Returns:	(Result) Formatted JSON string
-         */
-        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-            write!(f, r#"{{"id":"{}", "name":"{}", "ip_fqdn":"{}", "protocol":{}, "conn_settings":"{}"}}"#, 
-            self.id, 
-            self.name, 
-            self.ip_fqdn, 
-            self.protocol, 
-            self.conn_settings)
-        }
-    }
-    impl fmt::Display for Profiles {
-
-        /** Function
-         * Name:    fmt
-         * Purpose:	JSON Display formatter
-         * Args:	(&Profiles) Object being formatted
-         *          (&mut fmt::Formatter) Formatter configuration 
-         * Returns:	(Result) Formatted JSON string
-         */
-        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-            if self.profile_vec.len() > 0{
-                //Dynamically create JSON profile object array from Vec
-                self.profile_vec.iter().enumerate().fold(Ok(()), |result, profile| {  //Fold executes a closure on all objects of a collection
-                    result.and_then(|_| write!(f, r#"{}"{}": {}{}"#, //Write each object inside object array
-                        (if profile.0 == 0 {"{"} else {""}), //Either opening curly bracket or empty string
-                        profile.0, //Object index
-                        profile.1, //Object JSON
-                        (if self.profile_vec.len() - 1 == profile.0 {"}"} else {","}))) //Either comma seperating objects or closing curly bracket
-                })
-            } else {
-                //Return empty JSON object if Vec contains no profiles
-                write!(f, "{{}}")
             }
         }
     }

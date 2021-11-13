@@ -67,6 +67,7 @@ function validateIpFqdn(value){
 }
 
 function loadQueriedProfiles(profiles){
+	profiles = profiles['profile_vec']
 	let inputProfileSelectOptions = document.getElementById("inputProfileSelectOptions");
 	inputProfileSelectOptions.innerHTML = "";
 	if (Object.keys(profiles).length == 0) {
