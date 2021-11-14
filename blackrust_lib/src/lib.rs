@@ -272,7 +272,7 @@ pub mod profile{
          * Returns:	Profile object
          */
         pub fn new() -> Profile{
-            return Profile::new4(
+            return Profile::new3(
                 String::from(defaults::PROFILE_NAME),
                 ConnectionSettings::new(),
                 vec!(NetworkSettings::new())
@@ -280,7 +280,7 @@ pub mod profile{
         }
 
         /** Function
-        * Name:	    new4
+        * Name:	    new3
         * Purpose:	Full constructor for Profile object
         * Args:	    (String) name: Profile name
         *           (String) ip_fqdn: Remote host IP address or FQDN
@@ -288,7 +288,7 @@ pub mod profile{
         *           (String) conn_settings: Extra setting for remote connection
         * Returns:	Profile object
         */
-        pub fn new4(name: String, conn_settings: ConnectionSettings, network_settings: Vec<NetworkSettings>) -> Profile{
+        pub fn new3(name: String, conn_settings: ConnectionSettings, network_settings: Vec<NetworkSettings>) -> Profile{
             return Profile{
                 id: Uuid::new_v4().to_string(),
                 name: name,
