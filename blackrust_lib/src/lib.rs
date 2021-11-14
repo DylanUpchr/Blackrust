@@ -99,7 +99,7 @@ pub mod profile{
     * Purpose:      Profile object
     * Properties:   (String) id: Profile UUIDv4
     *               (String) name: Profile name
-    *               (String) connection_settings: Remote connection configuration
+    *               (ConnectionSettings) connection_settings: Remote connection configuration
     *               (Vec<NetworkSettings>) network_settings: Local networking interface configurations
     */
     #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -244,9 +244,13 @@ pub mod profile{
         /** Function
         * Name:	    new7
         * Purpose:	Full constructor for NetworkSettings object
-        * Args:	    (String) ip_fqdn: IP address or FQDN of remote host
-        *           (Protocol) protocol: Remote host protocol
-        *           (String) extra_settings: Extra settings for remote session
+        * Args:	    (String) interface: Name of interface to apply configuration to
+        *           (String) ipv4: IPv4 address of local host
+        *           (String) ipv6: IPv6 address of local host
+        *           (String) hostname: Hostname of local host
+        *           (String) gateway: IP address of local gateway
+        *           (DNS) DNS configuration
+        *           (VPN) VPN  configuration
         * Returns:	NetworkSettings object
         */
         pub fn new7(interface: String, ipv4: String, ipv6: String, hostname: String, gateway: String, dns: DNS, vpn: VPN) -> NetworkSettings {
@@ -283,9 +287,8 @@ pub mod profile{
         * Name:	    new3
         * Purpose:	Full constructor for Profile object
         * Args:	    (String) name: Profile name
-        *           (String) ip_fqdn: Remote host IP address or FQDN
-        *           (Protocol) protocol: Remote protocol
-        *           (String) connection_settings: Extra setting for remote connection
+        *           (ConnectionSettings) connection_settings: Remote connection configuration
+        *           (Vec<NetworkSettings>) network_settings: Local networking interface configurations
         * Returns:	Profile object
         */
         pub fn new3(name: String, connection_settings: ConnectionSettings, network_settings: Vec<NetworkSettings>) -> Profile{
