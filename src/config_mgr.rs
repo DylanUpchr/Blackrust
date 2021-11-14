@@ -18,7 +18,7 @@ pub fn get_profiles(query: String) -> Result<Profiles, String> {
     profiles.profile_vec = profiles.profile_vec.into_iter()
         .filter(|profile| {
             profile.name.to_lowercase().contains(&query.to_lowercase()) 
-            || profile.ip_fqdn.to_lowercase().contains(&query.to_lowercase())
+            || profile.conn_settings.ip_fqdn.to_lowercase().contains(&query.to_lowercase())
         })
         .collect();
     return Ok(profiles);
