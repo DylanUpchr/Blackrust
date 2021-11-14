@@ -99,14 +99,14 @@ pub mod profile{
     * Purpose:      Profile object
     * Properties:   (String) id: Profile UUIDv4
     *               (String) name: Profile name
-    *               (String) conn_settings: Remote connection configuration
+    *               (String) connection_settings: Remote connection configuration
     *               (Vec<NetworkSettings>) network_settings: Local networking interface configurations
     */
     #[derive(Debug, Serialize, Deserialize, Clone)]
     pub struct Profile{
         pub id: String,
         pub name: String,
-        pub conn_settings: ConnectionSettings,
+        pub connection_settings: ConnectionSettings,
         pub network_settings: Vec<NetworkSettings>
     }
 
@@ -285,14 +285,14 @@ pub mod profile{
         * Args:	    (String) name: Profile name
         *           (String) ip_fqdn: Remote host IP address or FQDN
         *           (Protocol) protocol: Remote protocol
-        *           (String) conn_settings: Extra setting for remote connection
+        *           (String) connection_settings: Extra setting for remote connection
         * Returns:	Profile object
         */
-        pub fn new3(name: String, conn_settings: ConnectionSettings, network_settings: Vec<NetworkSettings>) -> Profile{
+        pub fn new3(name: String, connection_settings: ConnectionSettings, network_settings: Vec<NetworkSettings>) -> Profile{
             return Profile{
                 id: Uuid::new_v4().to_string(),
                 name: name,
-                conn_settings: conn_settings,
+                connection_settings: connection_settings,
                 network_settings: network_settings
             }
         }

@@ -95,8 +95,8 @@ function genProfileSelectItemHTML(profile){
 	let protocol = document.createElement("span");
 
 	name.innerText = profile.name;
-	ip_fqdn.innerText = profile.conn_settings.ip_fqdn;
-	protocol.innerText = profile.conn_settings.protocol.name + " " + profile.conn_settings.protocol.port + " (" + profile.conn_settings.protocol.port_protocol + ")";
+	ip_fqdn.innerText = profile.connection_settings.ip_fqdn;
+	protocol.innerText = profile.connection_settings.protocol.name + " " + profile.connection_settings.protocol.port + " (" + profile.connection_settings.protocol.port_protocol + ")";
 
 	name.classList.add("profileName");
 	ip_fqdn.classList.add("profileIpFqdn");
