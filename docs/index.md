@@ -21,7 +21,7 @@ Logiciel qui permet de:
 - Démarrer un serveur audio distant dans le cas d'une session XDMCP/X11-Forwarding
 - Configurer le réseau local à travers NetworkManager
 - Configurer une connexion VPN à travers NetworkManager
-- Sauvegarder / Modifier / Charger des profiles de connexion
+- Sauvegarder / Modifier / Charger des profils de connexion
 - Sauvegarder / Modifier / Charger des thèmes
 ## Parties prenantes
 | Nom | Fonction |
@@ -124,18 +124,23 @@ Citrix est un environnement d'accès distant complet basé sur le RDP/RDS qui pr
 Ils proposent une soultion propriétaire qui utilise des librairies open source, afin d'avoir un système client/serveur pour les clients légers interne, et même du télétravail selon la configuration réseau. Ils font partie de la concurrence à ce projet, car ils se situent dans le même domaine et remplissent le même, cas d'utilisation, mais ils proposent un écosystème d'accès distant complet alors que Blackrust est un client polyvalent pour les installations basiques de RDP/VNC/SSH/XDMCP.
 ## Analyse système
 ![Analyse système](./img/blackrust-systems-analysis.png)
+Le programme se decoupe en quatre modules principaux:
+
+- Main: Module qui gère l'affichage de l'interface principale WebView et communique avec les autres modules
+- NetworkMgr: Module qui configure le réseau (IPv4, IPv6, configuration VPN) à travers la commande `nmcli` de [NetworkManager](https://networkmanager.dev/)
+- ConfigMgr: Module qui gère les profils (Réglages protocol, hôte distant, réglages réseau)
+- RemoteSessionMgr: Module qui lance les sessions d'accès distant
+
+
 ## Analyse heuristique
 ![Analyse heuristique](./img/blackrust-mind-map.png)
 
-## Documentation à fournir
+## Livrables
+- Code source Rust du projet
 - Documentation utilisateur
 - Documentation administrateur
 - Rapport de travail
 - Journal de bord
-
-## Livrables
-- Code source Rust du projet
-- Documentation
 
 ## Glossaire
 #### Serveur d'affichage
