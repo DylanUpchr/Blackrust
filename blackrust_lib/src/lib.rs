@@ -22,12 +22,12 @@ pub mod profile{
     }
 
     /** Struct
-    * Name:	        Protocol
-    * Purpose:      Protocol object
-    * Properties:   (String) name: Name of protocol
-    *               (u16) port: Host protocol port
-    *               (PortProtocol) port_protocol: Remote port protocol (TCP/UDP/None)
-    */
+     * Name:	        Protocol
+     * Purpose:      Protocol object
+     * Properties:   (String) name: Name of protocol
+     *               (u16) port: Host protocol port
+     *               (PortProtocol) port_protocol: Remote port protocol (TCP/UDP/None)
+     */
     #[derive(Debug, Serialize, Deserialize, Clone)]
     pub struct Protocol{
         name: String,
@@ -36,11 +36,11 @@ pub mod profile{
     }
 
     /** Struct
-    * Name:	        DNS
-    * Purpose:      DNS object
-    * Properties:   (Vec<String>) name_servers: Vec of name server IP addresses
-    *               (Vec<String>) search_domains: Vec of search domain names
-    */
+     * Name:	        DNS
+     * Purpose:      DNS object
+     * Properties:   (Vec<String>) name_servers: Vec of name server IP addresses
+     *               (Vec<String>) search_domains: Vec of search domain names
+     */
     #[derive(Debug, Serialize, Deserialize, Clone)]
     pub struct DNS{
         pub name_servers: Vec<String>,
@@ -48,22 +48,22 @@ pub mod profile{
     }
 
     /** Struct
-    * Name:	        VPN
-    * Purpose:      VPN object
-    * Properties:   ...
-    */
+     * Name:    VPN
+     * Purpose: VPN object
+     * Properties:  
+     */
     #[derive(Debug, Serialize, Deserialize, Clone)]
     pub struct VPN{
 
     }
 
     /** Struct
-    * Name:	        ConnectionSettings
-    * Purpose:      Contains fields used for connection to remote host
-    * Properties:   (String) ip_fqdn: IP address or FQDN of remote host
-    *               (Protocol) protocol: Remote host protocol
-    *               (String) extra_settings: Extra settings for remote session
-    */
+     * Name:	        ConnectionSettings
+     * Purpose:      Contains fields used for connection to remote host
+     * Properties:   (String) ip_fqdn: IP address or FQDN of remote host
+     *               (Protocol) protocol: Remote host protocol
+     *               (String) extra_settings: Extra settings for remote session
+     */
     #[derive(Debug, Serialize, Deserialize, Clone)]
     pub struct ConnectionSettings {
         pub ip_fqdn: String,
@@ -72,16 +72,16 @@ pub mod profile{
     }
 
     /** Struct
-    * Name:	        NetworkSettings
-    * Purpose:      Contains fields used for network configuration (LAN and VPN)
-    * Properties:   (String) interface: Name of interface to apply configuration to
-    *               (String) ipv4: IPv4 address of local host
-    *               (String) ipv6: IPv6 address of local host
-    *               (String) hostname: Hostname of local host
-    *               (String) gateway: IP address of local gateway
-    *               (DNS) DNS configuration
-    *               (VPN) VPN  configuration
-    */
+     * Name:	        NetworkSettings
+     * Purpose:      Contains fields used for network configuration (LAN and VPN)
+     * Properties:   (String) interface: Name of interface to apply configuration to
+     *               (String) ipv4: IPv4 address of local host
+     *               (String) ipv6: IPv6 address of local host
+     *               (String) hostname: Hostname of local host
+     *               (String) gateway: IP address of local gateway
+     *               (DNS) DNS configuration
+     *               (VPN) VPN  configuration
+     */
     #[derive(Debug, Serialize, Deserialize, Clone)]
     pub struct NetworkSettings {
         pub interface: String,
@@ -95,13 +95,13 @@ pub mod profile{
     }
 
     /** Struct
-    * Name:	        Profile
-    * Purpose:      Profile object
-    * Properties:   (String) id: Profile UUIDv4
-    *               (String) name: Profile name
-    *               (ConnectionSettings) connection_settings: Remote connection configuration
-    *               (Vec<NetworkSettings>) network_settings: Local networking interface configurations
-    */
+     * Name:	        Profile
+     * Purpose:      Profile object
+     * Properties:   (String) id: Profile UUIDv4
+     *               (String) name: Profile name
+     *               (ConnectionSettings) connection_settings: Remote connection configuration
+     *               (Vec<NetworkSettings>) network_settings: Local networking interface configurations
+     */
     #[derive(Debug, Serialize, Deserialize, Clone)]
     pub struct Profile{
         pub id: String,
@@ -111,10 +111,10 @@ pub mod profile{
     }
 
     /** Struct
-    * Name:	        Profiles
-    * Purpose:      Profile Vector wrapper
-    * Properties:   (Vec<Profile>) profile_vec: profile vector
-    */
+     * Name:	        Profiles
+     * Purpose:      Profile Vector wrapper
+     * Properties:   (Vec<Profile>) profile_vec: profile vector
+     */
     #[derive(Debug, Serialize, Deserialize)]
     pub struct Profiles{pub profile_vec: Vec<Profile>}
 
@@ -134,13 +134,13 @@ pub mod profile{
         }
 
         /** Function
-        * Name:	    new3
-        * Purpose:	Full constructor for Protocol object
-        * Args:	    (String) name: Protocol name
-        *           (u16) port: Remote host protocol port
-    *               (PortProtocol) port_protocol: Remote port protocol (TCP/UDP/None)
-        * Returns:	Profile object
-        */
+         * Name:	    new3
+         * Purpose:	Full constructor for Protocol object
+         * Args:	    (String) name: Protocol name
+         *           (u16) port: Remote host protocol port
+         *               (PortProtocol) port_protocol: Remote port protocol (TCP/UDP/None)
+         * Returns:	Profile object
+         */
         pub fn new3(name: String, port: u16, port_protocol: PortProtocol) -> Protocol {
             return Protocol{
                 name: name,
@@ -206,13 +206,13 @@ pub mod profile{
         }
 
         /** Function
-        * Name:	    new3
-        * Purpose:	Full constructor for ConnectionSettings object
-        * Args:	    (String) ip_fqdn: IP address or FQDN of remote host
-        *           (Protocol) protocol: Remote host protocol
-        *           (String) extra_settings: Extra settings for remote session
-        * Returns:	ConnectionSettings object
-        */
+         * Name:	    new3
+         * Purpose:	Full constructor for ConnectionSettings object
+         * Args:	    (String) ip_fqdn: IP address or FQDN of remote host
+         *           (Protocol) protocol: Remote host protocol
+         *           (String) extra_settings: Extra settings for remote session
+         * Returns:	ConnectionSettings object
+         */
         pub fn new3(ip_fqdn: String, protocol: Protocol, extra_settings: String) -> ConnectionSettings {
             return ConnectionSettings{
                 ip_fqdn: ip_fqdn,
@@ -242,17 +242,17 @@ pub mod profile{
         }
 
         /** Function
-        * Name:	    new7
-        * Purpose:	Full constructor for NetworkSettings object
-        * Args:	    (String) interface: Name of interface to apply configuration to
-        *           (String) ipv4: IPv4 address of local host
-        *           (String) ipv6: IPv6 address of local host
-        *           (String) hostname: Hostname of local host
-        *           (String) gateway: IP address of local gateway
-        *           (DNS) DNS configuration
-        *           (VPN) VPN  configuration
-        * Returns:	NetworkSettings object
-        */
+         * Name:	    new7
+         * Purpose:	Full constructor for NetworkSettings object
+         * Args:	    (String) interface: Name of interface to apply configuration to
+         *           (String) ipv4: IPv4 address of local host
+         *           (String) ipv6: IPv6 address of local host
+         *           (String) hostname: Hostname of local host
+         *           (String) gateway: IP address of local gateway
+         *           (DNS) DNS configuration
+         *           (VPN) VPN  configuration
+         * Returns:	NetworkSettings object
+         */
         pub fn new7(interface: String, ipv4: String, ipv6: String, hostname: String, gateway: String, dns: DNS, vpn: VPN) -> NetworkSettings {
             return NetworkSettings{
                 interface: interface,
@@ -284,13 +284,13 @@ pub mod profile{
         }
 
         /** Function
-        * Name:	    new3
-        * Purpose:	Full constructor for Profile object
-        * Args:	    (String) name: Profile name
-        *           (ConnectionSettings) connection_settings: Remote connection configuration
-        *           (Vec<NetworkSettings>) network_settings: Local networking interface configurations
-        * Returns:	Profile object
-        */
+         * Name:	    new3
+         * Purpose:	Full constructor for Profile object
+         * Args:	    (String) name: Profile name
+         *           (ConnectionSettings) connection_settings: Remote connection configuration
+         *           (Vec<NetworkSettings>) network_settings: Local networking interface configurations
+         * Returns:	Profile object
+         */
         pub fn new3(name: String, connection_settings: ConnectionSettings, network_settings: Vec<NetworkSettings>) -> Profile{
             return Profile{
                 id: Uuid::new_v4().to_string(),
