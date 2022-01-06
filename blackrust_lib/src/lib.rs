@@ -25,13 +25,13 @@ pub mod profile{
     * Name:	        Protocol
     * Purpose:      Protocol object
     * Properties:   (String) name: Name of protocol
-    *               (i32) port: Host protocol port
+    *               (u16) port: Host protocol port
     *               (PortProtocol) port_protocol: Remote port protocol (TCP/UDP/None)
     */
     #[derive(Debug, Serialize, Deserialize, Clone)]
     pub struct Protocol{
         name: String,
-        port: i32,
+        port: u16,
         port_protocol: PortProtocol
     }
 
@@ -137,11 +137,11 @@ pub mod profile{
         * Name:	    new3
         * Purpose:	Full constructor for Protocol object
         * Args:	    (String) name: Protocol name
-        *           (i32) port: Remote host protocol port
+        *           (u16) port: Remote host protocol port
     *               (PortProtocol) port_protocol: Remote port protocol (TCP/UDP/None)
         * Returns:	Profile object
         */
-        pub fn new3(name: String, port: i32, port_protocol: PortProtocol) -> Protocol {
+        pub fn new3(name: String, port: u16, port_protocol: PortProtocol) -> Protocol {
             return Protocol{
                 name: name,
                 port: port,
@@ -360,6 +360,6 @@ pub mod defaults {
     pub const PROFILES_FILENAME: &str = "profiles.toml";
     pub const PROFILE_NAME: &str = "Empty profile";
     pub const PROTOCOL_NAME: &str = "Local";
-    pub const PROTOCOL_PORT: i32 = 0;
+    pub const PROTOCOL_PORT: u16 = 0;
     pub const PROTOCOL_PORT_PROTOCOL: PortProtocol = PortProtocol::None;
 }
