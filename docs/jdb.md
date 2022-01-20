@@ -19,10 +19,15 @@ Travail sur la maquette de l'interface
 Installation de poste de travail Arch Linux
 
 ## 2022-01-13
-Découverte de nouveaux frameworks [WebAssembly (WASM)](https://webassembly.org/) pour faciliter le développement et améliorer les performances de l'interface. Le WebAssembly est une solution possible pour remplacer les pages statiques afin d'avoir un rendu plus léger et rapide.
+Découverte de nouveaux frameworks [WebAssembly (WASM)](https://webassembly.org/) pour faciliter le développement et améliorer les performances de l'interface. Le WebAssembly est une solution possible pour remplacer les pages statiques afin d'avoir un rendu dynamique plus léger et rapide. 
+
+WASM permet de faire des applications web avec des executables binaires intégrés. Ces éxecutables peuvent être compilés depuis le JS, ou cross-compilés depuis d'autres langues comme le C, C++, TypeScript, Rust, etc.
 
 - [Yew](https://github.com/yewstack/yew)
 - [Percy](https://github.com/chinedufn/percy)
 - [Seed](https://github.com/seed-rs/seed)
 - [Sycamore](https://github.com/sycamore-rs/sycamore)
 - [MoonZoon](https://github.com/MoonZoon/MoonZoon)
+
+## 2022-01-20
+Début de la documentation technique et du rapport de stage

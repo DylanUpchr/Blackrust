@@ -1,6 +1,7 @@
 # Rapport de stage
 ## Introduction
 ## Rappel du cahier des charges
+## Maquettes
 ## Développement
 ### Environnement de travail
 ### Architecture
@@ -17,8 +18,6 @@
 ##### Hostname
 ##### Image-base64
 ##### Regex
-### Maquettes
-### Description des activités
 ## Difficultés
 ## Planning
 ## Livrables
