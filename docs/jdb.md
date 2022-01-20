@@ -14,3 +14,15 @@ Le cahier des charges aurait besoin d'un diagramme de séquences pour les action
 ## 2021-12-16
 Ajout de précisions sur les rôles des modules dans l'analyse système
 Travail sur la maquette de l'interface
+
+## 2021-12-23
+Installation de poste de travail Arch Linux
+
+## 2022-01-13
+Découverte de nouveaux frameworks [WebAssembly (WASM)](https://webassembly.org/) pour faciliter le développement et améliorer les performances de l'interface. Le WebAssembly est une solution possible pour remplacer les pages statiques afin d'avoir un rendu plus léger et rapide.
+
+- [Yew](https://github.com/yewstack/yew)
+- [Percy](https://github.com/chinedufn/percy)
+- [Seed](https://github.com/seed-rs/seed)
+- [Sycamore](https://github.com/sycamore-rs/sycamore)
+- [MoonZoon](https://github.com/MoonZoon/MoonZoon)
