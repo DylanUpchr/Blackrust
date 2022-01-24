@@ -21,17 +21,23 @@ L'environnement de travail utilisé lors du développement de ce projet consiste
 ### Architecture
 Le programme est décomposé en 5 modules principaux:
 - Main: Point d'entrée du programme et aperçu graphique
-- Config_Mgr: CRUD pour les options de connexion
-- Network-Mgr: Appels aux outils système pour configurer le réseau
-- RemoteSession_Mgr: Lanceur de sessions distant
+- ConfigMgr: CRUD pour les options de connexion sauvegardées
+- NetworkMgr: Appels aux outils système pour configurer le réseau
+- RemoteSessionMgr: Lanceur de sessions distant
 - Blackrust-Lib: Fonctions commun a plusieurs modules, librairie interne
-#### Modules
+#### Modules internes
 ##### Main
-##### Config_Mgr
-##### Network_Mgr
-##### RemoteSession_Mgr
+Le module main est la point d'entrée principale de l'application, lance l'aperçu WebView qui permet d'interfacer avec l'application et appeler les autres modules
+##### ConfigMgr
+Le module ConfigMgr gère les profiles de connexion de session distant avec des fonctions CRUD (Création, Lecture, Mise à Jour, Suppression). Ses fonctionnalités sont appelé depuis le Invoke Handler du WebView et donc depuis le JS de l'interface utilisateur.
+##### NetworkMgr
+Le module NetworkMgr permet de faire des appels vers NetworkManager pour configurer les interface réseau afin de pouvoir se connecter au réseau local et éventuellement à un VPN.
+##### RemoteSessionMgr
+Le module RemoteSessionMgr lance les sessions distant en utilisant les options de connexion soit fourni par l'utilisateur soit par un profile chargé par l'utilisateur. Ce module fait appel aux commandes tel xfreerdp, vncviewer, Xnest ou ssh.
 ##### Blackrust-Lib
+Blackrust-Lib est la libraire commun aux modules et contient les définitions de structures de données et le fonctions utilisé par tous les modules.
 #### Librairies externes
+
 ##### Web-view
 ##### Xrandr
 ##### Serde
