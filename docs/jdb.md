@@ -31,3 +31,6 @@ WASM permet de faire des applications web avec des executables binaires intégr�
 
 ## 2022-01-20
 Début de la documentation technique et du rapport de stage
+
+## 2022-01-27
+Conitnuation de la documentation technique
