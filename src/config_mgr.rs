@@ -6,6 +6,7 @@
 use blackrust_lib::profile::*;
 use blackrust_lib::file::*;
 use blackrust_lib::defaults;
+use std::path::Path;
 
 /** Function
  * Name:    get_profiles
@@ -49,12 +50,14 @@ pub fn get_profile_by_id(id: String) -> Result<Profile, String> {
  * Returns:	(Result) Profiles object or error string
  */
 pub fn load_all_profiles() -> Result<Profiles, String>{
-    let toml = &read_file(&format!("{}/{}", defaults::DATA_PATH, defaults::PROFILES_FILENAME));
+    let path_str = format!("{}/{}", defaults::DATA_PATH, defaults::PROFILES_FILENAME);
+    let path = Path::new(&path_str);
     let profiles: Profiles;
-    if toml == "" {
-        profiles = Profiles::new();
-    } else {
+    if path.metadata().is_ok() {
+        let toml = &read_file(path);
         profiles = toml::from_str(toml).unwrap()
+    } else {
+        profiles = Profiles::new();
     }
     return Ok(profiles);
 }
@@ -67,5 +70,7 @@ pub fn load_all_profiles() -> Result<Profiles, String>{
  */
 pub fn save_profiles(profiles: &Profiles){
     let toml = toml::Value::try_from(&profiles).unwrap();
-    write_file(&format!("{}/{}", defaults::DATA_PATH, defaults::PROFILES_FILENAME), &format!("{}", toml));
+    let path_str = format!("{}/{}", defaults::DATA_PATH, defaults::PROFILES_FILENAME);
+    let path = Path::new(&path_str);
+    write_file(&path, &format!("{}", toml));
 }

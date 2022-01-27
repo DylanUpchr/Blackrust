@@ -331,6 +331,7 @@ pub mod profile{
 }
 pub mod file {
     use std::fs;
+    use std::path::Path;
 
     /** Function
      * Name:	read_file
@@ -338,7 +339,7 @@ pub mod file {
      * Args:	(&str) File path
      * Returns:	(String) File contents
      */
-    pub fn read_file(path: &str) -> String{
+    pub fn read_file(path: &Path) -> String{
         fs::read_to_string(path).expect("Issue with reading the requested file.")
     }
 
@@ -349,7 +350,7 @@ pub mod file {
      *          (&str) Content to write to file
      * Returns:	Profile object
      */
-    pub fn write_file(path: &str, content: &str){
+    pub fn write_file(path: &Path, content: &str){
         fs::write(path, content).expect("Issue with writing to the requested file.")
     }
 }
