@@ -33,4 +33,7 @@ WASM permet de faire des applications web avec des executables binaires intégr�
 Début de la documentation technique et du rapport de stage
 
 ## 2022-01-27
-Conitnuation de la documentation technique
+Continuation de la documentation technique
+
+## 2022-02-03
+Debut du programmation du module NetworkMgr et supression du crate hostname

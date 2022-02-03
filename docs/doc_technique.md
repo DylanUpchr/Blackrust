@@ -44,8 +44,6 @@ Web-view est un crate qui agit en tant que navigateur web qui affiche le rendu H
 Xrandr permet de récuperer des informations sur le ou les écrans d'afficage, comme taille, DPI, disposition des moniteurs, etc.
 ##### Serde / Serde-JSON
 Serde implémente des fonctionnalités de serialisation et déserialisation des instances d'objets vers et depuis le JavaScript Object Notation (JSON).
-##### Hostname
-Hostname permet de recupérer le nom d'hôte de la machine. **A remplacer par un appel a nmcli dans NetworkMgr**
 ##### Image-base64
 Image-base64 est un crate qui encode ou "traduit" des fichiers image en texte base64. **Ceci est necessaire pour l'instant à cause de WebView qui ne peut pas referencer des fichier et que traiter du HTML pur. Ceci pourra changer en implementant Actix (Serveur Web) et Yew (Framework WASM pour Rust)**
 ##### Regex

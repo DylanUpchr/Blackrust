@@ -78,7 +78,7 @@ fn open_webview() -> WebView<'static, &'static str> {
 		.build()
 		.unwrap();
 
-	let hostname = hostname::get().unwrap();
+	let hostname = network_mgr::get_hostname();
 	webview.eval(&format!("setHostname({:?})", hostname)).unwrap();
 	return webview;
 }
