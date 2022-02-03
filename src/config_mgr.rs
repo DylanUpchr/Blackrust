@@ -1,6 +1,6 @@
 /** File
  * Author:		Dylan Upchurch
- * Date:		2021-10-28
+ * Date:		2022-01-27
  * Desc:		Blackrust configuration manager crate (Profile/settings management)
  */
 use blackrust_lib::profile::*;

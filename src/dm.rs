@@ -1,6 +1,6 @@
 /** File
  * Author:		Dylan Upchurch
- * Date:		2021-10-28
+ * Date:		2021-01-28
  * Desc:		Blackrust main crate (main entry point and opens webview)
  */
 #[macro_use]
@@ -11,6 +11,7 @@ use web_view::*;
 use regex::Regex;
 use regex::Captures;
 mod config_mgr;
+mod network_mgr;
 
 /** Function
  * Name:	main
