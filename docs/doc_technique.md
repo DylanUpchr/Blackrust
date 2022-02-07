@@ -14,7 +14,7 @@ This project is a thin client, which aims to reduce the size and cost of the man
 ## Maquettes
 ## Développement
 ### Environnement de travail
-L'environnement de travail utilisé lors du développement de ce projet consiste en:
+L'environnement de travail utilisé lors du développement de ce projet consistes-en:
 - Ordinateur de l'école avec Arch Linux installé dessus,
 - Visual Studio Code comme IDE
 - Raspberry Pi 4
@@ -25,33 +25,33 @@ Le programme est décomposé en 5 modules principaux:
 - ConfigMgr: CRUD pour les options de connexion sauvegardées
 - NetworkMgr: Appels aux outils système pour configurer le réseau
 - RemoteSessionMgr: Lanceur de sessions distant
-- Blackrust-Lib: Fonctions commun a plusieurs modules, librairie interne
+- Blackrust-Lib: Fonctions commun à plusieurs modules, librairie interne
 ##### Main
-Le module main est la point d'entrée principale de l'application, lance l'aperçu WebView qui permet d'interfacer avec l'application et appeler les autres modules
+Le module main est le point d'entrée principale de l'application, lance l'aperçu WebView qui permet d'interfacer avec l'application et appeler les autres modules
 ##### ConfigMgr
-Le module ConfigMgr gère les profiles de connexion de session distant avec des fonctions CRUD (Création, Lecture, Mise à Jour, Suppression). Ses fonctionnalités sont appelé depuis le Invoke Handler du WebView et donc depuis le JS de l'interface utilisateur.
+Le module ConfigMgr gère les profils de connexion de session distante avec des fonctions CRUD (Création, Lecture, Mise à Jour, Suppression). Ses fonctionnalités sont appelées depuis le Invoke Handler du WebView et donc depuis le JS de l'interface utilisateur.
 ##### NetworkMgr
-Le module NetworkMgr permet de faire des appels vers NetworkManager pour configurer les interface réseau afin de pouvoir se connecter au réseau local et éventuellement à un VPN.
+Le module NetworkMgr permet de faire des appels vers NetworkManager pour configurer les interfaces réseau afin de pouvoir se connecter au réseau local et éventuellement à un VPN.
 ##### RemoteSessionMgr
-Le module RemoteSessionMgr lance les sessions distant en utilisant les options de connexion soit fourni par l'utilisateur soit par un profile chargé par l'utilisateur. Ce module fait appel aux commandes tel xfreerdp, vncviewer, Xnest ou ssh.
+Le module RemoteSessionMgr lance les sessions distantes en utilisant les options de connexion soit fournies par l'utilisateur soit par un profile chargé par l'utilisateur. Ce module fait appel aux commandes tel xfreerdp, vncviewer, Xnest ou ssh.
 ##### Blackrust-Lib
-Blackrust-Lib est la libraire commun aux modules et contient les définitions de structures de données et le fonctions utilisé par tous les modules.
+Blackrust-Lib est la libraire commune aux modules et contient les définitions de structures de données et les fonctions utilisées par tous les modules.
 #### Librairies externes
-Le programme utilise également quelques libraires externes, principalement pour la rendu graphique Web.
+Le programme utilise également quelques libraires externes, principalement pour le rendu graphique Web.
 ##### Web-view
-Web-view est un crate qui agit en tant que navigateur web qui affiche le rendu HTML/CSS/JS
+Web-view est un crate qui agit en tant que navigateur web qui affiche le rendu HTML/CSS/JS.
 ##### Xrandr
-Xrandr permet de récuperer des informations sur le ou les écrans d'afficage, comme taille, DPI, disposition des moniteurs, etc.
+Xrandr permet de récupérer des informations sur le ou les écrans d'affichage, comme taille, DPI, disposition des moniteurs, etc.
 ##### Serde / Serde-JSON
 Serde implémente des fonctionnalités de serialisation et déserialisation des instances d'objets vers et depuis le JavaScript Object Notation (JSON).
 ##### Image-base64
-Image-base64 est un crate qui encode ou "traduit" des fichiers image en texte base64. **Ceci est necessaire pour l'instant à cause de WebView qui ne peut pas referencer des fichier et que traiter du HTML pur. Ceci pourra changer en implementant Actix (Serveur Web) et Yew (Framework WASM pour Rust)**
+Image-base64 est un crate qui encode ou "traduit" des fichiers image en texte base64. **Ceci est nécessaire pour l'instant à cause de WebView qui ne peut pas référencer des fichiers et que traiter du HTML pur. Ceci pourra changer en implémentant Actix (Serveur Web) et Yew (Framework WASM pour Rust)**
 ##### Regex
-Le crate Regex implémente des expressions regulières utilisées pour la verification des données saisies par l'utilisateur pour la configuration réseau
+Le crate Regex implémente des expressions régulières utilisées pour la vérification des données saisies par l'utilisateur pour la configuration réseau
 ## Difficultés
 - Appréhension de Rust
 - WebView (Inclusion du CSS/JS et images encodées en base64)
-- Définition des dépendance clef du projet à installer
+- Définition des dépendances clés du projet à installer
 ## Planning
 ## Livrables
 - Documentation
