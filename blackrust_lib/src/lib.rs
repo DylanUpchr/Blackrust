@@ -21,6 +21,19 @@ pub mod profile{
         None
     }
 
+    /** Enum
+     * Name:    NetworkManagerProfileType
+     * Members: Ethernet: An ethernet connection profile
+     *          Wifi: A Wifi connection profile
+     *          Wireguard: A Wireguard VPN connection profile
+     */
+    #[derive(Debug, Serialize, Deserialize, Clone)]
+    pub enum NetworkManagerProfileType{
+        Ethernet,
+        Wifi,
+        Wireguard
+    }
+
     /** Struct
      * Name:	        Protocol
      * Purpose:      Protocol object
@@ -36,28 +49,6 @@ pub mod profile{
     }
 
     /** Struct
-     * Name:	        DNS
-     * Purpose:      DNS object
-     * Properties:   (Vec<String>) name_servers: Vec of name server IP addresses
-     *               (Vec<String>) search_domains: Vec of search domain names
-     */
-    #[derive(Debug, Serialize, Deserialize, Clone)]
-    pub struct DNS{
-        pub name_servers: Vec<String>,
-        pub search_domains: Vec<String>
-    }
-
-    /** Struct
-     * Name:    VPN
-     * Purpose: VPN object
-     * Properties:  
-     */
-    #[derive(Debug, Serialize, Deserialize, Clone)]
-    pub struct VPN{
-
-    }
-
-    /** Struct
      * Name:	        ConnectionSettings
      * Purpose:      Contains fields used for connection to remote host
      * Properties:   (String) ip_fqdn: IP address or FQDN of remote host
@@ -70,28 +61,21 @@ pub mod profile{
         pub protocol: Protocol,
         pub extra_settings: String
     }
-
+    
     /** Struct
      * Name:	        NetworkSettings
      * Purpose:      Contains fields used for network configuration (LAN and VPN)
-     * Properties:   (String) interface: Name of interface to apply configuration to
-     *               (String) ipv4: IPv4 address of local host
-     *               (String) ipv6: IPv6 address of local host
-     *               (String) hostname: Hostname of local host
-     *               (String) gateway: IP address of local gateway
-     *               (DNS) DNS configuration
-     *               (VPN) VPN  configuration
-     */
+     * Properties:   (String) name: Name of the profile
+     *               (String) uuid: Unique identifier of the profile
+     *               (NetworkManagerProfileType) profile_type: Type of the profile (Ethernet, Wifi, etc.)
+     *               (String) interface: Name of interface to apply configuration to
+     **/
     #[derive(Debug, Serialize, Deserialize, Clone)]
-    pub struct NetworkSettings {
-        pub interface: String,
-        pub ipv4: String,
-        pub ipv6: String,
-        pub hostname: String,
-        pub gateway: String,
-        pub dns: DNS,
-        pub vpn: VPN
-
+    pub struct NetworkManagerProfile{
+        pub name: String,
+        pub uuid: String,
+        pub profile_type: NetworkManagerProfileType,
+        pub interface: String
     }
 
     /** Struct
@@ -107,7 +91,7 @@ pub mod profile{
         pub id: String,
         pub name: String,
         pub connection_settings: ConnectionSettings,
-        pub network_settings: Vec<NetworkSettings>
+        pub network_profiles: Vec<NetworkManagerProfile>
     }
 
     /** Struct
@@ -150,46 +134,6 @@ pub mod profile{
         }
     }
 
-    impl DNS {
-        /** Function
-         * Name:	new
-         * Purpose:	Default constructor for DNS object
-         * Args:	None
-         * Returns:	DNS object
-         */
-        pub fn new() -> DNS {
-            return DNS::new2(
-                vec!(String::new()),
-                vec!(String::new())
-            )
-        }
-        /** Function
-         * Name:	new
-         * Purpose:	Default constructor for DNS object
-         * Args:	(Vec<String>) name_servers: Vec of name server IP addresses
-         *          (Vec<String>) search_domains: Vec of search domain names
-         * Returns:	DNS object
-         */
-        pub fn new2(name_servers: Vec<String>, search_domains: Vec<String>) -> DNS {
-            return DNS {
-                name_servers: name_servers,
-                search_domains: search_domains
-            }
-        }
-    }
-
-    impl VPN {
-        /** Function
-         * Name:	new
-         * Purpose:	Default constructor for ConnectionSettings object
-         * Args:	None
-         * Returns:	ConnectionSettings object
-         */
-        pub fn new() -> VPN {
-            return VPN{}
-        }
-    }
-
     impl ConnectionSettings {
         /** Function
          * Name:	new
@@ -222,46 +166,37 @@ pub mod profile{
         }
     }
 
-    impl NetworkSettings {
+    impl NetworkManagerProfile {
         /** Function
          * Name:	new
-         * Purpose:	Default constructor for NetworkSettings object
+         * Purpose:	Default constructor for NetworkManagerProfile object
          * Args:	None
-         * Returns:	NetworkSettings object
+         * Returns:	NetworkManagerProfile object
          */
-        pub fn new() -> NetworkSettings {
-            return NetworkSettings::new7(
+        pub fn new() -> NetworkManagerProfile {
+            return NetworkManagerProfile::new4(
                 String::new(), 
-                String::new(), 
-                String::new(), 
-                String::new(),
-                String::new(),
-                DNS::new(),
-                VPN::new()
+                Uuid::new_v4().to_string(),
+                crate::defaults::NETWORK_MANAGER_PROFILE_TYPE,
+                String::new()
             )
         }
 
         /** Function
-         * Name:	    new7
-         * Purpose:	Full constructor for NetworkSettings object
-         * Args:	    (String) interface: Name of interface to apply configuration to
-         *           (String) ipv4: IPv4 address of local host
-         *           (String) ipv6: IPv6 address of local host
-         *           (String) hostname: Hostname of local host
-         *           (String) gateway: IP address of local gateway
-         *           (DNS) DNS configuration
-         *           (VPN) VPN  configuration
-         * Returns:	NetworkSettings object
+         * Name:	    new4
+         * Purpose:	Full constructor for NetworkManagerProfile object
+         * Args:	(String) name: Name of the profile
+         *          (String) uuid: Unique identifier of the profile
+         *          (NetworkManagerProfileType) profile_type: Type of the profile (Ethernet, Wifi, etc.)
+         *          (String) interface: Name of interface to apply configuration to
+         * Returns:	NetworkManagerProfile object
          */
-        pub fn new7(interface: String, ipv4: String, ipv6: String, hostname: String, gateway: String, dns: DNS, vpn: VPN) -> NetworkSettings {
-            return NetworkSettings{
-                interface: interface,
-                ipv4: ipv4,
-                ipv6: ipv6,
-                hostname: hostname,
-                gateway: gateway,
-                dns: dns,
-                vpn: vpn
+        pub fn new4(name: String, uuid: String, profile_type: NetworkManagerProfileType, interface: String) -> NetworkManagerProfile {
+            return NetworkManagerProfile{
+                name: name,
+                uuid: uuid,
+                profile_type: profile_type,
+                interface: interface
             }
         }
 
@@ -279,7 +214,7 @@ pub mod profile{
             return Profile::new3(
                 String::from(defaults::PROFILE_NAME),
                 ConnectionSettings::new(),
-                vec!(NetworkSettings::new())
+                vec!(NetworkManagerProfile::new())
             )
         }
 
@@ -291,12 +226,12 @@ pub mod profile{
          *           (Vec<NetworkSettings>) network_settings: Local networking interface configurations
          * Returns:	Profile object
          */
-        pub fn new3(name: String, connection_settings: ConnectionSettings, network_settings: Vec<NetworkSettings>) -> Profile{
+        pub fn new3(name: String, connection_settings: ConnectionSettings, network_profiles: Vec<NetworkManagerProfile>) -> Profile{
             return Profile{
                 id: Uuid::new_v4().to_string(),
                 name: name,
                 connection_settings: connection_settings,
-                network_settings: network_settings
+                network_profiles: network_profiles
             }
         }
     }
@@ -356,6 +291,7 @@ pub mod file {
 }
 pub mod defaults {
     use crate::profile::PortProtocol;
+    use crate::profile::NetworkManagerProfileType;
     //Constants
     pub const DATA_PATH: &str = "/etc/blackrust/data";
     pub const PROFILES_FILENAME: &str = "profiles.toml";
@@ -363,4 +299,5 @@ pub mod defaults {
     pub const PROTOCOL_NAME: &str = "Local";
     pub const PROTOCOL_PORT: u16 = 0;
     pub const PROTOCOL_PORT_PROTOCOL: PortProtocol = PortProtocol::None;
+    pub const NETWORK_MANAGER_PROFILE_TYPE: NetworkManagerProfileType = NetworkManagerProfileType::Ethernet;
 }
