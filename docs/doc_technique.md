@@ -52,6 +52,7 @@ Le crate Regex implémente des expressions régulières utilisées pour la véri
 - Appréhension de Rust
 - WebView (Inclusion du CSS/JS et images encodées en base64)
 - Définition des dépendances clés du projet à installer
+- Compilation Multi-plateforme
 ## Planning
 ## Livrables
 - Documentation
