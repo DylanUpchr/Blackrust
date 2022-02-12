@@ -7,6 +7,7 @@
 pub mod profile{
     use uuid::Uuid;
     use serde_derive::{Serialize, Deserialize};
+    use std::str::FromStr;
     use crate::defaults;
 
     /** Enum
@@ -32,6 +33,26 @@ pub mod profile{
         Ethernet,
         Wifi,
         Wireguard
+    }
+
+    impl FromStr for NetworkManagerProfileType{
+
+        type Err = ();
+
+        /** Function
+         * Name:	from_str
+         * Purpose:	Get enum member by string
+         * Args:	(&str) enum member value (lowercase)
+         * Returns:	(Result<NetworkManagerProfileType, Self::Err>) NetworkManagerProfileType or empty Err
+         */
+        fn from_str(input: &str) -> Result<NetworkManagerProfileType, Self::Err> {
+            match input {
+                "ethernet" => Ok(NetworkManagerProfileType::Ethernet),
+                "wifi" => Ok(NetworkManagerProfileType::Wifi),
+                "wireguard" => Ok(NetworkManagerProfileType::Wireguard),
+                _      => Err(()),
+            }
+        }
     }
 
     /** Struct
