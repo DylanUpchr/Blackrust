@@ -12,7 +12,7 @@ use std::path::Path;
  * Name:    get_profiles
  * Purpose:	Gets all profiles responding to query
  * Args:	(String) Query with which to filter profiles
- * Returns:	(Result) Profiles object or error string
+ * Returns:	(Result<Profiles, String>) Profiles object or error string
  */
 pub fn get_profiles(query: String) -> Result<Profiles, String> {
     let mut profiles: Profiles = load_all_profiles()?;
@@ -29,7 +29,7 @@ pub fn get_profiles(query: String) -> Result<Profiles, String> {
  * Name:    get_profile_by_id
  * Purpose:	Gets profile that has matching id
  * Args:	(String) Id with which to filter profiles
- * Returns:	(Result) Profile object or error string
+ * Returns:	(Result<Profile, String>) Profile object or error string
  */
 pub fn get_profile_by_id(id: String) -> Result<Profile, String> {
     let profiles: Profiles = load_all_profiles()?;
@@ -47,7 +47,7 @@ pub fn get_profile_by_id(id: String) -> Result<Profile, String> {
  * Name:    load_all_profiles
  * Purpose:	Reads and returns all profiles from read config file
  * Args:	None
- * Returns:	(Result) Profiles object or error string
+ * Returns:	(Result<Profiles, String>) Profiles object or error string
  */
 pub fn load_all_profiles() -> Result<Profiles, String>{
     let path_str = format!("{}/{}", defaults::DATA_PATH, defaults::PROFILES_FILENAME);
