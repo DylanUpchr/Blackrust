@@ -13,6 +13,32 @@ This project is a thin client, which aims to reduce the size and cost of the man
 [Lien vers le cahier des charges](index.md)
 ## Maquettes
 ## Développement
+### Choix du langue
+**INSPIRATION**
+Rust is blazing fast and reliable with its rich type system and ownership model. It has a tough learning curve but is well worth the effort. Rust has been voted the most loved programming language in Stack Overflow's Developer Survey six years in a row: 2016, 2017, 2018, 2019, 2020 and 2021.
+
+Rust also helps developers write safer code with its rich type system and ownership model. Say goodbye to hard to track down race condition bugs in JavaScript! In fact, with Rust, most of your bugs will be caught by the compiler before your app even runs. And don't worry, when your app does run into an error, you can still get full stack-traces for your Rust code in the browser console.
+
+Doxygen-like rustdoc, integrated documentation tools from function headers and comments
+
+Rust is a statically-typed programming language designed for performance and safety, especially safe concurrency and memory management.
+Rust solves problems that C/C++ developers have been struggling with for a long time: memory errors and concurrent programming. This is seen as its main benefit.
+
+Safe rust (forced ownership) vs unsafe rust (greater flexibility but code needs to be thoroughly checked)
+
+cargo check, compiler messages
+
+Integrated unit tests 
+
+**TEXT**
+
+J'ai choisi Rust comme langage pour le travail de diplôme car c'est une langage moderne. Rust est connu pour son fiabilité, sécurité et rapidité.
+
+#### Rapidité
+statically-typed, no gc due to ownership, monomorphization
+#### Sécurité / Fiabilité
+Memory safe, dual-mode safe/unsafe
+
 ### Environnement de travail
 L'environnement de travail utilisé lors du développement de ce projet consistes-en:
 - Ordinateur de l'école avec Arch Linux installé dessus,
