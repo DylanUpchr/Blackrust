@@ -27,8 +27,8 @@ pub fn get_hostname() -> String {
  */
 pub fn set_hostname(hostname: &str) -> Result<String, String> {
     match exec_nmcli_command(vec!("general", "hostname", hostname)) {
-        Ok(String) => Ok(get_hostname()),
-        Err(err) => Err(err)
+        Ok(stdout) => Ok(stdout),
+        Err(stderr) => Err(stderr) //TODO localized error message instead of stderr
     }
 }
 
