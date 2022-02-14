@@ -36,4 +36,8 @@ Début de la documentation technique et du rapport de stage
 Continuation de la documentation technique
 
 ## 2022-02-03
-Debut du programmation du module NetworkMgr et supression du crate hostname
+Debut du programmation du module NetworkMgr et supression du crate hostname. Ceci permet de reduire les dépendances et utiliser une commande de NetworkManager. La même commande avec un argument en plus set le hostname.
+
+## 2022-02-10
+Création du fonction load_profiles dans le module NetworkMgr permettant de charger les profiles de configuration stockées dans NetworkManager et permettant de déléguer le stockage des configuration réseau à ce dernier.
+
