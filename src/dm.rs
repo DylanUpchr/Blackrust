@@ -92,10 +92,11 @@ fn open_webview() -> WebView<'static, &'static str> {
  */
 fn combined_html_css_js() -> String {
 	format!(
-		"{}{}{}",
+		"{}{}{}{}",
 		base64_encode_images(include_str!("web/index.html")),
 		inline_style(include_str!("web/style.css")),
-		inline_script(include_str!("web/functions.js"))
+		inline_script(include_str!("web/functions.js")),
+		inline_script(include_str!("web/node_modules/@fortawesome/fontawesome-free/js/all.min.js"))
 	)
 }
 

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css" />
     <script src="functions.js"></script>
+    <script defer src="node_modules/@fortawesome/fontawesome-free/js/all.min.js"></script> <!--load all styles -->
   </head>
   <body onload="init()">
     <img id="backgroundImg" src="./img/placeholder-image.png" alt="background image">
@@ -13,29 +14,34 @@
         <nav id="topBar">
             <span id="hostname" style="margin-left: 8px;"><h2>Hostname</h2></span>
             <span id="time"><h2>00:00:00</h2></span>
-            <span id="settings" style="margin-right: 8px; font-size: 2em;">
+            <span id="settingsButton" style="margin-right: 8px; font-size: 2em;">
                 <i class="fas fa-cogs"></i>
             </span>
         </nav>   
         <div id="cardContent">
-            <img id="bannerImg" src="./img/placeholder-image.png" alt="banner image">
-            <div id="connectionSelect">
-                <select name="protocol" id="inputProtocol">
-                    <option>RDP</option>
-                    <option>XDMCP</option>
-                    <option>VNC</option>
-                    <option>SSH - X11 Forwarding</option>
-                </select>
-                <span id="inputProfileWrapper">
-                    <span id="inputProfile">
-                      <input type="text" name="ip_fqdn" id="inputIpFqdn">
-                      <button id="inputProfileSelect" class="arrow-closed"></button>
-                      <div id="inputProfileSelectOptions" class="options-closed"></div>
+            <div class="content currentContent" id="home">
+                <img id="bannerImg" src="./img/placeholder-image.png" alt="banner image">
+                <div id="connectionSelect">
+                    <select name="protocol" id="inputProtocol">
+                        <option>RDP</option>
+                        <option>XDMCP</option>
+                        <option>VNC</option>
+                        <option>SSH - X11 Forwarding</option>
+                    </select>
+                    <span id="inputProfileWrapper">
+                        <span id="inputProfile">
+                          <input type="text" name="ip_fqdn" id="inputIpFqdn">
+                          <button id="inputProfileSelect" class="arrow-closed"></button>
+                          <div id="inputProfileSelectOptions" class="options-closed"></div>
+                        </span>
                     </span>
-                </span>
-                <button id="inputConnect">Connect</button>
-                <button id="inputConnectionSettings">Connection settings</button>
-                <input type="hidden" name="inputConnectionSettingsValue">
+                    <button id="inputConnect">Connect</button>
+                    <button id="inputConnectionSettings">Connection settings</button>
+                    <input type="hidden" name="inputConnectionSettingsValue">
+                </div>
+            </div>
+            <div class="content" id="settings">
+                test
             </div>
         </div>
     </div>

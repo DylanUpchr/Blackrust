@@ -4,22 +4,33 @@ function invoke(arg) {
 
 function init() {
 	setTime();
-	invoke({cmd: 'init'});
+	invoke({ cmd: 'init' });
 
 	let inputProfileSelect = document.getElementById("inputProfileSelect");
 	let inputProfileSelectOptions = document.getElementById("inputProfileSelectOptions");
-	
-	document.getElementById("inputIpFqdn").addEventListener("input", 
-		function(e){
-			invoke({cmd: 'queryProfiles', query: e.target.value});
+
+	document.getElementById("settingsButton").addEventListener(
+		"click",
+		function (e) {
+			if (document.getElementsByClassName("currentContent")[0].id == "home") {
+				showContent("settings");
+			} else {
+				showContent("home");
+			}
 		}
 	);
-	document.getElementById("inputConnect").addEventListener("click", function(e){});
-	document.getElementById("inputConnectionSettings").addEventListener("click", function(e){});
+
+	document.getElementById("inputIpFqdn").addEventListener("input",
+		function (e) {
+			invoke({ cmd: 'queryProfiles', query: e.target.value });
+		}
+	);
+	document.getElementById("inputConnect").addEventListener("click", function (e) { });
+	document.getElementById("inputConnectionSettings").addEventListener("click", function (e) { });
 	inputProfileSelect.addEventListener(
-		"click", 
-		function(e){
-			if(inputProfileSelect.classList.contains("arrow-open")){
+		"click",
+		function (e) {
+			if (inputProfileSelect.classList.contains("arrow-open")) {
 				inputProfileSelect.classList.replace("arrow-open", "arrow-closed");
 				inputProfileSelectOptions.classList.replace("options-open", "options-closed");
 			} else {
@@ -38,18 +49,18 @@ function setTime() {
 	}, 250);
 }
 
-function setHostname(hostname){
-    document.getElementById("hostname").innerHTML = "<h2>" + hostname + "</h2>";
+function setHostname(hostname) {
+	document.getElementById("hostname").innerHTML = "<h2>" + hostname + "</h2>";
 }
 
-function connect(){
+function connect() {
 	let ip_fqdn = document.getElementById("inputIpFqdn").value;
 	let protocol = document.getElementById("inputProtocol").value;
 	let config = document.getElementById("inputConnectionSettingsValue").value;
 
-	if(validateIpFqdn(ip_fqdn.value)){
+	if (validateIpFqdn(ip_fqdn.value)) {
 		invoke({
-			cmd: 'connect' ,
+			cmd: 'connect',
 			ip_fqdn: ip_fqdn,
 			protocol: protocol,
 			config: config
@@ -57,16 +68,7 @@ function connect(){
 	}
 }
 
-function validateIpFqdn(value){
-	let validIpAddressRegex = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$";
-	let validHostnameRegex = "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]+[a-zA-Z0-9])\.)+([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]+[A-Za-z0-9])$";
-	let IpMatches = value.match(validIpAddressRegex);
-	let HostnameMatches = value.match(validHostnameRegex);
-
-	return (IpMatches != null || HostnameMatches != null)
-}
-
-function loadQueriedProfiles(profiles){
+function loadQueriedProfiles(profiles) {
 	profiles = profiles['profile_vec']
 	let inputProfileSelectOptions = document.getElementById("inputProfileSelectOptions");
 	inputProfileSelectOptions.innerHTML = "";
@@ -75,7 +77,7 @@ function loadQueriedProfiles(profiles){
 		let text = document.createElement("i");
 
 		text.innerText = "No Profiles";
-		
+
 		div.appendChild(text);
 		inputProfileSelectOptions.appendChild(text);
 	} else {
@@ -88,7 +90,7 @@ function loadQueriedProfiles(profiles){
 	}
 }
 
-function genProfileSelectItemHTML(profile){
+function genProfileSelectItemHTML(profile) {
 	let div = document.createElement("div");
 	let name = document.createElement("span");
 	let ip_fqdn = document.createElement("span");
@@ -107,15 +109,31 @@ function genProfileSelectItemHTML(profile){
 	div.appendChild(protocol);
 
 	div.addEventListener(
-		"click", 
-		function(e){
-			invoke({cmd: 'loadProfile', id: profile.id});
+		"click",
+		function (e) {
+			invoke({ cmd: 'loadProfile', id: profile.id });
 		}
 	);
 
 	return div;
 }
 
-function loadSelectedProfile(profile){
-	invoke({cmd: 'debug', value: JSON.stringify(profile)});
+function loadSelectedProfile(profile) {
+	invoke({ cmd: 'debug', value: JSON.stringify(profile) });
+}
+
+function showContent(contentName) {
+	//Hide current content
+	let content = document.getElementsByClassName("currentContent");
+	for (let elem of content) {
+		elem.classList.remove("currentContent");
+	}
+
+	//Show selected content
+	let newContent = document.getElementById(contentName);
+	newContent.classList.add("currentContent");
+}
+
+function showSubContent(contentName, subContentName) {
+
 }

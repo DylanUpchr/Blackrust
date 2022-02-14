@@ -127,3 +127,9 @@ body {
 .profile{
   padding: 5px;
 }
+.content{
+  display: none;
+}
+.currentContent{
+  display: block;
+}
