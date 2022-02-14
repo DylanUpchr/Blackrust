@@ -20,6 +20,19 @@ pub fn get_hostname() -> String {
 }
 
 /** Function
+ * Name:	set_hostname
+ * Purpose:	Set system hostname
+ * Args:	(&str) hostname to set
+ * Returns: Result<String, String> Changed hostname or stderr from command
+ */
+pub fn set_hostname(hostname: &str) -> Result<String, String> {
+    match exec_nmcli_command(vec!("general", "hostname", hostname)) {
+        Ok(String) => Ok(get_hostname()),
+        Err(err) => Err(err)
+    }
+}
+
+/** Function
  * Name:	load_profiles
  * Purpose:	Load saved profiles from NetworkManager
  * Args:	None
