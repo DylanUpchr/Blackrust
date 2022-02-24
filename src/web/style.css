@@ -43,7 +43,7 @@ body {
 #topBar span h2{
     margin: 0px;
 }
-#cardContent{
+#contentContainer{
     width: 100%;
     height: calc(100% - 50px - 16px);
 }
@@ -132,4 +132,42 @@ body {
 }
 .currentContent{
   display: block;
+  height: 100%;
+}
+.currentSubContent{
+  display: block;
+}
+#settingsButton{
+  margin-right: 8px !important;
+  font-size: 2em;
+}
+#settingsTabs{
+  height: 100%;
+  width: 15%;
+  float: left;
+}
+#settings ul{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0px;
+  padding-inline-start: 20px;
+  padding-inline-end: 20px;
+  border-right: solid black 1px;
+}
+.subcontent{
+  display: none;
+}
+.currentSubcontent{
+  display: block;
+}
+.subcontentTab{
+  list-style: none;
+  font-size: 3em;
+  margin: auto;
+}
+.currentSubcontentTab{
+  color: #0000DD;
 }

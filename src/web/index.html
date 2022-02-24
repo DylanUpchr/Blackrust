@@ -14,11 +14,11 @@
         <nav id="topBar">
             <span id="hostname" style="margin-left: 8px;"><h2>Hostname</h2></span>
             <span id="time"><h2>00:00:00</h2></span>
-            <span id="settingsButton" style="margin-right: 8px; font-size: 2em;">
+            <span id="settingsButton">
                 <i class="fas fa-cogs"></i>
             </span>
         </nav>   
-        <div id="cardContent">
+        <div id="contentContainer">
             <div class="content currentContent" id="home">
                 <img id="bannerImg" src="./img/placeholder-image.png" alt="banner image">
                 <div id="connectionSelect">
@@ -41,7 +41,22 @@
                 </div>
             </div>
             <div class="content" id="settings">
-                test
+                <nav id="settingsTabs">
+                    <ul>
+                        <li class="subcontentTab currentSubcontentTab" id="network" name="Network"><i class="fas fa-network-wired"></i></li>
+                        <li class="subcontentTab" id="profiles" name="Profiles"><i class="fas fa-user-cog"></i></li>
+                        <li class="subcontentTab" id="theme" name="Theme"><i class="fas fa-palette"></i></li>
+                        <li class="subcontentTab" id="i18n" name="Localization"><i class="fas fa-globe"></i></li>
+                        <li class="subcontentTab" id="about" name="About"><i class="fas fa-info"></i></li>
+                    </ul>
+                </nav>
+                <div class="subcontentContainer" id="settingsSubcontent">
+                    <div class="subcontent currentSubcontent" id="settingsNetworkSubcontent">network</div>
+                    <div class="subcontent" id="settingsProfilesSubcontent">profiles</div>
+                    <div class="subcontent" id="settingsThemeSubcontent">theme</div>
+                    <div class="subcontent" id="settingsLocalizationSubcontent">i18n</div>
+                    <div class="subcontent" id="settingsAboutSubcontent">about</div>
+                </div>
             </div>
         </div>
     </div>

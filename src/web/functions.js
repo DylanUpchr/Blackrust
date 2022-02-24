@@ -1,5 +1,5 @@
 function invoke(arg) {
-	window.webkit.messageHandlers.external.postMessage(JSON.stringify(arg));
+	//window.webkit.messageHandlers.external.postMessage(JSON.stringify(arg));
 }
 
 function init() {
@@ -8,17 +8,29 @@ function init() {
 
 	let inputProfileSelect = document.getElementById("inputProfileSelect");
 	let inputProfileSelectOptions = document.getElementById("inputProfileSelectOptions");
-
-	document.getElementById("settingsButton").addEventListener(
+	let settingsButton = document.getElementById("settingsButton");
+	settingsButton.addEventListener(
 		"click",
 		function (e) {
 			if (document.getElementsByClassName("currentContent")[0].id == "home") {
 				showContent("settings");
+				settingsButton.innerHTML = '<i class="fas fa-xmark"></i>';
 			} else {
 				showContent("home");
+				settingsButton.innerHTML = '<i class="fas fa-cogs"></i>';
 			}
 		}
 	);
+	let subContentTabButtons = document.getElementsByClassName("subcontentTab");
+	console.log(subContentTabButtons);
+	for (let button of subContentTabButtons) {
+		button.addEventListener(
+			"click",
+			function(e){
+				showSubContent("settings", "settings" + button.attributes.name.value + "Subcontent");
+			}
+		);
+	}
 
 	document.getElementById("inputIpFqdn").addEventListener("input",
 		function (e) {
@@ -130,10 +142,14 @@ function showContent(contentName) {
 	}
 
 	//Show selected content
-	let newContent = document.getElementById(contentName);
-	newContent.classList.add("currentContent");
+	document.getElementById(contentName).classList.add("currentContent");
 }
 
 function showSubContent(contentName, subContentName) {
-
+	contentName = contentName + "Subcontent"
+	let subcontentContainer = document.getElementById(contentName);
+	for (let elem of subcontentContainer.children) {
+		elem.classList.remove("currentSubcontent");
+	}
+	document.getElementById(subContentName).classList.add("currentSubcontent");
 }

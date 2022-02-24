@@ -41,3 +41,5 @@ Debut du programmation du module NetworkMgr et supression du crate hostname. Cec
 ## 2022-02-10
 Création du fonction load_profiles dans le module NetworkMgr permettant de charger les profiles de configuration stockées dans NetworkManager et permettant de déléguer le stockage des configuration réseau à ce dernier.
 
+## 2022-02-24
+Ajout de menu de reglages avec le systeme "sous-contenu" dans le JS et HTML, dans l'interface. Ceci permet un moyen dynamique d'ajoute des pages de réglages dans le HTML/JS. La prochaine étape serait de créer les formaulaires sur les differents pages de réglage.
