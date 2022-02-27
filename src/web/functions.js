@@ -1,10 +1,12 @@
 function invoke(arg) {
-	//window.webkit.messageHandlers.external.postMessage(JSON.stringify(arg));
+	window.webkit.messageHandlers.external.postMessage(JSON.stringify(arg));
 }
 
 function init() {
 	setTime();
 	invoke({ cmd: 'init' });
+	invoke({ cmd: 'getNetworkProfiles'});
+	invoke({ cmd: 'queryConnectionProfiles', callback: 'loadQueriedConnectionProfiles', query: ''});
 
 	let inputProfileSelect = document.getElementById("inputProfileSelect");
 	let inputProfileSelectOptions = document.getElementById("inputProfileSelectOptions");
@@ -21,20 +23,24 @@ function init() {
 			}
 		}
 	);
-	let subContentTabButtons = document.getElementsByClassName("subcontentTab");
-	console.log(subContentTabButtons);
+	let subContentTabButtons = document.getElementsByClassName("subcontentTabButton");
 	for (let button of subContentTabButtons) {
 		button.addEventListener(
 			"click",
 			function(e){
 				showSubContent("settings", "settings" + button.attributes.name.value + "Subcontent");
+				let content = document.getElementsByClassName("currentSubcontentTabButton");
+				for (let elem of content) {
+					elem.classList.remove("currentSubcontentTabButton");
+				}
+				button.classList.add("currentSubcontentTabButton");
 			}
 		);
 	}
 
 	document.getElementById("inputIpFqdn").addEventListener("input",
 		function (e) {
-			invoke({ cmd: 'queryProfiles', query: e.target.value });
+			invoke({ cmd: 'queryConnectionProfiles', callback: 'loadQueriedConnectionProfiles', query: e.target.value });
 		}
 	);
 	document.getElementById("inputConnect").addEventListener("click", function (e) { });
@@ -80,7 +86,7 @@ function connect() {
 	}
 }
 
-function loadQueriedProfiles(profiles) {
+function loadQueriedConnectionProfiles(profiles) {
 	profiles = profiles['profile_vec']
 	let inputProfileSelectOptions = document.getElementById("inputProfileSelectOptions");
 	inputProfileSelectOptions.innerHTML = "";
@@ -96,13 +102,13 @@ function loadQueriedProfiles(profiles) {
 		for (let key in profiles) {
 			if (Object.hasOwnProperty.call(profiles, key)) {
 				let profile = profiles[key];
-				inputProfileSelectOptions.appendChild(genProfileSelectItemHTML(profile));
+				inputProfileSelectOptions.appendChild(genConnectionProfileSelectItemHTML(profile));
 			}
 		}
 	}
 }
 
-function genProfileSelectItemHTML(profile) {
+function genConnectionProfileSelectItemHTML(profile) {
 	let div = document.createElement("div");
 	let name = document.createElement("span");
 	let ip_fqdn = document.createElement("span");
@@ -123,14 +129,21 @@ function genProfileSelectItemHTML(profile) {
 	div.addEventListener(
 		"click",
 		function (e) {
-			invoke({ cmd: 'loadProfile', id: profile.id });
+			invoke({ cmd: 'loadConnectionProfile', callback: 'loadSelectedConnectionProfile', id: profile.id });
 		}
 	);
 
 	return div;
 }
 
-function loadSelectedProfile(profile) {
+function loadSelectedConnectionProfile(profile) {
+	invoke({ cmd: 'debug', value: JSON.stringify(profile) });
+}
+
+function loadNetworkProfiles(profiles){
+	invoke({ cmd: 'debug', value: JSON.stringify(profiles) });
+}
+function loadSelectedNetworkProfile(profile) {
 	invoke({ cmd: 'debug', value: JSON.stringify(profile) });
 }
 
@@ -145,11 +158,21 @@ function showContent(contentName) {
 	document.getElementById(contentName).classList.add("currentContent");
 }
 
-function showSubContent(contentName, subContentName) {
+function showSubContent(contentName, subContentTabName) {
 	contentName = contentName + "Subcontent"
 	let subcontentContainer = document.getElementById(contentName);
 	for (let elem of subcontentContainer.children) {
-		elem.classList.remove("currentSubcontent");
+		elem.classList.remove("currentSubcontentTab");
 	}
-	document.getElementById(subContentName).classList.add("currentSubcontent");
+	document.getElementById(subContentTabName).classList.add("currentSubcontentTab");
+	switch (subContentTabName) {
+		case "settingsNetworkSubcontent":
+			invoke({ cmd: 'getNetworkProfiles'});
+			break;
+		case "settingsProfilesSubcontent":
+			invoke({ cmd: 'queryConnectionProfiles', callback: '', query: ''});
+			break;
+		default:
+			break;
+	}
 }

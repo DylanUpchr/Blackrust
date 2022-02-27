@@ -43,35 +43,38 @@ fn open_webview() -> WebView<'static, &'static str> {
 		.invoke_handler(|webview, arg| {
 			use Cmd::*;
 			match serde_json::from_str(arg).unwrap() {
-				Init => ({
-					webview.eval(
-						&format!("loadQueriedProfiles({})", 
-							serde_json::to_string(
-								&config_mgr::get_profiles(String::new()).unwrap()
-							).unwrap()
-						)
-					)?;
-				}),
+				Init => (),
 				Debug { value } => (println!("{}", value)),
 				Connect { ip_fqdn, protocol, config} => (),
-				QueryProfiles { query } => (
+				QueryConnectionProfiles { callback, query } => (
 					webview.eval(
-						&format!("loadQueriedProfiles({})", 
+						&format!("{}({})", 
+							callback,
 							serde_json::to_string(
 								&config_mgr::get_profiles(query).unwrap()
 							).unwrap()
 						)
 					)?
 				),
-				LoadProfile { id } => (
+				LoadConnectionProfile { callback, id } => (
 					webview.eval(
-						&format!("loadSelectedProfile({})", 
+						&format!("{}({})",
+							callback,
 							serde_json::to_string(
 								&config_mgr::get_profile_by_id(id).unwrap()
 							).unwrap()
 						)
 					)?
-				) 
+				),
+				GetNetworkProfiles => (
+					webview.eval(
+						&format!("loadNetworkProfiles({})",
+							serde_json::to_string(
+								&network_mgr::load_profiles()
+							).unwrap()
+						)
+					)?),
+				LoadNetworkProfile { id } => ()
 			}
 			Ok(())
 		})
@@ -142,6 +145,8 @@ pub enum Cmd {
     Init,
 	Debug { value: String },
 	Connect { ip_fqdn: String, protocol: String, config: String},
-	QueryProfiles { query: String },
-	LoadProfile { id: String }
+	QueryConnectionProfiles { callback: String, query: String },
+	LoadConnectionProfile { callback: String, id: String },
+	GetNetworkProfiles,
+	LoadNetworkProfile { id: String }
 }

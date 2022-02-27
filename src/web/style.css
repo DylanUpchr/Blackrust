@@ -13,7 +13,6 @@ body {
 #mainCard{
 	width: 854px;
 	height: 480px;
-	/*padding: 8px 8px 8px 8px;*/
 	opacity: 75%;
 	background-color: #ffffff;
 	border-color: #000000;
@@ -137,6 +136,9 @@ body {
 .currentSubContent{
   display: block;
 }
+#hostname{
+  margin-left: 8px !important;
+}
 #settingsButton{
   margin-right: 8px !important;
   font-size: 2em;
@@ -157,17 +159,17 @@ body {
   padding-inline-end: 20px;
   border-right: solid black 1px;
 }
-.subcontent{
+.subcontentTab{
   display: none;
 }
-.currentSubcontent{
+.currentSubcontentTab{
   display: block;
 }
-.subcontentTab{
+.subcontentTabButton{
   list-style: none;
   font-size: 3em;
   margin: auto;
 }
-.currentSubcontentTab{
+.currentSubcontentTabButton{
   color: #0000DD;
 }
