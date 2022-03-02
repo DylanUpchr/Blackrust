@@ -43,3 +43,9 @@ Création du fonction load_profiles dans le module NetworkMgr permettant de char
 
 ## 2022-02-24
 Ajout de menu de reglages avec le systeme "sous-contenu" dans le JS et HTML, dans l'interface. Ceci permet un moyen dynamique d'ajoute des pages de réglages dans le HTML/JS. La prochaine étape serait de créer les formaulaires sur les differents pages de réglage.
+
+## 2022-02-28
+Ajout des composants "select" dans les pages de réglage "Network" et "Profiles" qui chargent les profiles réseau et profiles de connexion dans l'interface et permettent de selectionner le profile souhaité pour vision/édition
+
+## 2022-03-02
+Ajout des containeurs pour les forms de modifications de profiles de connexion et réseau
