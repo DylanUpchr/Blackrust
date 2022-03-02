@@ -51,8 +51,22 @@
                     </ul>
                 </nav>
                 <div class="subcontentContainer" id="settingsSubcontent">
-                    <div class="subcontentTab currentSubcontentTab" id="settingsNetworkSubcontent">network</div>
-                    <div class="subcontentTab" id="settingsProfilesSubcontent">profiles</div>
+                    <div class="subcontentTab currentSubcontentTab" id="settingsNetworkSubcontent">
+                        <select 
+                        id="networkProfilesSelect" 
+                        name="networkProfiles" 
+                        size="5"
+                        onchange="invoke({cmd: 'loadNetworkProfile', id: this.options[this.selectedIndex].value})">
+                        </select>
+                    </div>
+                    <div class="subcontentTab" id="settingsProfilesSubcontent">
+                        <select 
+                        id="connectionProfilesSelect" 
+                        name="connectionProfiles" 
+                        size="5"
+                        onchange="invoke({cmd: 'loadConnectionProfile', callback: 'loadSelectedConnectionProfile', id: this.options[this.selectedIndex].value})">
+                        </select>
+                    </div>
                     <div class="subcontentTab" id="settingsThemeSubcontent">theme</div>
                     <div class="subcontentTab" id="settingsLocalizationSubcontent">i18n</div>
                     <div class="subcontentTab" id="settingsAboutSubcontent">about</div>

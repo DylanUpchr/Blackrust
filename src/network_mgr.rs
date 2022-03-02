@@ -38,7 +38,7 @@ pub fn set_hostname(hostname: &str) -> Result<String, String> {
  * Args:	None
  * Returns: (Vec<NetworkManagerProfile>) NetworkManager profiles
  */
-pub fn load_profiles() -> Vec<NetworkManagerProfile>{
+pub fn load_all_profiles() -> Result<Vec<NetworkManagerProfile>, String>{
     use std::str::FromStr;
 
     let mut profiles: Vec<NetworkManagerProfile> = vec!();
@@ -58,7 +58,25 @@ pub fn load_profiles() -> Vec<NetworkManagerProfile>{
             profiles.push(profile);
         }
     });
-    profiles
+    Ok(profiles)
+}
+
+/** Function
+ * Name:    get_profile_by_id
+ * Purpose:	Gets profile that has matching id
+ * Args:	(String) Id with which to filter profiles
+ * Returns:	(Result<Profile, String>) Profile object or error string
+ */
+pub fn get_profile_by_id(id: String) -> Result<NetworkManagerProfile, String>{
+    let profiles: Vec<NetworkManagerProfile> = load_all_profiles()?;
+    let profile_result: Option<&NetworkManagerProfile>;
+    profile_result = profiles.iter()
+                        .find(|profile: &_| profile.uuid == id);
+
+    match profile_result {
+        Some(profile) => (return Ok(profile.clone())),
+        None => (return Err(String::from("Could not find profile.")))
+    }
 }
 
 /** Function

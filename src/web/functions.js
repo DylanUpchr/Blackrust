@@ -6,7 +6,7 @@ function init() {
 	setTime();
 	invoke({ cmd: 'init' });
 	invoke({ cmd: 'getNetworkProfiles'});
-	invoke({ cmd: 'queryConnectionProfiles', callback: 'loadQueriedConnectionProfiles', query: ''});
+	invoke({ cmd: 'queryConnectionProfiles', callback: 'loadQueriedConnectionProfilesSelect', query: ''});
 
 	let inputProfileSelect = document.getElementById("inputProfileSelect");
 	let inputProfileSelectOptions = document.getElementById("inputProfileSelectOptions");
@@ -86,7 +86,7 @@ function connect() {
 	}
 }
 
-function loadQueriedConnectionProfiles(profiles) {
+function loadQueriedConnectionProfilesSelect(profiles) {
 	profiles = profiles['profile_vec']
 	let inputProfileSelectOptions = document.getElementById("inputProfileSelectOptions");
 	inputProfileSelectOptions.innerHTML = "";
@@ -136,12 +136,33 @@ function genConnectionProfileSelectItemHTML(profile) {
 	return div;
 }
 
+function genConnectionProfileSettingsHTML(profile){
+}
+
+function loadQueriedConnectionProfilesSettings(profiles) {
+	let selectTag = document.getElementById("connectionProfilesSelect");
+	selectTag.innerHTML = "";
+	profiles = profiles['profile_vec'];
+	profiles.forEach(profile => {
+		let optionTag = document.createElement("option");
+		optionTag.value = profile.id;
+		optionTag.innerText = profile.name;
+		selectTag.appendChild(optionTag);
+	});
+}
 function loadSelectedConnectionProfile(profile) {
 	invoke({ cmd: 'debug', value: JSON.stringify(profile) });
 }
 
 function loadNetworkProfiles(profiles){
-	invoke({ cmd: 'debug', value: JSON.stringify(profiles) });
+	let selectTag = document.getElementById("networkProfilesSelect");
+	selectTag.innerHTML = "";
+	profiles.forEach(profile => {
+		let optionTag = document.createElement("option");
+		optionTag.value = profile.uuid;
+		optionTag.innerText = profile.name;
+		selectTag.appendChild(optionTag);
+	});
 }
 function loadSelectedNetworkProfile(profile) {
 	invoke({ cmd: 'debug', value: JSON.stringify(profile) });
@@ -170,7 +191,7 @@ function showSubContent(contentName, subContentTabName) {
 			invoke({ cmd: 'getNetworkProfiles'});
 			break;
 		case "settingsProfilesSubcontent":
-			invoke({ cmd: 'queryConnectionProfiles', callback: '', query: ''});
+			invoke({ cmd: 'queryConnectionProfiles', callback: 'loadQueriedConnectionProfilesSettings', query: ''});
 			break;
 		default:
 			break;

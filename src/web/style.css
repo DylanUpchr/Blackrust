@@ -11,8 +11,8 @@ body {
     align-items: center;
 }
 #mainCard{
-	width: 854px;
-	height: 480px;
+	width: 1280px;
+	height: 720px;
 	opacity: 75%;
 	background-color: #ffffff;
 	border-color: #000000;
@@ -139,6 +139,11 @@ body {
 #hostname{
   margin-left: 8px !important;
 }
+#settingsSubcontent{
+    width: 85%;
+    float: right;
+    height: 100%;
+}
 #settingsButton{
   margin-right: 8px !important;
   font-size: 2em;
@@ -161,6 +166,16 @@ body {
 }
 .subcontentTab{
   display: none;
+  height: 100%;
+  width: 100%;
+}
+.subcontentTab select{
+  width: 20%;
+  height: calc(100% - 2px);
+  size-adjust: auto;
+}
+.subcontentTab select option{
+  font-size: 1em;
 }
 .currentSubcontentTab{
   display: block;

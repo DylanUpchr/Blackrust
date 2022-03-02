@@ -70,11 +70,19 @@ fn open_webview() -> WebView<'static, &'static str> {
 					webview.eval(
 						&format!("loadNetworkProfiles({})",
 							serde_json::to_string(
-								&network_mgr::load_profiles()
+								&network_mgr::load_all_profiles().unwrap()
 							).unwrap()
 						)
 					)?),
-				LoadNetworkProfile { id } => ()
+				LoadNetworkProfile { id } => ({
+					webview.eval(
+					&format!("loadSelectedNetworkProfile({})",
+						serde_json::to_string(
+							&network_mgr::get_profile_by_id(id).unwrap()
+						).unwrap()
+					)
+				)?
+			})
 			}
 			Ok(())
 		})
