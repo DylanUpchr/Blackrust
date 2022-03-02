@@ -58,6 +58,7 @@
                         size="5"
                         onchange="invoke({cmd: 'loadNetworkProfile', id: this.options[this.selectedIndex].value})">
                         </select>
+                        <div id="networkProfilesSettingsForm"></div>
                     </div>
                     <div class="subcontentTab" id="settingsProfilesSubcontent">
                         <select 
@@ -66,6 +67,7 @@
                         size="5"
                         onchange="invoke({cmd: 'loadConnectionProfile', callback: 'loadSelectedConnectionProfile', id: this.options[this.selectedIndex].value})">
                         </select>
+                        <div id="connectionProfilesSettingsForm"></div>
                     </div>
                     <div class="subcontentTab" id="settingsThemeSubcontent">theme</div>
                     <div class="subcontentTab" id="settingsLocalizationSubcontent">i18n</div>

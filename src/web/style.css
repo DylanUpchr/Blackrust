@@ -172,7 +172,7 @@ body {
 .subcontentTab select{
   width: 20%;
   height: calc(100% - 2px);
-  size-adjust: auto;
+  float: left;
 }
 .subcontentTab select option{
   font-size: 1em;
@@ -187,4 +187,9 @@ body {
 }
 .currentSubcontentTabButton{
   color: #0000DD;
+}
+#networkProfilesSettingsForm, #connectionProfilesSettingsForm{
+  width: 80%;
+  height: 100%;
+  float: right;
 }
