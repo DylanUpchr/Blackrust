@@ -6,8 +6,7 @@
 use std::process::{Command, Output};
 use std::str;
 use regex::Regex;
-use blackrust_lib::profile::NetworkManagerProfile;
-use blackrust_lib::profile::NetworkManagerProfileType;
+use blackrust_lib::profile::{NetworkManagerProfile,NetworkManagerProfileType,Interface};
 
 /** Function
  * Name:	get_hostname
@@ -17,6 +16,23 @@ use blackrust_lib::profile::NetworkManagerProfileType;
  */
 pub fn get_hostname() -> String {
     exec_nmcli_command(vec!("general", "hostname")).unwrap()
+}
+
+pub fn get_all_interfaces() -> Result<Vec<Interface>, String> {
+    let result = vec!();
+
+    Ok(result)
+}
+
+pub fn get_interface_by_name(name: String) -> Result<Interface, String>{
+    let interfaces: Vec<Interface> = get_all_interfaces()?;
+    let interface_result: Option<&Interface> = interfaces.iter()
+                        .find(|interface: &_| interface.name == name);
+
+    match interface_result {
+        Some(interface) => Ok(interface.clone()),
+        None => Err(String::from("Could not find interface."))
+    }
 }
 
 /** Function
@@ -49,11 +65,12 @@ pub fn load_all_profiles() -> Result<Vec<NetworkManagerProfile>, String>{
     stdout_lines.into_iter().for_each(|line| {
         if line != "" {
             let line_data = re.split(line).collect::<Vec<&str>>();
+            let interface = Interface::new2(line_data[3].to_string(), String::new());
             let profile = NetworkManagerProfile::new4(
                 line_data[0].to_string(), 
                 line_data[1].to_string(), 
                 NetworkManagerProfileType::from_str(&line_data[2].to_string()).unwrap(), 
-                line_data[3].to_string()
+                interface
             );
             profiles.push(profile);
         }

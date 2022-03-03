@@ -193,3 +193,9 @@ body {
   height: 100%;
   float: right;
 }
+.typeSpecific {
+  display: none;
+}
+.currentType {
+  display: block;
+}

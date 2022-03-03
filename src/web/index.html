@@ -58,7 +58,38 @@
                         size="5"
                         onchange="invoke({cmd: 'loadNetworkProfile', id: this.options[this.selectedIndex].value})">
                         </select>
-                        <div id="networkProfilesSettingsForm"></div>
+                        <div id="networkProfilesSettingsForm">
+                            <form>
+                                <fieldset name="profileGeneral">
+                                    <label for="profileName">Name</label>
+                                    <input type="text" name="profileName">
+                                    <label for="profileDevice">Device</label>
+                                    <select name="profileDevice"></select>
+                                </fieldset>
+                                <fieldset class="typeSpecific" name="profileSpecificEthernet">
+
+                                </fieldset>
+                                <fieldset class="typeSpecific" name="profileSpecificWifi">
+
+                                </fieldset>
+                                <fieldset class="typeSpecific" name="profileSpecificWireguard">
+
+                                </fieldset>
+                                <fieldset name="profileIPConfiguration">
+                                    <label for="profileIPv4Configuration">IPv4 Configuration</label>
+                                    <fieldset name="profileIPv4Configuration">
+                                        <input type="checkbox" name="IPv4Auto" checked>
+                                        <label for="IPv4Auto">Automatic</label>
+                                    </fieldset>
+                                    <label for="profileIPv6Configuration">IPv6 Configuration</label>
+                                    <fieldset name="profileIPv6Configuration">
+                                        <input type="checkbox" name="IPv6Auto" checked>
+                                        <label for="IPv6Auto">Automatic</label>
+                                    </fieldset>
+                                </fieldset>
+                                <button>OK</button>
+                            </form>
+                        </div>
                     </div>
                     <div class="subcontentTab" id="settingsProfilesSubcontent">
                         <select 

@@ -1,12 +1,12 @@
 function invoke(arg) {
-	window.webkit.messageHandlers.external.postMessage(JSON.stringify(arg));
+	//window.webkit.messageHandlers.external.postMessage(JSON.stringify(arg));
 }
 
 function init() {
 	setTime();
 	invoke({ cmd: 'init' });
-	invoke({ cmd: 'getNetworkProfiles'});
-	invoke({ cmd: 'queryConnectionProfiles', callback: 'loadQueriedConnectionProfilesSelect', query: ''});
+	invoke({ cmd: 'getNetworkProfiles' });
+	invoke({ cmd: 'queryConnectionProfiles', callback: 'loadQueriedConnectionProfilesSelect', query: '' });
 
 	let inputProfileSelect = document.getElementById("inputProfileSelect");
 	let inputProfileSelectOptions = document.getElementById("inputProfileSelectOptions");
@@ -27,7 +27,7 @@ function init() {
 	for (let button of subContentTabButtons) {
 		button.addEventListener(
 			"click",
-			function(e){
+			function (e) {
 				showSubContent("settings", "settings" + button.attributes.name.value + "Subcontent");
 				let content = document.getElementsByClassName("currentSubcontentTabButton");
 				for (let elem of content) {
@@ -136,7 +136,7 @@ function genConnectionProfileSelectItemHTML(profile) {
 	return div;
 }
 
-function genConnectionProfileSettingsHTML(profile){
+function genConnectionProfileSettingsHTML(profile) {
 }
 
 function loadQueriedConnectionProfilesSettings(profiles) {
@@ -154,7 +154,7 @@ function loadSelectedConnectionProfile(profile) {
 	invoke({ cmd: 'debug', value: JSON.stringify(profile) });
 }
 
-function loadNetworkProfiles(profiles){
+function loadNetworkProfiles(profiles) {
 	let selectTag = document.getElementById("networkProfilesSelect");
 	selectTag.innerHTML = "";
 	profiles.forEach(profile => {
@@ -166,6 +166,12 @@ function loadNetworkProfiles(profiles){
 }
 function loadSelectedNetworkProfile(profile) {
 	invoke({ cmd: 'debug', value: JSON.stringify(profile) });
+	let fieldsets = document.getElementsByClassName("typeSpecific");
+	for (let fieldset of fieldsets) {
+		fieldset.classList.remove("currentType");
+	}
+	document.getElementsByName("profileSpecific" + profile.profile_type)[0].classList.add("currentType")
+	
 }
 
 function showContent(contentName) {
@@ -188,10 +194,10 @@ function showSubContent(contentName, subContentTabName) {
 	document.getElementById(subContentTabName).classList.add("currentSubcontentTab");
 	switch (subContentTabName) {
 		case "settingsNetworkSubcontent":
-			invoke({ cmd: 'getNetworkProfiles'});
+			invoke({ cmd: 'getNetworkProfiles' });
 			break;
 		case "settingsProfilesSubcontent":
-			invoke({ cmd: 'queryConnectionProfiles', callback: 'loadQueriedConnectionProfilesSettings', query: ''});
+			invoke({ cmd: 'queryConnectionProfiles', callback: 'loadQueriedConnectionProfilesSettings', query: '' });
 			break;
 		default:
 			break;

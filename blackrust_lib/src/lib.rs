@@ -70,6 +70,47 @@ pub mod profile{
     }
 
     /** Struct
+     * Name:	        Interface
+     * Purpose:      Interface object
+     * Properties:   (String) name: Name of Interface
+     *               (String) mac_addr: Hardware MAC address
+     */
+    #[derive(Debug, Serialize, Deserialize, Clone)]
+    pub struct Interface{
+        pub name: String,
+        pub mac_addr: String
+    }
+    
+    impl Interface {
+        /** Function
+         * Name:	new
+         * Purpose:	Default constructor for Interface object
+         * Args:	None
+         * Returns:	NetworkManagerProfile object
+         */
+        pub fn new() -> Interface{
+            Interface::new2(
+                String::new(), 
+                String::new()
+            )
+        }
+
+        /** Function
+         * Name:	new2
+         * Purpose:	Full constructor for Interface object
+         * Args:	(String) name: Interface name
+         *          (String) mac_addr: Physical MAC address of interface
+         * Returns:	Interface object
+         */
+        pub fn new2(name: String, mac_addr: String) -> Interface{
+            Interface {
+                name: name,
+                mac_addr: mac_addr
+            }
+        }
+    }
+
+    /** Struct
      * Name:	        ConnectionSettings
      * Purpose:      Contains fields used for connection to remote host
      * Properties:   (String) ip_fqdn: IP address or FQDN of remote host
@@ -96,7 +137,7 @@ pub mod profile{
         pub name: String,
         pub uuid: String,
         pub profile_type: NetworkManagerProfileType,
-        pub interface: String
+        pub interface: Interface
     }
 
     /** Struct
@@ -121,7 +162,9 @@ pub mod profile{
      * Properties:   (Vec<Profile>) profile_vec: profile vector
      */
     #[derive(Debug, Serialize, Deserialize)]
-    pub struct Profiles{pub profile_vec: Vec<Profile>}
+    pub struct Profiles{
+        pub profile_vec: Vec<Profile>
+    }
 
     impl Protocol{
         /** Function
@@ -199,7 +242,7 @@ pub mod profile{
                 String::new(), 
                 Uuid::new_v4().to_string(),
                 crate::defaults::NETWORK_MANAGER_PROFILE_TYPE,
-                String::new()
+                Interface::new()
             )
         }
 
@@ -212,7 +255,7 @@ pub mod profile{
          *          (String) interface: Name of interface to apply configuration to
          * Returns:	NetworkManagerProfile object
          */
-        pub fn new4(name: String, uuid: String, profile_type: NetworkManagerProfileType, interface: String) -> NetworkManagerProfile {
+        pub fn new4(name: String, uuid: String, profile_type: NetworkManagerProfileType, interface: Interface) -> NetworkManagerProfile {
             return NetworkManagerProfile{
                 name: name,
                 uuid: uuid,
