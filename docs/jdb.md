@@ -48,4 +48,7 @@ Ajout de menu de reglages avec le systeme "sous-contenu" dans le JS et HTML, dan
 Ajout des composants "select" dans les pages de réglage "Network" et "Profiles" qui chargent les profiles réseau et profiles de connexion dans l'interface et permettent de selectionner le profile souhaité pour vision/édition
 
 ## 2022-03-02
-Ajout des containeurs pour les forms de modifications de profiles de connexion et réseau
+Ajout des containeurs pour les forms de modifications de profiles de connexion et réseau avec affichage automatique selon le type de profile NetworkManager.
+
+## 2022-03-05
+Ajout du bouton création de profile réseau (avec fonction associé à compléter avec appel vers NM) et changement du checkbox "Automatic" pour le type de configuration ipv4/ipv6 d'un profile pour permettre plus de types de configuration comme Link-local et le faite de pouvoir ignorer le type d'adressage. Le bouton création crée un profile réseau vide dans NetworkManager et charge cette nouvelle profile dans l'interface pour modification. 

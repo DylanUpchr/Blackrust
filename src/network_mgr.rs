@@ -96,6 +96,18 @@ pub fn get_profile_by_id(id: String) -> Result<NetworkManagerProfile, String>{
     }
 }
 
+
+/** Function
+ * Name:    create_profile
+ * Purpose:	Creates a new NetworkManagerProfile
+ * Args:	None
+ * Returns:	(Result<Profile, String>) NetworkManagerProfile id or error string
+ */
+pub fn create_profile() -> Result<String, String>{
+    let new_id: String = String::new();
+    Ok(new_id)
+}
+
 /** Function
  * Name:	exec_nmcli_command
  * Purpose:	Load saved profiles from NetworkManager

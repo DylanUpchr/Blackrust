@@ -169,10 +169,18 @@ body {
   height: 100%;
   width: 100%;
 }
-.subcontentTab select{
+.subcontentTab nav{
   width: 20%;
   height: calc(100% - 2px);
   float: left;
+}
+#networkProfilesSelect{
+  width: 100%;
+  height: calc(100% - 25px);
+}
+#networkProfilesCreateButton{
+  width: 100%;
+  height: 25px;
 }
 .subcontentTab select option{
   font-size: 1em;
@@ -198,4 +206,7 @@ body {
 }
 .currentType {
   display: block;
+}
+#profileDeviceSelect {
+  float: none;
 }

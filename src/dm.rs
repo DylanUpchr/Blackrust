@@ -73,16 +73,28 @@ fn open_webview() -> WebView<'static, &'static str> {
 								&network_mgr::load_all_profiles().unwrap()
 							).unwrap()
 						)
-					)?),
-				LoadNetworkProfile { id } => ({
+					)?
+				),
+				LoadNetworkProfile { id } => (
 					webview.eval(
-					&format!("loadSelectedNetworkProfile({})",
-						serde_json::to_string(
-							&network_mgr::get_profile_by_id(id).unwrap()
-						).unwrap()
-					)
-				)?
-			})
+						&format!("loadSelectedNetworkProfile({})",
+							serde_json::to_string(
+								&network_mgr::get_profile_by_id(id).unwrap()
+							).unwrap()
+						)
+					)?
+				),
+				CreateNetworkProfile => (
+					webview.eval(
+						&format!("loadSelectedNetworkProfile({})",
+							serde_json::to_string(
+								&network_mgr::get_profile_by_id(
+									network_mgr::create_profile().unwrap()
+								).unwrap()
+							).unwrap()
+						)
+					)?
+				)
 			}
 			Ok(())
 		})
@@ -156,5 +168,6 @@ pub enum Cmd {
 	QueryConnectionProfiles { callback: String, query: String },
 	LoadConnectionProfile { callback: String, id: String },
 	GetNetworkProfiles,
-	LoadNetworkProfile { id: String }
+	LoadNetworkProfile { id: String },
+	CreateNetworkProfile
 }

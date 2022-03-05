@@ -52,19 +52,25 @@
                 </nav>
                 <div class="subcontentContainer" id="settingsSubcontent">
                     <div class="subcontentTab currentSubcontentTab" id="settingsNetworkSubcontent">
-                        <select 
-                        id="networkProfilesSelect" 
-                        name="networkProfiles" 
-                        size="5"
-                        onchange="invoke({cmd: 'loadNetworkProfile', id: this.options[this.selectedIndex].value})">
-                        </select>
+                        <nav>
+                            <select 
+                            id="networkProfilesSelect"
+                            size="5"
+                            onchange="invoke({cmd: 'loadNetworkProfile', id: this.options[this.selectedIndex].value})">
+                            </select>
+                            <button 
+                            id="networkProfilesCreateButton"
+                            onclick="invoke({cmd: 'createNetworkProfile'})">
+                            + Create Profile
+                            </button>
+                        </nav>
                         <div id="networkProfilesSettingsForm">
                             <form>
                                 <fieldset name="profileGeneral">
                                     <label for="profileName">Name</label>
                                     <input type="text" name="profileName">
                                     <label for="profileDevice">Device</label>
-                                    <select name="profileDevice"></select>
+                                    <select id="profileDeviceSelect" name="profileDevice"></select>
                                 </fieldset>
                                 <fieldset class="typeSpecific" name="profileSpecificEthernet">
 
@@ -76,15 +82,35 @@
 
                                 </fieldset>
                                 <fieldset name="profileIPConfiguration">
+                                    <!--For both, add following fields:
+                                        - Addresses
+                                        - Gateway
+                                        - DNS servers
+                                        - Search domains
+                                        - Custom routes
+                                        - Use as default route checkbox
+                                        - Ignore obtained routes checkbox
+                                        - Ignore obtained DNS params checkbox
+                                    -->
                                     <label for="profileIPv4Configuration">IPv4 Configuration</label>
                                     <fieldset name="profileIPv4Configuration">
-                                        <input type="checkbox" name="IPv4Auto" checked>
-                                        <label for="IPv4Auto">Automatic</label>
+                                        <label for="IPv4ConfigType">Configuration Type</label>
+                                        <select name="IPv4ConfigType">
+                                            <option>Automatic</option>
+                                            <option>Manual</option>
+                                            <option>Link-local</option>
+                                            <option>Ignore</option>
+                                        </select>
                                     </fieldset>
                                     <label for="profileIPv6Configuration">IPv6 Configuration</label>
                                     <fieldset name="profileIPv6Configuration">
-                                        <input type="checkbox" name="IPv6Auto" checked>
-                                        <label for="IPv6Auto">Automatic</label>
+                                        <label for="IPv6ConfigType">Configuration Type</label>
+                                        <select name="IPv6ConfigType">
+                                            <option>Automatic</option>
+                                            <option>Manual</option>
+                                            <option>Link-local</option>
+                                            <option>Ignore</option>
+                                        </select>
                                     </fieldset>
                                 </fieldset>
                                 <button>OK</button>
