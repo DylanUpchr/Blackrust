@@ -79,12 +79,30 @@ pub fn load_all_profiles() -> Result<Vec<NetworkManagerProfile>, String>{
 }
 
 /** Function
- * Name:    get_profile_by_id
+ * Name:    get_simple_profile_by_id
  * Purpose:	Gets profile that has matching id
  * Args:	(String) Id with which to filter profiles
- * Returns:	(Result<Profile, String>) Profile object or error string
+ * Returns:	(Result<NetworkManagerProfile, String>) Simple NetworkManagerProfile object or error string
  */
-pub fn get_profile_by_id(id: String) -> Result<NetworkManagerProfile, String>{
+pub fn get_simple_profile_by_id(id: String) -> Result<NetworkManagerProfile, String>{
+    let profiles: Vec<NetworkManagerProfile> = load_all_profiles()?;
+    let profile_result: Option<&NetworkManagerProfile>;
+    profile_result = profiles.iter()
+                        .find(|profile: &_| profile.uuid == id);
+
+    match profile_result {
+        Some(profile) => (return Ok(profile.clone())),
+        None => (return Err(String::from("Could not find profile.")))
+    }
+}
+
+/** Function
+ * Name:    get_detailed_profile_by_id
+ * Purpose:	Gets profile that has matching id
+ * Args:	(String) Id with which to filter profiles
+ * Returns:	(Result<NetworkManagerProfile, String>) Detailed NetworkManagerProfile object or error string
+ */
+pub fn get_detailed_profile_by_id(id: String) -> Result<NetworkManagerProfile, String>{
     let profiles: Vec<NetworkManagerProfile> = load_all_profiles()?;
     let profile_result: Option<&NetworkManagerProfile>;
     profile_result = profiles.iter()
@@ -101,7 +119,7 @@ pub fn get_profile_by_id(id: String) -> Result<NetworkManagerProfile, String>{
  * Name:    create_profile
  * Purpose:	Creates a new NetworkManagerProfile
  * Args:	None
- * Returns:	(Result<Profile, String>) NetworkManagerProfile id or error string
+ * Returns:	(Result<String, String>) NetworkManagerProfile id or error string
  */
 pub fn create_profile() -> Result<String, String>{
     let new_id: String = String::new();

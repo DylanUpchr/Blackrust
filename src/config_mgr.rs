@@ -74,3 +74,14 @@ pub fn save_profiles(profiles: &Profiles){
     let path = Path::new(&path_str);
     write_file(&path, &format!("{}", toml));
 }
+
+/** Function
+ * Name:    create_profile
+ * Purpose:	Creates a new Profile
+ * Args:	None
+ * Returns:	(Result<String, String>) Profile id or error string
+ */
+pub fn create_profile() -> Result<String, String>{
+    let new_id: String = String::new();
+    Ok(new_id)
+}

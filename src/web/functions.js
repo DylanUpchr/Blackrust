@@ -1,5 +1,5 @@
 function invoke(arg) {
-	//window.webkit.messageHandlers.external.postMessage(JSON.stringify(arg));
+	window.webkit.messageHandlers.external.postMessage(JSON.stringify(arg));
 }
 
 function init() {
@@ -165,13 +165,12 @@ function loadNetworkProfiles(profiles) {
 	});
 }
 function loadSelectedNetworkProfile(profile) {
-	invoke({ cmd: 'debug', value: JSON.stringify(profile) });
 	let fieldsets = document.getElementsByClassName("typeSpecific");
 	for (let fieldset of fieldsets) {
 		fieldset.classList.remove("currentType");
 	}
-	document.getElementsByName("profileSpecific" + profile.profile_type)[0].classList.add("currentType")
-	
+	document.getElementsByName("networkProfileSpecific" + profile.profile_type)[0].classList.add("currentType")
+	document.getElementById("networkProfileName").value = profile.name;
 }
 
 function showContent(contentName) {
@@ -202,4 +201,59 @@ function showSubContent(contentName, subContentTabName) {
 		default:
 			break;
 	}
+}
+
+function addField(type, fieldsetID){
+	let fieldset = document.getElementById(fieldsetID);
+	switch (type) {
+		case 'address':
+			let br = document.createElement("br");
+			let input = document.createElement("input");
+			input.addEventListener("change", validateCIDR);
+			input.required = true;
+			let removeButton = document.createElement("button")
+			removeButton.innerText = "Remove";
+			removeButton.addEventListener(
+				"click", 
+				function(){
+					fieldset.removeChild(input); 
+					fieldset.removeChild(removeButton); 
+					fieldset.removeChild(br)
+				}
+			);
+			fieldset.insertBefore(br, fieldset.firstChild);
+			fieldset.insertBefore(removeButton, fieldset.firstChild);
+			fieldset.insertBefore(input, fieldset.firstChild);
+			break;
+		case 'gateway':
+				
+			break;
+		case 'route':
+					
+			break;	
+		default:
+			break;
+	}
+}
+function toggleFieldset(sender, fieldsetID){
+	let fieldset = document.getElementById(fieldsetID);
+	if (fieldset.classList.contains("fieldset-closed")) {
+		fieldset.classList.remove("fieldset-closed");
+		fieldset.classList.add("fieldset-open");
+		sender.innerText = "Hide";
+	} else {
+		fieldset.classList.remove("fieldset-open");
+		fieldset.classList.add("fieldset-closed");
+		sender.innerText = "Show";
+	}
+}
+
+function validateCIDR(e){
+	//console.log(e);
+	return true;
+}
+
+function validateGateway(e){
+	//console.log(e);
+	return true;
 }

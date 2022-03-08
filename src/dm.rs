@@ -66,6 +66,17 @@ fn open_webview() -> WebView<'static, &'static str> {
 						)
 					)?
 				),
+				CreateConnectionProfile => (
+					webview.eval(
+						&format!("loadSelectedConnectionProfile({})",
+							serde_json::to_string(
+								&config_mgr::get_profile_by_id(
+									config_mgr::create_profile().unwrap()
+								).unwrap()
+							).unwrap()
+						)
+					)?
+				),
 				GetNetworkProfiles => (
 					webview.eval(
 						&format!("loadNetworkProfiles({})",
@@ -79,22 +90,30 @@ fn open_webview() -> WebView<'static, &'static str> {
 					webview.eval(
 						&format!("loadSelectedNetworkProfile({})",
 							serde_json::to_string(
-								&network_mgr::get_profile_by_id(id).unwrap()
+								&network_mgr::get_simple_profile_by_id(id).unwrap()
 							).unwrap()
 						)
 					)?
 				),
-				CreateNetworkProfile => (
+				CreateNetworkProfile => ({
+					let id = network_mgr::create_profile().unwrap();
+					webview.eval(
+						&format!("loadNetworkProfiles({})",
+							serde_json::to_string(
+								&network_mgr::load_all_profiles().unwrap()
+							).unwrap()
+						)
+					)?;
 					webview.eval(
 						&format!("loadSelectedNetworkProfile({})",
 							serde_json::to_string(
-								&network_mgr::get_profile_by_id(
-									network_mgr::create_profile().unwrap()
+								&network_mgr::get_detailed_profile_by_id(
+									id
 								).unwrap()
 							).unwrap()
 						)
 					)?
-				)
+				})
 			}
 			Ok(())
 		})
@@ -167,6 +186,7 @@ pub enum Cmd {
 	Connect { ip_fqdn: String, protocol: String, config: String},
 	QueryConnectionProfiles { callback: String, query: String },
 	LoadConnectionProfile { callback: String, id: String },
+	CreateConnectionProfile,
 	GetNetworkProfiles,
 	LoadNetworkProfile { id: String },
 	CreateNetworkProfile
