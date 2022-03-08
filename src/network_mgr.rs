@@ -6,6 +6,7 @@
 use std::process::{Command, Output};
 use std::str;
 use regex::Regex;
+use itertools::Itertools;
 use blackrust_lib::profile::{NetworkManagerProfile,NetworkManagerProfileType,Interface};
 
 /** Function
@@ -18,12 +19,35 @@ pub fn get_hostname() -> String {
     exec_nmcli_command(vec!("general", "hostname")).unwrap()
 }
 
+/** Function
+ * Name:	get_all_interfaces
+ * Purpose:	Get all network interfaces
+ * Args:	None
+ * Returns: Result<Vec<Interface>, String> Interfaces or error string
+ */
 pub fn get_all_interfaces() -> Result<Vec<Interface>, String> {
-    let result = vec!();
+    let mut result: Vec<Interface> = vec!();
+    let stdout = exec_nmcli_command(vec!("--fields", "GENERAL.DEVICE,GENERAL.HWADDR,GENERAL.TYPE", "device", "show")).unwrap();
+    let stdout_lines: Vec<&str> = stdout.split("\n").collect::<Vec<&str>>();
+    let re = Regex::new("\\s{2,}").unwrap();
+    let fields: Vec<Vec<&str>> = stdout_lines.into_iter().filter(|&line| {
+        line != ""
+    }).map(|line| {
+            re.split(line).collect::<Vec<&str>>()
+    }).collect::<Vec<Vec<&str>>>();
 
+    for (name, hw_addr, interface_type) in fields.into_iter().tuples(){
+        result.push(Interface::new3(name[1].to_string(), hw_addr[1].to_string(), interface_type[1].to_string()));
+    }
     Ok(result)
 }
 
+/** Function
+ * Name:	get_interface_by_name
+ * Purpose:	Get a network interface by name
+ * Args:	(String) Interface name query
+ * Returns: Result<Interface, String> Interface or error string
+ */
 pub fn get_interface_by_name(name: String) -> Result<Interface, String>{
     let interfaces: Vec<Interface> = get_all_interfaces()?;
     let interface_result: Option<&Interface> = interfaces.iter()
@@ -31,7 +55,13 @@ pub fn get_interface_by_name(name: String) -> Result<Interface, String>{
 
     match interface_result {
         Some(interface) => Ok(interface.clone()),
-        None => Err(String::from("Could not find interface."))
+        None => (
+            if name == "--" {
+                Ok(Interface::new())
+            } else {
+                Err(String::from("Could not find interface."))
+            }
+        )
     }
 }
 
@@ -62,15 +92,15 @@ pub fn load_all_profiles() -> Result<Vec<NetworkManagerProfile>, String>{
     let mut stdout_lines: Vec<&str> = stdout.split("\n").collect::<Vec<&str>>();
     stdout_lines.remove(0);
     let re = Regex::new("\\s{2,}").unwrap();
-    stdout_lines.into_iter().for_each(|line| {
+    stdout_lines.into_iter().for_each(|mut line| {
         if line != "" {
+            line = line.trim();
             let line_data = re.split(line).collect::<Vec<&str>>();
-            let interface = Interface::new2(line_data[3].to_string(), String::new());
             let profile = NetworkManagerProfile::new4(
                 line_data[0].to_string(), 
                 line_data[1].to_string(), 
                 NetworkManagerProfileType::from_str(&line_data[2].to_string()).unwrap(), 
-                interface
+                get_interface_by_name(line_data[3].to_string()).unwrap()
             );
             profiles.push(profile);
         }

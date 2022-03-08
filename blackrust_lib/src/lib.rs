@@ -78,7 +78,8 @@ pub mod profile{
     #[derive(Debug, Serialize, Deserialize, Clone)]
     pub struct Interface{
         pub name: String,
-        pub mac_addr: String
+        pub mac_addr: String,
+        pub interface_type: String
     }
     
     impl Interface {
@@ -89,23 +90,26 @@ pub mod profile{
          * Returns:	NetworkManagerProfile object
          */
         pub fn new() -> Interface{
-            Interface::new2(
+            Interface::new3(
                 String::new(), 
+                String::new(),
                 String::new()
             )
         }
 
         /** Function
-         * Name:	new2
+         * Name:	new3
          * Purpose:	Full constructor for Interface object
          * Args:	(String) name: Interface name
          *          (String) mac_addr: Physical MAC address of interface
+         *          (String) interface_type: Interface type
          * Returns:	Interface object
          */
-        pub fn new2(name: String, mac_addr: String) -> Interface{
+        pub fn new3(name: String, mac_addr: String, interface_type: String) -> Interface{
             Interface {
                 name: name,
-                mac_addr: mac_addr
+                mac_addr: mac_addr,
+                interface_type: interface_type
             }
         }
     }

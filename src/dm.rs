@@ -120,6 +120,8 @@ fn open_webview() -> WebView<'static, &'static str> {
 		.build()
 		.unwrap();
 
+	network_mgr::get_all_interfaces().unwrap();
+
 	let hostname = network_mgr::get_hostname();
 	webview.eval(&format!("setHostname({:?})", hostname)).unwrap();
 	return webview;
