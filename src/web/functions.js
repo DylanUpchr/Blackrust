@@ -165,12 +165,14 @@ function loadNetworkProfiles(profiles) {
 	});
 }
 function loadSelectedNetworkProfile(profile) {
+	invoke({cmd: 'getNetworkInterfaces'});
 	let fieldsets = document.getElementsByClassName("typeSpecific");
 	for (let fieldset of fieldsets) {
 		fieldset.classList.remove("currentType");
 	}
 	document.getElementsByName("networkProfileSpecific" + profile.profile_type)[0].classList.add("currentType")
 	document.getElementById("networkProfileName").value = profile.name;
+	document.getElementById("networkProfileDeviceSelect").value = profile.interface.name + profile.interface.mac_addr;
 }
 
 function showContent(contentName) {
@@ -235,6 +237,18 @@ function addField(type, fieldsetID){
 			break;
 	}
 }
+
+function loadNetworkInterfaces(interfaces) {
+	let selectTag = document.getElementById("networkProfileDeviceSelect");
+	selectTag.innerHTML = "";
+	interfaces.forEach(interface => {
+		let optionTag = document.createElement("option");
+		optionTag.value = interface.name + interface.mac_addr;
+		optionTag.innerText = interface.interface_type + ": " + interface.name + " (" + interface.mac_addr + ")";
+		selectTag.appendChild(optionTag);
+	});
+}
+
 function toggleFieldset(sender, fieldsetID){
 	let fieldset = document.getElementById(fieldsetID);
 	if (fieldset.classList.contains("fieldset-closed")) {

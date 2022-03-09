@@ -113,7 +113,16 @@ fn open_webview() -> WebView<'static, &'static str> {
 							).unwrap()
 						)
 					)?
-				})
+				}),
+				GetNetworkInterfaces => (
+					webview.eval(
+						&format!("loadNetworkInterfaces({})",
+							serde_json::to_string(
+								&network_mgr::get_all_interfaces().unwrap()
+							).unwrap()
+						)
+					)?
+				)
 			}
 			Ok(())
 		})
@@ -191,5 +200,6 @@ pub enum Cmd {
 	CreateConnectionProfile,
 	GetNetworkProfiles,
 	LoadNetworkProfile { id: String },
-	CreateNetworkProfile
+	CreateNetworkProfile,
+	GetNetworkInterfaces
 }
