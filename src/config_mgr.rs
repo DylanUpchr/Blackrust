@@ -82,6 +82,10 @@ pub fn save_profiles(profiles: &Profiles){
  * Returns:	(Result<String, String>) Profile id or error string
  */
 pub fn create_profile() -> Result<String, String>{
-    let new_id: String = String::new();
-    Ok(new_id)
+    let profile: Profile = Profile::new();
+    let mut profiles = load_all_profiles().unwrap();
+    let id: String = profile.id.to_owned();
+    profiles.profile_vec.push(profile);
+    save_profiles(&profiles);
+    Ok(id)
 }

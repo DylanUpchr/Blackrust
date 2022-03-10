@@ -66,17 +66,25 @@ fn open_webview() -> WebView<'static, &'static str> {
 						)
 					)?
 				),
-				CreateConnectionProfile => (
+				CreateConnectionProfile => ({
+					let id = config_mgr::create_profile().unwrap();
+					webview.eval(
+						&format!("loadQueriedConnectionProfilesSettings({})",
+							serde_json::to_string(
+								&config_mgr::get_profiles("".to_string()).unwrap()
+							).unwrap()
+						)
+					)?;
 					webview.eval(
 						&format!("loadSelectedConnectionProfile({})",
 							serde_json::to_string(
 								&config_mgr::get_profile_by_id(
-									config_mgr::create_profile().unwrap()
+									id
 								).unwrap()
 							).unwrap()
 						)
 					)?
-				),
+				}),
 				GetNetworkProfiles => (
 					webview.eval(
 						&format!("loadNetworkProfiles({})",

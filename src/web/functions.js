@@ -151,7 +151,8 @@ function loadQueriedConnectionProfilesSettings(profiles) {
 	});
 }
 function loadSelectedConnectionProfile(profile) {
-	invoke({ cmd: 'debug', value: JSON.stringify(profile) });
+	document.getElementById("connectionProfilesSelect").value = profile.id;
+	document.getElementById("connectionProfileID").value = profile.id;
 }
 
 function loadNetworkProfiles(profiles) {
