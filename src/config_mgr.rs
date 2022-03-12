@@ -6,7 +6,8 @@
 use blackrust_lib::profile::*;
 use blackrust_lib::file::*;
 use blackrust_lib::defaults;
-use std::path::Path;
+use std::path::PathBuf;
+extern crate dirs;
 
 /** Function
  * Name:    get_profiles
@@ -50,16 +51,53 @@ pub fn get_profile_by_id(id: String) -> Result<Profile, String> {
  * Returns:	(Result<Profiles, String>) Profiles object or error string
  */
 pub fn load_all_profiles() -> Result<Profiles, String>{
-    let path_str = format!("{}/{}", defaults::DATA_PATH, defaults::PROFILES_FILENAME);
-    let path = Path::new(&path_str);
     let profiles: Profiles;
+    let mut path: PathBuf = dirs::config_dir().unwrap();
+    path.push(defaults::DATA_PATH);
+    path.push(defaults::PROFILES_FILENAME);
     if path.metadata().is_ok() {
-        let toml = &read_file(path);
+        let toml = &read_file(&path);
         profiles = toml::from_str(toml).unwrap()
     } else {
         profiles = Profiles::new();
     }
     return Ok(profiles);
+}
+
+/** Function
+ * Name:    save_profile
+ * Purpose:	Saves Profile object
+ * Args:	(&Profile) Profile object
+ * Returns:	None
+ */
+pub fn save_profile(profile: Profile){
+    let mut profiles: Profiles = load_all_profiles().unwrap();
+    let profile_index = profiles.profile_vec.iter()
+                        .position(|profile_query: &_| profile_query.id == profile.id);
+    match profile_index {
+        Some(index) => profiles.profile_vec[index] = profile,
+        None => ()
+    }
+
+    save_profiles(&profiles);
+}
+
+/** Function
+ * Name:    delete_profile
+ * Purpose:	Deletes Profile object
+ * Args:	(&Profile) Profile object to delete
+ * Returns:	None
+ */
+pub fn delete_profile(profile: Profile){
+    let mut profiles: Profiles = load_all_profiles().unwrap();
+    let profile_index = profiles.profile_vec.iter()
+                        .position(|profile_query: &_| profile_query.id == profile.id);
+    match profile_index {
+        Some(index) => drop(profiles.profile_vec.swap_remove(index)),
+        None => ()
+    }
+
+    save_profiles(&profiles);
 }
 
 /** Function
@@ -70,8 +108,12 @@ pub fn load_all_profiles() -> Result<Profiles, String>{
  */
 pub fn save_profiles(profiles: &Profiles){
     let toml = toml::Value::try_from(&profiles).unwrap();
-    let path_str = format!("{}/{}", defaults::DATA_PATH, defaults::PROFILES_FILENAME);
-    let path = Path::new(&path_str);
+    let mut path: PathBuf = dirs::config_dir().unwrap();
+    path.push(defaults::DATA_PATH);
+    if path.metadata().is_err(){
+        create_path(&path);
+    }
+    path.push(defaults::PROFILES_FILENAME);
     write_file(&path, &format!("{}", toml));
 }
 

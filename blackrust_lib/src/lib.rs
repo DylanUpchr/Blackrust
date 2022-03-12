@@ -356,12 +356,22 @@ pub mod file {
     pub fn write_file(path: &Path, content: &str){
         fs::write(path, content).expect("Issue with writing to the requested file.")
     }
+
+    /** Function
+     * Name:	create_path
+     * Purpose:	Create path if not exists
+     * Args:	(&str) Dir path
+     * Returns:	None
+     */
+    pub fn create_path(path: &Path){
+        fs::create_dir_all(path).unwrap();
+    }
 }
 pub mod defaults {
     use crate::profile::PortProtocol;
     use crate::profile::NetworkManagerProfileType;
     //Constants
-    pub const DATA_PATH: &str = "/etc/blackrust/data";
+    pub const DATA_PATH: &str = "blackrust/data";
     pub const PROFILES_FILENAME: &str = "profiles.toml";
     pub const PROFILE_NAME: &str = "Empty profile";
     pub const PROTOCOL_NAME: &str = "Local";

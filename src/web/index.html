@@ -56,7 +56,7 @@
                             <select 
                             id="networkProfilesSelect"
                             size="5"
-                            onchange="invoke({cmd: 'loadNetworkProfile', id: this.options[this.selectedIndex].value})">
+                            onchange="invoke({cmd: 'loadNetworkProfile', callback: 'loadSelectedNetworkProfile', id: this.options[this.selectedIndex].value})">
                             </select>
                             <button 
                             id="networkProfilesCreateButton"
@@ -162,7 +162,8 @@
                                         </fieldset>
                                     </fieldset>
                                 </fieldset>
-                                <button>OK</button>
+                                <button onclick="invoke({cmd: 'loadNetworkProfile', callback: 'saveSelectedNetworkProfile', id: networkProfilesSelect.options[networkProfilesSelect.selectedIndex].value})">Save changes</button>
+                                <button onclick="invoke({cmd: 'loadNetworkProfile', callback: 'deleteSelectedNetworkProfile', id: networkProfilesSelect.options[networkProfilesSelect.selectedIndex].value})">Delete</button>
                             </form>
                         </div>
                     </div>
@@ -172,7 +173,7 @@
                             id="connectionProfilesSelect" 
                             name="connectionProfiles" 
                             size="5"
-                            onchange="invoke({cmd: 'loadConnectionProfile', callback: 'loadSelectedConnectionProfile', id: this.options[this.selectedIndex].value})">
+                            onchange="invoke({cmd: 'loadConnectionProfile', callback: 'loadSelectedConnectionProfileSettings', id: this.options[this.selectedIndex].value})">
                             </select>
                             <button 
                             id="connectionProfilesCreateButton"
@@ -184,15 +185,18 @@
                             <label for="connectionProfileID">ID:</label>
                             <input type="text" id="connectionProfileID" name="connectionProfileID" disabled>
                             <label for="connectionProfileName">Name</label>
-                            <input type="text" name="connectionProfileName"><br>
+                            <input type="text" name="connectionProfileName" id="connectionProfileName"><br>
                             <label for="connectionProfileConnectionSettings">Connection settings, seperated by ';'</label>
-                            <input type="text" name="connectionProfileConnectionSettings"><br>
+                            <input type="text" name="connectionProfileConnectionSettings" id="connectionProfileConnectionSettings"><br>
                             <label for="connectionProfileName">Network Profiles</label><br>
                             <select 
-                            id="connectionProfileNetworkProfiles"
+                            id="connectionProfileNetworkProfilesSelect"
                             name="connectionProfileNetworkProfiles"
+                            size="5"
                             multiple>
                             </select>
+                            <button onclick="invoke({cmd: 'loadConnectionProfile', callback: 'saveSelectedConnectionProfile', id: connectionProfilesSelect.options[connectionProfilesSelect.selectedIndex].value})">Save changes</button>
+                            <button onclick="invoke({cmd: 'loadConnectionProfile', callback: 'deleteSelectedConnectionProfile', id: connectionProfilesSelect.options[connectionProfilesSelect.selectedIndex].value})">Delete</button>
                         </div>
                     </div>
                     <div class="subcontentTab" id="settingsThemeSubcontent">theme</div>

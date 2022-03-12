@@ -216,3 +216,6 @@ body {
 .fieldset-open{
   display: block;
 }
+#connectionProfileNetworkProfilesSelect {
+  width: 150px;
+}

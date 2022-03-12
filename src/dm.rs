@@ -10,6 +10,7 @@ extern crate image_base64;
 use web_view::*;
 use regex::Regex;
 use regex::Captures;
+use blackrust_lib::profile::{Profile,NetworkManagerProfile};
 mod config_mgr;
 mod network_mgr;
 
@@ -76,7 +77,7 @@ fn open_webview() -> WebView<'static, &'static str> {
 						)
 					)?;
 					webview.eval(
-						&format!("loadSelectedConnectionProfile({})",
+						&format!("loadSelectedConnectionProfileSettings({})",
 							serde_json::to_string(
 								&config_mgr::get_profile_by_id(
 									id
@@ -85,6 +86,12 @@ fn open_webview() -> WebView<'static, &'static str> {
 						)
 					)?
 				}),
+				SaveConnectionProfile { profile } => (
+					config_mgr::save_profile(profile)
+				),
+				DeleteConnectionProfile { profile } => (
+					config_mgr::delete_profile(profile)
+				),
 				GetNetworkProfiles => (
 					webview.eval(
 						&format!("loadNetworkProfiles({})",
@@ -94,9 +101,10 @@ fn open_webview() -> WebView<'static, &'static str> {
 						)
 					)?
 				),
-				LoadNetworkProfile { id } => (
+				LoadNetworkProfile { callback, id } => (
 					webview.eval(
-						&format!("loadSelectedNetworkProfile({})",
+						&format!("{}({})",
+							callback,
 							serde_json::to_string(
 								&network_mgr::get_simple_profile_by_id(id).unwrap()
 							).unwrap()
@@ -122,6 +130,12 @@ fn open_webview() -> WebView<'static, &'static str> {
 						)
 					)?
 				}),
+				SaveNetworkProfile { profile } => (
+					network_mgr::modify_profile(profile).unwrap()
+				),
+				DeleteNetworkProfile { profile } => (
+					network_mgr::delete_profile(profile).unwrap()
+				),
 				GetNetworkInterfaces => (
 					webview.eval(
 						&format!("loadNetworkInterfaces({})",
@@ -206,8 +220,12 @@ pub enum Cmd {
 	QueryConnectionProfiles { callback: String, query: String },
 	LoadConnectionProfile { callback: String, id: String },
 	CreateConnectionProfile,
+	SaveConnectionProfile { profile: Profile },
+	DeleteConnectionProfile { profile: Profile },
 	GetNetworkProfiles,
-	LoadNetworkProfile { id: String },
+	LoadNetworkProfile { callback: String, id: String },
 	CreateNetworkProfile,
+	SaveNetworkProfile { profile: NetworkManagerProfile },
+	DeleteNetworkProfile { profile: NetworkManagerProfile },
 	GetNetworkInterfaces
 }

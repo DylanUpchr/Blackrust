@@ -157,6 +157,45 @@ pub fn create_profile() -> Result<String, String>{
 }
 
 /** Function
+ * Name:    modify_profile
+ * Purpose:	Modifies a NetworkManagerProfile
+ * Args:	(NetworkManagerProfile) profile: Modified NetworkManagerProfile
+ * Returns:	(Result<(), String>) Empty result or error string
+ */
+pub fn modify_profile(profile: NetworkManagerProfile) -> Result<(), String>{
+    let result = exec_nmcli_command(
+        vec!(
+            "connection", "modify", &profile.uuid,
+            "connection.id", &profile.name,
+            "connection.interface-name", &profile.interface.name
+        )
+    );
+
+    match result {
+        Ok(_) => Ok(()),
+        Err(stderr) => Err(stderr)
+    }
+}
+/** Function
+ * Name:    delete_profile
+ * Purpose:	Deletes a NetworkManagerProfile
+ * Args:	(NetworkManagerProfile) profile: NetworkManagerProfile to delete
+ * Returns:	(Result<(), String>) Empty result or error string
+ */
+pub fn delete_profile(profile: NetworkManagerProfile) -> Result<(), String>{
+    let result = exec_nmcli_command(
+        vec!(
+            "connection", "delete", &profile.uuid
+        )
+    );
+
+    match result {
+        Ok(_) => Ok(()),
+        Err(stderr) => Err(stderr)
+    }
+}
+
+/** Function
  * Name:	exec_nmcli_command
  * Purpose:	Load saved profiles from NetworkManager
  * Args:	(Vec<&str>) Command-line arguments
@@ -165,10 +204,12 @@ pub fn create_profile() -> Result<String, String>{
 pub fn exec_nmcli_command(args: Vec<&str>) -> Result<String, String> {
     let output: Output =  Command::new("nmcli").args(args).output().unwrap();
     
-    if output.stdout.is_empty() {
+    if output.stderr.is_empty() && !output.stdout.is_empty() {
+        Ok(str::from_utf8(&output.stdout).unwrap().to_string())
+    } else if !output.stderr.is_empty(){
         Err(str::from_utf8(&output.stderr).unwrap().to_string())
     } else {
-        Ok(str::from_utf8(&output.stdout).unwrap().to_string())
+        Ok(format!("Unknown status: {}", output.status))
     }
 
 }

@@ -129,7 +129,7 @@ function genConnectionProfileSelectItemHTML(profile) {
 	div.addEventListener(
 		"click",
 		function (e) {
-			invoke({ cmd: 'loadConnectionProfile', callback: 'loadSelectedConnectionProfile', id: profile.id });
+			invoke({ cmd: 'loadConnectionProfile', callback: 'loadSelectedConnectionProfileMenu', id: profile.id });
 		}
 	);
 
@@ -150,19 +150,55 @@ function loadQueriedConnectionProfilesSettings(profiles) {
 		selectTag.appendChild(optionTag);
 	});
 }
-function loadSelectedConnectionProfile(profile) {
+function loadSelectedConnectionProfileMenu(profile) {
+
+}
+function loadSelectedConnectionProfileSettings(profile) {
 	document.getElementById("connectionProfilesSelect").value = profile.id;
 	document.getElementById("connectionProfileID").value = profile.id;
+	document.getElementById("connectionProfileName").value = profile.name;
+	document.getElementById("connectionProfileConnectionSettings").value = JSON.stringify(profile.connection_settings);
+	let networkProfiles = [...document.getElementById("connectionProfileNetworkProfilesSelect").options];
+	networkProfiles.map(option => option.removeAttribute('selected'));
+	networkProfiles.filter((profileOption) => { 
+		return profile.network_profiles.some((profile) => {
+			return profile.uuid == JSON.parse(profileOption.value).uuid;
+		});
+	}).map(option => option.setAttribute('selected', 'selected'));
+}
+
+function saveSelectedConnectionProfile(profile){
+	profile.name = document.getElementById("connectionProfileName").value;
+	profile.connection_settings = JSON.parse(document.getElementById("connectionProfileConnectionSettings").value);
+	profile.network_profiles = [];
+	let networkProfiles = document.getElementById("connectionProfileNetworkProfilesSelect").selectedOptions;
+	for (let networkProfile of networkProfiles) {
+		if (networkProfile.selected) {
+			profile.network_profiles.push(JSON.parse(networkProfile.value));
+		}
+	}
+
+	invoke({cmd: 'saveConnectionProfile', profile: profile});
+	invoke({ cmd: 'queryConnectionProfiles', callback: 'loadQueriedConnectionProfilesSettings', query: '' });
+}
+
+function deleteSelectedConnectionProfile(profile){
+	invoke({cmd: 'deleteConnectionProfile', profile: profile});
+	invoke({ cmd: 'queryConnectionProfiles', callback: 'loadQueriedConnectionProfilesSettings', query: '' });
 }
 
 function loadNetworkProfiles(profiles) {
-	let selectTag = document.getElementById("networkProfilesSelect");
-	selectTag.innerHTML = "";
+	let networkProfilesSelectTag = document.getElementById("networkProfilesSelect");
+	let connectionProfileNetworkProfilesSelectTag = document.getElementById("connectionProfileNetworkProfilesSelect");
+	networkProfilesSelectTag.innerHTML = "";
+	connectionProfileNetworkProfilesSelectTag.innerHTML = "";
 	profiles.forEach(profile => {
 		let optionTag = document.createElement("option");
-		optionTag.value = profile.uuid;
+		optionTag.value = JSON.stringify(profile);
 		optionTag.innerText = profile.name;
-		selectTag.appendChild(optionTag);
+		//invoke({cmd: 'debug', value: JSON.stringify(optionTag)});
+		//networkProfilesSelectTag.appendChild(optionTag);
+		connectionProfileNetworkProfilesSelectTag.appendChild(optionTag);
 	});
 }
 function loadSelectedNetworkProfile(profile) {
@@ -173,7 +209,19 @@ function loadSelectedNetworkProfile(profile) {
 	}
 	document.getElementsByName("networkProfileSpecific" + profile.profile_type)[0].classList.add("currentType")
 	document.getElementById("networkProfileName").value = profile.name;
-	document.getElementById("networkProfileDeviceSelect").value = profile.interface.name + profile.interface.mac_addr;
+	document.getElementById("networkProfileDeviceSelect").value = JSON.stringify(profile.interface);
+}
+
+function saveSelectedNetworkProfile(profile){
+	profile.name = document.getElementById("networkProfileName").value;
+	profile.interface = JSON.parse(document.getElementById("networkProfileDeviceSelect").value);
+	invoke({cmd: 'saveNetworkProfile', profile: profile});
+	invoke({cmd: 'getNetworkProfiles'});
+}
+
+function deleteSelectedNetworkProfile(profile){
+	invoke({cmd: 'deleteNetworkProfile', profile: profile});
+	invoke({cmd: 'getNetworkProfiles'});
 }
 
 function showContent(contentName) {
@@ -244,7 +292,7 @@ function loadNetworkInterfaces(interfaces) {
 	selectTag.innerHTML = "";
 	interfaces.forEach(interface => {
 		let optionTag = document.createElement("option");
-		optionTag.value = interface.name + interface.mac_addr;
+		optionTag.value = JSON.stringify(interface);
 		optionTag.innerText = interface.interface_type + ": " + interface.name + " (" + interface.mac_addr + ")";
 		selectTag.appendChild(optionTag);
 	});
