@@ -40,10 +40,9 @@ function init() {
 
 	document.getElementById("inputIpFqdn").addEventListener("input",
 		function (e) {
-			invoke({ cmd: 'queryConnectionProfiles', callback: 'loadQueriedConnectionProfiles', query: e.target.value });
+			invoke({ cmd: 'queryConnectionProfiles', callback: 'loadQueriedConnectionProfilesSelect', query: e.target.value });
 		}
 	);
-	document.getElementById("inputConnect").addEventListener("click", function (e) { });
 	document.getElementById("inputConnectionSettings").addEventListener("click", function (e) { });
 	inputProfileSelect.addEventListener(
 		"click",
@@ -72,16 +71,11 @@ function setHostname(hostname) {
 }
 
 function connect() {
-	let ip_fqdn = document.getElementById("inputIpFqdn").value;
-	let protocol = document.getElementById("inputProtocol").value;
-	let config = document.getElementById("inputConnectionSettingsValue").value;
-
-	if (validateIpFqdn(ip_fqdn.value)) {
+	let hiddenProfileInput = document.getElementById("inputConnectionProfile");
+	if (hiddenProfileInput.value != "") {
 		invoke({
 			cmd: 'connect',
-			ip_fqdn: ip_fqdn,
-			protocol: protocol,
-			config: config
+			profile: JSON.parse(hiddenProfileInput.value)
 		});
 	}
 }
@@ -114,9 +108,11 @@ function genConnectionProfileSelectItemHTML(profile) {
 	let ip_fqdn = document.createElement("span");
 	let protocol = document.createElement("span");
 
-	name.innerText = profile.name;
-	ip_fqdn.innerText = profile.connection_settings.ip_fqdn;
-	protocol.innerText = profile.connection_settings.protocol.name + " " + profile.connection_settings.protocol.port + " (" + profile.connection_settings.protocol.port_protocol + ")";
+	name.innerText = profile.name + " ";
+	ip_fqdn.innerText = profile.connection_settings.ip_fqdn + " ";
+	protocol.innerText = profile.connection_settings.protocol.name + 
+	" " + profile.connection_settings.protocol.port + 
+	" (" + profile.connection_settings.protocol.port_protocol + ")";
 
 	name.classList.add("profileName");
 	ip_fqdn.classList.add("profileIpFqdn");
@@ -136,9 +132,6 @@ function genConnectionProfileSelectItemHTML(profile) {
 	return div;
 }
 
-function genConnectionProfileSettingsHTML(profile) {
-}
-
 function loadQueriedConnectionProfilesSettings(profiles) {
 	let selectTag = document.getElementById("connectionProfilesSelect");
 	selectTag.innerHTML = "";
@@ -151,7 +144,12 @@ function loadQueriedConnectionProfilesSettings(profiles) {
 	});
 }
 function loadSelectedConnectionProfileMenu(profile) {
+	document.getElementById("inputIpFqdn").value = 
+	profile.connection_settings.protocol.name + 
+	" " + profile.connection_settings.protocol.port + 
+	" (" + profile.connection_settings.protocol.port_protocol + ")";
 
+	document.getElementById("inputConnectionProfile").value = JSON.stringify(profile);
 }
 function loadSelectedConnectionProfileSettings(profile) {
 	document.getElementById("connectionProfilesSelect").value = profile.id;
@@ -180,11 +178,13 @@ function saveSelectedConnectionProfile(profile){
 
 	invoke({cmd: 'saveConnectionProfile', profile: profile});
 	invoke({ cmd: 'queryConnectionProfiles', callback: 'loadQueriedConnectionProfilesSettings', query: '' });
+	invoke({ cmd: 'queryConnectionProfiles', callback: 'loadQueriedConnectionProfilesSelect', query: '' });
 }
 
 function deleteSelectedConnectionProfile(profile){
 	invoke({cmd: 'deleteConnectionProfile', profile: profile});
 	invoke({ cmd: 'queryConnectionProfiles', callback: 'loadQueriedConnectionProfilesSettings', query: '' });
+	invoke({ cmd: 'queryConnectionProfiles', callback: 'loadQueriedConnectionProfilesSelect', query: '' });
 }
 
 function loadNetworkProfiles(profiles) {
@@ -196,9 +196,8 @@ function loadNetworkProfiles(profiles) {
 		let optionTag = document.createElement("option");
 		optionTag.value = JSON.stringify(profile);
 		optionTag.innerText = profile.name;
-		//invoke({cmd: 'debug', value: JSON.stringify(optionTag)});
-		//networkProfilesSelectTag.appendChild(optionTag);
-		connectionProfileNetworkProfilesSelectTag.appendChild(optionTag);
+		networkProfilesSelectTag.appendChild(optionTag);
+		connectionProfileNetworkProfilesSelectTag.appendChild(optionTag.cloneNode(true));
 	});
 }
 function loadSelectedNetworkProfile(profile) {

@@ -13,6 +13,7 @@ use regex::Captures;
 use blackrust_lib::profile::{Profile,NetworkManagerProfile};
 mod config_mgr;
 mod network_mgr;
+mod remote_session_mgr;
 
 /** Function
  * Name:	main
@@ -46,7 +47,10 @@ fn open_webview() -> WebView<'static, &'static str> {
 			match serde_json::from_str(arg).unwrap() {
 				Init => (),
 				Debug { value } => (println!("{}", value)),
-				Connect { ip_fqdn, protocol, config} => (),
+				Connect { profile } => ({
+					println!("{:?}", profile);
+					remote_session_mgr::connect(profile);
+				}),
 				QueryConnectionProfiles { callback, query } => (
 					webview.eval(
 						&format!("{}({})", 
@@ -216,7 +220,7 @@ fn inline_script(js: &str) -> String {
 pub enum Cmd {
     Init,
 	Debug { value: String },
-	Connect { ip_fqdn: String, protocol: String, config: String},
+	Connect { profile: Profile },
 	QueryConnectionProfiles { callback: String, query: String },
 	LoadConnectionProfile { callback: String, id: String },
 	CreateConnectionProfile,
