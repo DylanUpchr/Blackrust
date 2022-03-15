@@ -81,6 +81,7 @@ Ajout de l'appel de l'interface vers Rust pour la connexion à un serveur distan
 Recherches sur le protocole XDMCP et création de la strucutre de classes nécessaires pour plusieurs implémentations de protocols sous la module remote_sessions_mgr et remote_protocols
 
 Liens de recherche:
+
 - [XDMCP Whitesheet](https://www.x.org/releases/X11R7.6/doc/libXdmcp/xdmcp.html)
 - [Exemple de client XDMCP en C](https://github.com/astrand/xdmcpc)
 - [XAuth Whitesheet](https://www.x.org/releases/current/doc/man/man1/xauth.1.xhtml)

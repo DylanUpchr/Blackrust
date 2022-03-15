@@ -10,7 +10,7 @@ Blackrust v0 is a multi-architecture program for linux that, at the startup of t
 
 This project is a thin client, which aims to reduce the size and cost of the many machines given to employees in a company. These thin clients will connect to a centralized server where the users workspace will be and will offer greater processing power.
 ## Objectifs
-Logiciel qui permet de:
+Logiciel qui permet de remplir les objectifs suivants:
 
 - Démarrer une session d'accès distant avec un des protocoles suivants|
     - RDP
@@ -62,7 +62,7 @@ Un cas d'utilisation professionnel serait si notre employeur nous met à disposi
 
 ## Expérience utilisateur
 ### Arrivée dans l'application
-Blackrust v0 est conçu pour être un Display Manager linux avec des fonctionnalités d'accès distant, du coup le programme sera un service de démarrage. Ceci entend que le programme sera la première application que l'utilisateur verra, et lui permettra de choisir une session locale ou une session sur un serveur distant.
+Blackrust v0 est conçu pour être un Display Manager linux avec des fonctionnalités d'accès distant, du coup le programme sera un service au démarrage. Ceci entend que le programme sera la première application que l'utilisateur verra, et lui permettra de choisir une session locale ou une session sur un serveur distant.
 
 ### Configuration de l'application
 Au besoin, l'utilisateur pourra adapter les réglages réseau à sa configuration, par exemple mettre une adresse fixe, changer la passerelle par défaut ou se connecter à un VPN. 
@@ -124,23 +124,32 @@ Citrix est un environnement d'accès distant complet basé sur le RDP/RDS qui pr
 Ils proposent une soultion propriétaire qui utilise des librairies open source, afin d'avoir un système client/serveur pour les clients légers interne, et même du télétravail selon la configuration réseau. Ils font partie de la concurrence à ce projet, car ils se situent dans le même domaine et remplissent le même, cas d'utilisation, mais ils proposent un écosystème d'accès distant complet alors que Blackrust est un client polyvalent pour les installations basiques de RDP/VNC/SSH/XDMCP.
 ## Analyse système
 ![Analyse système](./img/blackrust-systems-analysis.png)
-Le programme se decoupe en quatre modules principaux:
+Le programme est décomposé en 5 modules principaux:
 
-- Main: Module qui gère l'affichage de l'interface principale WebView et communique avec les autres modules
+- Main (DM): Point d'entrée du programme et aperçu graphique
+- ConfigMgr: CRUD pour les options de connexion sauvegardées
 - NetworkMgr: Module qui configure le réseau (IPv4, IPv6, configuration VPN) à travers la commande `nmcli` de [NetworkManager](https://networkmanager.dev/)
-- ConfigMgr: Module qui gère les profils (Réglages protocol, hôte distant, réglages réseau)
-- RemoteSessionMgr: Module qui lance les sessions d'accès distant
+- RemoteSessionMgr: Lanceur de sessions distant
+    - RemoteProtocols 
+        - XDMCP
+        - VNC
+        - RDP
+        - SSH
+- BlackrustLib: Fonctions commun à plusieurs modules, librairie interne
 
 
 ## Analyse heuristique
 ![Analyse heuristique](./img/blackrust-mind-map.png)
 
 ## Livrables
-- Code source Rust du projet
-- Documentation utilisateur
-- Documentation administrateur
-- Rapport de travail
-- Journal de bord
+- Documentation
+    - Cahier des charges
+    - Journal de bord
+    - Documentation technique
+    - Manuel utilisateur
+- Programme
+    - Paquet avec scripts d'installation (PKGBUILD)
+    - Code source ([Github](https://github.com/DylanUpchr/Blackrust))
 
 ## Glossaire
 #### Serveur d'affichage
