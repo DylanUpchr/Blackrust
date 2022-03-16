@@ -1,12 +1,12 @@
 site_name: Blackrust - Cahier des charges
 site_author: Dylan Upchurch
-copyright: Copyright &copy; 2021 Dylan Upchurch
+copyright: Copyright &copy; 2022 Dylan Upchurch
 repo_url: https://github.com/DylanUpchr/Blackrust
 repo_name: DylanUpchr/Blackrust
 theme:
   name: material
-  logo: img/logo.png
-  favicon: img/logo.png
+  logo: img/logo.svg
+  favicon: img/logo.svg
   palette:
     scheme: slate
     primary: red
@@ -14,6 +14,7 @@ theme:
 plugins:
     - with-pdf:
         cover_subtitle: Client léger polyvalent
+        cover_logo: img/logo.svg
         exclude_pages: 
             - 'jdb'
             - 'rapport_stage'

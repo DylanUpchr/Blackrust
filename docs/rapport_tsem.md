@@ -19,7 +19,7 @@ analyse concurencielle, parler de valeur ajoutée (multi plateforme, OSS vitesse
 L'analyse fonctionnelle contient les maquettes, l'architecture du programme et les diagrammes explicitant son fonctionnement
 ### Architecture
 #### Modules internes
-![Analyse système](./img/blackrust-systems-analysis.png)
+![Analyse système](./img/blackrust-systems-analysis.svg)
 Le programme est décomposé en 5 modules principaux:
 
 - Main (DM): Point d'entrée du programme et aperçu graphique

@@ -133,7 +133,7 @@ Citrix est un environnement d'accès distant complet basé sur le RDP/RDS qui pr
 
 Ils proposent une soultion propriétaire qui utilise des librairies open source, afin d'avoir un système client/serveur pour les clients légers interne, et même du télétravail selon la configuration réseau. Ils font partie de la concurrence à ce projet, car ils se situent dans le même domaine et remplissent le même, cas d'utilisation, mais ils proposent un écosystème d'accès distant complet alors que Blackrust est un client polyvalent pour les installations basiques de RDP/VNC/SSH/XDMCP.
 ## Analyse système
-![Analyse système](./img/blackrust-systems-analysis.png)
+![Analyse système](./img/blackrust-systems-analysis.svg)
 Le programme est décomposé en 5 modules principaux:
 
 - Main (DM): Point d'entrée du programme et aperçu graphique
@@ -149,7 +149,7 @@ Le programme est décomposé en 5 modules principaux:
 
 
 ## Analyse heuristique
-![Analyse heuristique](./img/blackrust-mind-map.png)
+![Analyse heuristique](./img/blackrust-mind-map.svg)
 
 ## Livrables
 - Documentation
