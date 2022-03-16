@@ -12,11 +12,9 @@ theme:
     primary: red
     accent: red
 plugins:
-    - with-pdf:
-        cover_subtitle: Client léger polyvalent
-        cover_logo: img/logo.svg
-        exclude_pages: 
-            - 'jdb'
-            - 'rapport_stage'
-            - 'rapport_tsem'
-            - 'rapport_td'
+#    - with-pdf:
+#        cover_subtitle: Client léger polyvalent
+#        cover_logo: img/logo.svg
+#        exclude_pages: 
+#            - 'rapport_stage'
+#            - 'rapport_td'

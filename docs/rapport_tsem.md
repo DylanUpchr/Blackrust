@@ -9,7 +9,6 @@ Ce projet est un client léger qui a pour but de réduire la taille et le coût 
 Blackrust v0 is a multi-architecture program for linux that, at the startup of the computer, will offer a remote desktop session via many protocols aswell as an offline local desktop.
 
 This project is a thin client, which aims to reduce the size and cost of the many machines given to employees in a company. These thin clients will connect to a centralized server where the users workspace will be and will offer greater processing power.
-## Introduction
 
 ## Analyse de l'existant
 analyse concurencielle, parler de valeur ajoutée (multi plateforme, OSS vitesse, sécurité)
@@ -59,36 +58,41 @@ Le crate Regex implémente des expressions régulières utilisées pour la véri
 ## Sécurité
 ### Failles possibles
 
-## Data flow diagram
-
 ## Analyse organique
 ### Choix du langage
-**INSPIRATION**
-Rust is blazing fast and reliable with its rich type system and ownership model. It has a tough learning curve but is well worth the effort. Rust has been voted the most loved programming language in Stack Overflow's Developer Survey six years in a row: 2016, 2017, 2018, 2019, 2020 and 2021.
-
-Rust also helps developers write safer code with its rich type system and ownership model. Say goodbye to hard to track down race condition bugs in JavaScript! In fact, with Rust, most of your bugs will be caught by the compiler before your app even runs. And don't worry, when your app does run into an error, you can still get full stack-traces for your Rust code in the browser console.
-
-Doxygen-like rustdoc, integrated documentation tools from function headers and comments
-
-Rust is a statically-typed programming language designed for performance and safety, especially safe concurrency and memory management.
-Rust solves problems that C/C++ developers have been struggling with for a long time: memory errors and concurrent programming. This is seen as its main benefit.
-
-Safe rust (forced ownership) vs unsafe rust (greater flexibility but code needs to be thoroughly checked)
-
-cargo check, compiler messages
-
-Integrated unit tests 
-
-**TEXT**
-
 J'ai choisi Rust comme langage pour le travail de semestre car c'est une langage moderne. Rust est connu pour son fiabilité, sécurité et rapidité.
 
 #### Rapidité
-statically-typed, no gc due to ownership, monomorphization
+Rust est connu pour sa rapidité grâce à certains caractéristiques:
+- Rust est statiquement typée, donc aprés la vérification de cargo check, pleins de vérifications au runtime peuvent être sautées
+- Rust n'as pas de Garbage Collector, la mémoire est alloué et libéré selon "l'éspérance de vie" d'une variable et donc ces derniers n'existent aussi longtemps que nécessaire. Ceci réduit les ressources consommées par un Garbage Collector et enlève les tâches répetitives de gérance de mémoire manuelle
+- Rust utilise le LLVM pour générer du code assembly optimisé, qui est comparable au GCC en termes de performances du programme finale
+#### Compilateur
+L'outil de compilation de Rust, nommée cargo, a plusieurs rôles:
+- Package manager, pour les "crates" qui sont les paquets/modules officiels et de la communauté
+- Validateur du code, cargo check vérifie plusieurs aspects avant de compiler le programme:
+    - Que la gérance du mémoire est bien fait et ne viole pas les régles d'appartenance ou d'emprunt de réferences
+    - Que les variables sont nommées en snake case, sinon il affiche des warnings
+    - Qu'il n'y a pas du code "mort", donc pas utilisé, sinon il affiche des warnings
+- Compilateur, bien entendu si le code ne contient pas d'erreur de syntaxe, ni de gérance de mémoire le programme est compilée et rends un éxécutable dans le dossier target
+
+Les messages d'erreurs de cargo sont assez riches comparés aux autres langages. Cargo peut décrire l'erreur détectée en détail et même selon le type d'erreur il peut suggérer des solutions. Si cela ne suffit pas, le traçage du pile d'appels est accésible et peut aider avec le débogage traditionnelle.
 #### Sécurité / Fiabilité
-Memory safe, dual-mode safe/unsafe
+De base, le langage Rust est assez sécure et fiable grâce au faites suivantes:
+- Rust est "memory-safe", qui signifie qu'il ne permet pas d'avoir des pointeurs null ou invalide
+- Les courses de données sont également impossible, grâce au système de "appartenance", qui impose qu'une instance ou réference variable ne peut être utilisé par une fonction à la fois.
+- La gestion d'erreur est très avancé et devrait être au coeur de la conception d'une fonction. Cette approche permet d'être toujours certain que le déroulement se passe comme prévu et les cas de bords qui pourraient compromettre la sécurité de l'application sont évités.
+- Fonctionnalités de tests unitaires intégrées
 
 #### Multi-plateforme
+Rust est une lanque avec un compilateur portable comme le langage C, donc qui peut être compilé sur la plupart des plateformes avec certains garanties de fonctionnalité. Rust catégorise ces garanties dans un système de tiers. Les tiers sont ainsi:
+
+- Tier 1: Garantie d'éxécution, un programme en Rust pure est capable de compiler et de s'éxécuter sans problèmes
+    - Exemples: x86_64 Windows, x86_64 MacOS, x86_64 Linux, AArch64 Linux (ARM64)
+- Tier 2: Garantie de compiler, un programme en Rust pure est capable d'être compilé mais n'as pas une garantie 100% de fonctionner parfaitement lors de l'éxécution
+    - Exemples: iOS, Android, RISC-V, MIPS/MIPS64, PowerPC/PowerPC64 
+- Tier 3: Pas de garanties de compilation ni d'éxécution, mais ont une possibilité de fonctionner et pour certains des programmes on déja été faites
+    - Exemples: Apple tvOS, Nintendo 3DS, CUDA, EFI
 
 ### Normes
 #### Nommage
@@ -97,8 +101,7 @@ Memory safe, dual-mode safe/unsafe
 #### Commentaires
 #### Commits
 ### Organisation
-SCRUM, Sprints, Agile
-### 
+
 ### Environnement de travail
 L'environnement de travail utilisé lors du développement de ce projet consistes-en:
 
@@ -112,22 +115,26 @@ L'environnement de travail utilisé lors du développement de ce projet consiste
 - Définition des dépendances clés du projet à installer
 - Compilation Multi-plateforme
 ## Difficultés à venir
-- 
+- Design/UX
+- Remplacement des technologies front-end (Passer de Webview à WebAssembly)
+- Définition des cas de testes unitaires pour les différents modules
 ## Tests
 ### Tests de compatabilité hardware (Integration)
-
+#### Procédure définit
+1. Installer Blackrust et ses dépendances
+2. Lancer Blackrust
+3. Observer délais/lag avec l'interface WebView/WebAssembly
+4. Lancer une session d'accès distant avec RDP, XDMCP et VNC
+5. Observer délais/lag avec session d'accès distant
 ## Planning
 ### Prévisionnel
-### Effectif
 
 ## Livrables
 - Documentation
     - Cahier des charges
     - Journal de bord
     - Documentation technique
-    - Manuel utilisateur
 - Programme
-    - Paquet avec scripts d'installation (PKGBUILD)
     - Code source ([Github](https://github.com/DylanUpchr/Blackrust))
 ## Conclusion
 ## Bilan Personnel
