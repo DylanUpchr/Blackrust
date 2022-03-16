@@ -79,6 +79,7 @@ name = "blackrust_v0"
 version = "0.1.0"
 dependencies = [
  "blackrust_lib",
+ "byteorder",
  "dirs",
  "image-base64",
  "itertools",
