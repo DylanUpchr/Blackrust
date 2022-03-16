@@ -52,6 +52,16 @@ Logiciel qui permet de remplir les objectifs suivants:
 | Server audio | PulseAudio |
 | Outil réseau (LAN/VPN) | NetworkManager |
 
+## Sécurité
+De base, le langage Rust est assez sécure grâce au faites suivantes:
+- Rust est "memory-safe", qui signifie qu'il ne permet pas d'avoir des pointeurs null ou invalide
+- Les courses de données sont également impossible, grâce au système de "appartenance", qui impose qu'une instance ou réference variable ne peut être utilisé par une fonction à la fois.
+- La gestion d'erreur est très avancé et devrait être au coeur de la conception d'une fonction. Cette approche permet d'être toujours certain que le déroulement se passe comme prévu et les cas de bords qui pourraient compromettre la sécurité de l'application sont évités.
+
+Ceci dit, les mesures suivantes devraient être prises lors du développement:
+- Aucune donnée sensible stockée, ce risque peut être différé à des keyrings et des gestionnaires de mot de passe tierces
+- Accès au système ne doit pas dépasser celles d'un utilisateur quelquonque, donc apart des vulnérabilités d'escalation de privilège externes existantes, ce risque est evité.
+
 ## Exemples d'utilisation
 ### Dans un cadre personel:
 Un cas d'utilisation personnel serait si l'on veut avoir un environnement de développement spécifique que l'on héberge à la maison sur un ordinateur puissant, et puis on veut utiliser cet environnement à l'extérieur sur un ordinateur portable bas de gamme. L'environnement de développement aura un serveur d'accès distant tel RDP ou VNC, et possiblement par le biais d'un VPN selon notre configuration. Le logiciel Blackrust pourra proposer de se connecter à cet environnement au démarrage de l'ordinateur portable qu'on soit en vacances ou dans le jardin chez nous.
@@ -145,7 +155,7 @@ Le programme est décomposé en 5 modules principaux:
 - Documentation
     - Cahier des charges
     - Journal de bord
-    - Documentation technique
+    - Rapport
     - Manuel utilisateur
 - Programme
     - Paquet avec scripts d'installation (PKGBUILD)
