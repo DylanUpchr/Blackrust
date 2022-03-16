@@ -31,12 +31,17 @@ Logiciel qui permet de remplir les objectifs suivants:
 
 ## Environnement
 - Matériel
-    - Ordinateur de l'école
-    - Raspberry Pi Model 4B (4GB) "Testbed"
+    - Ordinateur de l'école "upchr-arch"
+    - Raspberry Pi Model 4B (4GB) "Testbed-Rpi"
+    - Jetson Nano Developper Kit "Testbed-JN"
 - Software
-    - Arch Linux
+    - Arch Linux (upchr-arch)
         - Visual Studio Code
-        - Rust
+        - Rust "Stable"
+    - Raspbian / Debian 11 Bullseye (Testbed-Rpi)
+    - Arch Linux (Testbed-Rpi)
+    - Linux4Tegra (Testbed-JN)
+
 ## Technologies utilisées
 | Type | Nom |
 |-|-|
