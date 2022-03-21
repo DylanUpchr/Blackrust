@@ -87,3 +87,9 @@ Liens de recherche:
 - [XAuth Whitesheet](https://www.x.org/releases/current/doc/man/man1/xauth.1.xhtml)
 
 Préparation documentation technique, mise à jour journal de bord
+
+## 2022-03-16
+Avancements sur la documentation en anticipation du rendu finale du travail de semestre, ainsi que le rendu du cahier des charges pour le travail de dîplome
+
+## 2022-03-17
+Dernières modifications de la documentation avant le rendu a midi

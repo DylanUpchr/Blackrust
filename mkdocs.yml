@@ -1,4 +1,4 @@
-site_name: Blackrust - Cahier des charges
+site_name: Blackrust - Travail de semestre
 site_author: Dylan Upchurch
 copyright: Copyright &copy; 2022 Dylan Upchurch
 repo_url: https://github.com/DylanUpchr/Blackrust
@@ -12,9 +12,9 @@ theme:
     primary: red
     accent: red
 plugins:
-#    - with-pdf:
-#        cover_subtitle: Client léger polyvalent
-#        cover_logo: img/logo.svg
-#        exclude_pages: 
-#            - 'rapport_stage'
-#            - 'rapport_td'
+    - with-pdf:
+        cover_subtitle: Client léger polyvalent
+        cover_logo: img/logo.svg
+        exclude_pages: 
+            - 'rapport_stage'
+            - 'rapport_td'
