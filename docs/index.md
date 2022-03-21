@@ -30,17 +30,17 @@ Logiciel qui permet de remplir les objectifs suivants:
 | Dylan Upchurch | Élève/ Développeur / Mandataire |
 
 ## Environnement
-- Matériel
-    - Ordinateur de l'école "upchr-arch"
-    - Raspberry Pi Model 4B (4GB) "Testbed-Rpi"
-    - Jetson Nano Developer Kit "Testbed-JN"
-- Software
-    - Arch Linux (upchr-arch)
-        - Visual Studio Code
-        - Rust "Stable"
-    - Raspbian / Debian 11 Bullseye (Testbed-Rpi)
-    - Arch Linux (Testbed-Rpi)
-    - Linux4Tegra (Testbed-JN)
+#### Matériel
+- Ordinateur de l'école "upchr-arch"
+- Raspberry Pi Model 4B (4GB) "Testbed-Rpi"
+- Jetson Nano Developer Kit "Testbed-JN"
+#### Software
+##### Arch Linux (upchr-arch)
+- Visual Studio Code
+- Rust "Stable"
+##### Raspbian / Debian 11 Bullseye (Testbed-Rpi)
+##### Arch Linux (Testbed-Rpi)
+##### Linux4Tegra (Testbed-JN)
 
 ## Technologies utilisées
 | Type | Nom |
@@ -58,10 +58,10 @@ Logiciel qui permet de remplir les objectifs suivants:
 | Outil réseau (LAN/VPN) | NetworkManager |
 
 ## Sécurité
-De base, le langage Rust est assez sécure grâce aux faites suivantes :
+De base, le langage Rust est assez sécurisé grâce aux faits suivantes :
 - Rust est "memory-safe", qui signifie qu'il ne permet pas d'avoir des pointeurs null ou invalide
-- Les courses de données sont également impossible, grâce au système de "appartenance", qui impose qu'une instance ou référence variable ne peut être utilisé par une fonction à la fois.
-- La gestion d'erreur est très avancé et devrait être au cœur de la conception d'une fonction. Cette approche permet d'être toujours certain que le déroulement se passe comme prévu et les cas de bords qui pourraient compromettre la sécurité de l'application sont évités.
+- Les courses de données sont également impossible, grâce au système de "appartenance", qui impose qu'une instance ou référence variable ne peut être utilisée que par une fonction à la fois.
+- La gestion d'erreur est très avancée et devrait être au cœur de la conception d'une fonction. Cette approche permet d'être toujours certain que le déroulement se passe comme prévu et les cas de bords qui pourraient compromettre la sécurité de l'application sont évités.
 
 Ceci dit, les mesures suivantes devraient être prises lors du développement :
 - Aucune donnée sensible stockée, ce risque peut être différé à des keyrings et des gestionnaires de mot de passe tierces
@@ -73,7 +73,7 @@ Un cas d'utilisation personnel serait si l'on veut avoir un environnement de dé
 
 ---
 ### Dans un cadre professionnel :
-Un cas d'utilisation professionnel serait si notre employeur nous met à disposition une infrastructure de bureau virtuel avec le protocole RDP derrière un VPN, puis nous fournit un ordinateur de petite taille ou un ordinateur portable avec le logiciel Blackrust installé. Le logiciel permet de garder le même espace de travail n'importe où on va dans le monde, qu'on soit au bureau ou en télétravail.
+Un cas d'utilisation professionnel serait si notre employeur nous met à disposition une infrastructure de bureau virtuel avec le protocole RDP derrière un VPN, puis nous fournit un ordinateur de petite taille ou un ordinateur portable avec le logiciel Blackrust installé. Le logiciel permet de garder le même espace de travail quelque soit l'endroit où on se trouve dans le monde, qu'on soit au bureau ou en télétravail.
 
 ## Expérience utilisateur
 ### Arrivée dans l'application
@@ -101,11 +101,11 @@ Ce programme est gratuit, open source et sous la licence Copyleft.
 
 #### Avantages
 - Remmina propose les protocoles NX et HTTP/HTTPS en plus de celles de Blackrust
-- Système modulaire de plugins pour les protocoles distant
+- Système modulaire de plugins pour les protocoles distants
 - Interface simple, mais fonctionnel
 - Open source
 
-#### Inconvenients
+### Inconvénients
 - Doit être lancé depuis le bureau Linux
 
 ### [MobaXterm](https://mobaxterm.mobatek.net/)
@@ -141,29 +141,29 @@ Ils proposent une solution propriétaire qui utilise des librairies open source,
 ![Analyse système](./img/blackrust-systems-analysis.svg)
 Le programme est décomposé en 5 modules principaux :
 
-- Main (DM): Point d'entrée du programme et aperçu graphique
-- ConfigMgr: CRUD pour les options de connexion sauvegardées
-- NetworkMgr: Module qui configure le réseau (IPv4, IPv6, configuration VPN) à travers la commande `nmcli` de [NetworkManager](https://networkmanager.dev/)
-- RemoteSessionMgr: Lanceur de sessions distant
-    - RemoteProtocols 
-        - XDMCP
-        - VNC
-        - RDP
-        - SSH
-- BlackrustLib: Fonctions communes à plusieurs modules, librairie interne
+#### Main (DM): Point d'entrée du programme et aperçu graphique
+#### ConfigMgr: CRUD pour les options de connexion sauvegardées
+#### NetworkMgr: Module qui configure le réseau (IPv4, IPv6, configuration VPN) à travers la commande `nmcli` de [NetworkManager](https://networkmanager.dev/)
+#### RemoteSessionMgr: Lanceur de sessions distant
+##### RemoteProtocols 
+- XDMCP
+- VNC
+- RDP
+- SSH
+#### BlackrustLib: Fonctions communes à plusieurs modules, librairie interne
 
 ## Analyse heuristique
 ![Analyse heuristique](./img/blackrust-mind-map.svg)
 
 ## Livrables
-- Documentation
-    - Cahier des charges
-    - Journal de bord
-    - Rapport
-    - Manuel utilisateur
-- Programme
-    - Paquet avec scripts d'installation (PKGBUILD)
-    - Code source ([Github](https://github.com/DylanUpchr/Blackrust))
+### Documentation
+- Cahier des charges
+- Journal de bord
+- Rapport
+- Manuel utilisateur
+### Programme
+- Paquet avec scripts d'installation (PKGBUILD)
+- Code source ([Github](https://github.com/DylanUpchr/Blackrust))
 
 ## Glossaire
 #### Serveur d'affichage
@@ -179,3 +179,5 @@ Un Window Manager est un programme qui affiche des applications graphiques dans 
 
 #### Display Manager
 Un Display Manager est un programme qui, après le lancement du serveur d'affichage (tel X11 ou Wayland), se charge de l'authentification PAM et de lancer un Window Manager.
+
+gtk, eula, protocols, x11
