@@ -1,4 +1,4 @@
-site_name: Blackrust - Travail de semestre
+site_name: Blackrust - Travail de stage
 site_author: Dylan Upchurch
 copyright: Copyright &copy; 2022 Dylan Upchurch
 repo_url: https://github.com/DylanUpchr/Blackrust
@@ -16,5 +16,5 @@ plugins:
         cover_subtitle: Client léger polyvalent
         cover_logo: img/logo.svg
         exclude_pages: 
-            - 'rapport_stage'
+            - 'rapport_tsem'
             - 'rapport_td'

@@ -70,16 +70,16 @@ L'analyse fonctionnelle contient les maquettes, l'architecture du programme et l
 ![Analyse système](./img/blackrust-systems-analysis.svg)
 Le programme est décomposé en 5 modules principaux :
 
-- Main (DM): Point d'entrée du programme et aperçu graphique
-- ConfigMgr: CRUD pour les options de connexion sauvegardées
-- NetworkMgr: Module qui configure le réseau (IPv4, IPv6, configuration VPN) à travers la commande `nmcli` de [NetworkManager](https://networkmanager.dev/)
-- RemoteSessionMgr: Lanceur de sessions distant
-    - RemoteProtocols 
-        - XDMCP
-        - VNC
-        - RDP
-        - SSH
-- BlackrustLib: Fonctions communes à plusieurs modules, librairie interne
+##### Main (DM): Point d'entrée du programme et aperçu graphique
+##### ConfigMgr: CRUD pour les options de connexion sauvegardées
+##### NetworkMgr: Module qui configure le réseau (IPv4, IPv6, configuration VPN) à travers la commande `nmcli` de [NetworkManager](https://networkmanager.dev/)
+##### RemoteSessionMgr: Lanceur de sessions distant
+###### RemoteProtocols 
+- XDMCP
+- VNC
+- RDP
+- SSH
+##### BlackrustLib: Fonctions communes à plusieurs modules, librairie interne
 ##### Main
 Le module main est le point d'entrée principale de l'application, lance l'aperçu WebView qui permet d'interfacer avec l'application et appeler les autres modules
 ##### ConfigMgr
@@ -188,17 +188,17 @@ Les messages de commits n'ont pas de norme spéciale, le seul forme respectée s
 ### Environnement de travail
 L'environnement de travail utilisé lors du développement de ce projet consistes-en :
 
-- Matériel
-    - Ordinateur de l'école "upchr-arch"
-    - Raspberry Pi Model 4B (4GB) "Testbed-Rpi"
-    - Jetson Nano Developer Kit "Testbed-JN"
-- Software
-    - Arch Linux (upchr-arch)
-        - Visual Studio Code
-        - Rust "Stable"
-    - Raspbian / Debian 11 Bullseye (Testbed-Rpi)
-    - Arch Linux (Testbed-Rpi)
-    - Linux4Tegra (Testbed-JN)
+#### Matériel
+- Ordinateur de l'école "upchr-arch"
+- Raspberry Pi Model 4B (4GB) "Testbed-Rpi"
+- Jetson Nano Developer Kit "Testbed-JN"
+#### Software
+##### Arch Linux (upchr-arch)
+- Visual Studio Code
+- Rust "Stable"
+##### Raspbian / Debian 11 Bullseye (Testbed-Rpi)
+##### Arch Linux (Testbed-Rpi)
+##### Linux4Tegra (Testbed-JN)
 
 ## Difficultés rencontrées
 - Appréhension de Rust
@@ -219,12 +219,15 @@ Les tests d'intégration hardware servent à informer la portée possible de dé
 4. Lancer une session d'accès distant avec RDP, XDMCP et VNC
 5. Observer délais/lag avec session d'accès distant
 ## Livrables
-- Documentation
-    - Cahier des charges
-    - Journal de bord
-    - Documentation technique
-- Programme
-    - Code source ([Github](https://github.com/DylanUpchr/Blackrust))
+### Documentation
+- Cahier des charges
+- Journal de bord
+- Rapport
+- Manuel utilisateur
+### Programme
+- Paquet avec scripts d'installation (PKGBUILD)
+- Code source ([Github](https://github.com/DylanUpchr/Blackrust))
+
 ## Conclusion
 Lors de ce travail de semestre, j'ai pu créer un prototype Rust qui sert de base pour mon travail de diplôme. L'état final du travail de semestre est une interface WebView qui permet de gérer les profils de connexion et les profiles réseau qui servent à définir les détails de la session d'accès distant et se connecter au réseau local respectivement. La prochaine étape serait d'utiliser ces profiles pour négocier avec un protocole d'accès distant qui tourne sur un serveur.
 ### Améliorations à apporter pendant le TD

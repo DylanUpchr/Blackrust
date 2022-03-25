@@ -92,4 +92,9 @@ Préparation documentation technique, mise à jour journal de bord
 Avancements sur la documentation en anticipation du rendu finale du travail de semestre, ainsi que le rendu du cahier des charges pour le travail de dîplome
 
 ## 2022-03-17
-Dernières modifications de la documentation avant le rendu a midi
+Dernières modifications de la documentation avant le rendu à midi
+
+## 2022-03-25
+Exemples de CI/Versioning, projet Barrier KVM
+[Repology](https://repology.org/project/barrier/versions)
+[Github passed/failed versions](https://github.com/debauchee/barrier#distro-specific-packages)

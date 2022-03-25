@@ -30,6 +30,7 @@ Logiciel qui permet de remplir les objectifs suivants:
 | Dylan Upchurch | Élève/ Développeur / Mandataire |
 
 ## Environnement
+L'environnement de travail utilisé lors du développement de ce projet consistes-en :
 #### Matériel
 - Ordinateur de l'école "upchr-arch"
 - Raspberry Pi Model 4B (4GB) "Testbed-Rpi"
