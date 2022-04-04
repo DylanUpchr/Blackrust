@@ -98,3 +98,9 @@ Dernières modifications de la documentation avant le rendu à midi
 Exemples de CI/Versioning, projet Barrier KVM
 [Repology](https://repology.org/project/barrier/versions)
 [Github passed/failed versions](https://github.com/debauchee/barrier#distro-specific-packages)
+
+## 2022-04-04
+Debut du travail de diplôme
+- Presentation de M. Garcia et M. Bonvin le matin pour expliquer le déroulement et les règles du travail de diplôme
+- Mise en place du poste de travail dans la salle R.105 pour assurer une meilleure repartition des élèves entre les deux salles
+- Mise en place des outils de gestion de projet
