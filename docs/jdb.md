@@ -36,49 +36,49 @@ Début de la documentation technique et du rapport de stage
 Continuation de la documentation technique
 
 ## 2022-02-03
-Debut du programmation du module NetworkMgr et supression du crate hostname. Ceci permet de reduire les dépendances et utiliser une commande de NetworkManager. La même commande avec un argument en plus set le hostname.
+Début de la programmation du module NetworkMgr et suppression du crate hostname. Ceci permet de réduire les dépendances et utiliser une commande de NetworkManager. La même commande avec un argument en plus set le hostname.
 
 ## 2022-02-10
-Création du fonction load_profiles dans le module NetworkMgr permettant de charger les profiles de configuration stockées dans NetworkManager et permettant de déléguer le stockage des configuration réseau à ce dernier.
+Création du fonction load_profiles dans le module NetworkMgr permettant de charger les profiles de configuration stockée dans NetworkManager et permettant de déléguer le stockage des configuration réseau à ce dernier.
 
 ## 2022-02-24
-Ajout de menu de reglages avec le systeme "sous-contenu" dans le JS et HTML, dans l'interface. Ceci permet un moyen dynamique d'ajoute des pages de réglages dans le HTML/JS. La prochaine étape serait de créer les formaulaires sur les differents pages de réglage.
+Ajout de menu de réglages avec le système "sous-contenu" dans le JS et HTML, dans l'interface. Ceci permet un moyen dynamique d'ajouter des pages de réglages dans le HTML/JS. La prochaine étape serait de créer les formulaires sur les ddifférents pages de réglage.
 
 ## 2022-02-28
-Ajout des composants "select" dans les pages de réglage "Network" et "Profiles" qui chargent les profiles réseau et profiles de connexion dans l'interface et permettent de selectionner le profile souhaité pour vision/édition
+Ajout des composants "select" dans les pages de réglage "Network" et "Profiles" qui chargent les profiles réseau et profiles de connexion dans l'interface et permettent de sélectionner le profile souhaité pour vision/édition
 
 ## 2022-03-02
 Ajout des containeurs pour les forms de modifications de profiles de connexion et réseau avec affichage automatique selon le type de profile NetworkManager.
 
 ## 2022-03-05
-Ajout du bouton création de profile réseau (avec fonction associé à compléter avec appel vers NM) et changement du checkbox "Automatic" pour le type de configuration ipv4/ipv6 d'un profile pour permettre plus de types de configuration comme Link-local et le faite de pouvoir ignorer le type d'adressage. Le bouton création crée un profile réseau vide dans NetworkManager et charge cette nouvelle profile dans l'interface pour modification. 
+Ajout du bouton création de profile réseau (avec fonction associée à compléter avec appel vers NM) et changement du checkbox "Automatic" pour le type de configuration ipv4/ipv6 d'un profile pour permettre plus de types de configuration comme Link-local et le fait de pouvoir ignorer le type d'adressage. Le bouton création crée un profile réseau vide dans NetworkManager et charge cette nouvelle profile dans l'interface pour modification. 
 
 ## 2022-03-08
-Ajout des elements dans l'interface ainsi que les appels aux fonctions (pas encore faites) qui permettent de créer des profiles de réseau NetworkManager et les profiles de connexion.
+Ajout des éléments dans l'interface ainsi que les appels aux fonctions (pas encore faites) qui permettent de créer des profiles de réseau NetworkManager et les profiles de connexion.
 
-Ajout du fonctions pour recuperer les interface réseau depuis NetworkManager
+Ajout des fonctions pour récupérer les interface réseau depuis NetworkManager
 
 ## 2022-03-09
 Ajout des bindings Rust et JS pour appeler les fonctions dans network_mgr pour récuperer les interfaces afin pouvoir affecter cela depuis l'interface utilisateur et d'avoir des objets "Interface" dans les profiles réseau.
 
 ## 2022-03-10
-Terminé la création de profile (codé les fonctions définis)
+Terminé la création de profile (codé les fonctions définies)
 
 ## 2022-03-12
 Changement du répertoire par défaut pour les configurations de /etc/blackrust/data/ à ~/.config/blackrust/data. Ceci permet à l'application de créer le répertoire si elle n'existe pas ainsi que garde les profiles de connexion de l'utilisateur sécurisés.
 
-Ajout de verifications que le chemin vers laquel on écrit le fichier qui contient les profiles de connexion existe, et sinon on crée le chemin et écrit dans le fichier afin de sauvegarder les profiles.
+Ajout de vérifications que le chemin vers la quel on écrit le fichier qui contient les profiles de connexion existe, et sinon on crée le chemin et écrit dans le fichier afin de sauvegarder les profiles.
 
-Terminé le CRUD (Ajout, modification de tous les propriétés des struct et suppression des profiles) des profiles de connexion
+Terminé le CRUD (Ajout, modification de toutes les propriétés des struct et suppression des profiles) des profiles de connexion
 
 CRUD basique pour créer les profiles réseau, modifier le nom et l'interface et supprimer le profile.
 
 Le CRUD est maintenant assez fonctionnel pour affecter les profiles de connexion et l'assigner un profile réseau ce qui permet la connexion et le renseignement de nouveaux profiles de connexion vers des serveurs distants. 
 
 ## 2022-03-14
-Ajout de l'appel de l'interface vers Rust pour la connexion à un serveur distant spécifié dans le profile de connexion. La prochaine étape serait d'implémenter une protocole vers laquel on peut se connecter.
+Ajout de l'appel de l'interface vers Rust pour la connexion à un serveur distant spécifié dans le profile de connexion. La prochaine étape serait d'implémenter une protocole vers la quel on peut se connecter.
 
-Recherches sur le protocole XDMCP et création de la strucutre de classes nécessaires pour plusieurs implémentations de protocols sous la module remote_sessions_mgr et remote_protocols
+Recherches sur le protocole XDMCP et création de la structure de classes nécessaires pour plusieurs implémentations de protocoles sous les modules remote_sessions_mgr et remote_protocols
 
 Liens de recherche:
 
@@ -89,7 +89,7 @@ Liens de recherche:
 Préparation documentation technique, mise à jour journal de bord
 
 ## 2022-03-16
-Avancements sur la documentation en anticipation du rendu finale du travail de semestre, ainsi que le rendu du cahier des charges pour le travail de dîplome
+Avancements sur la documentation en anticipation du rendu finale du travail de semestre, ainsi que le rendu du cahier des charges pour le travail de diplôme
 
 ## 2022-03-17
 Dernières modifications de la documentation avant le rendu à midi
@@ -100,7 +100,7 @@ Exemples de CI/Versioning, projet Barrier KVM
 [Github passed/failed versions](https://github.com/debauchee/barrier#distro-specific-packages)
 
 ## 2022-04-04
-Debut du travail de diplôme
-- Presentation de M. Garcia et M. Bonvin le matin pour expliquer le déroulement et les règles du travail de diplôme
-- Mise en place du poste de travail dans la salle R.105 pour assurer une meilleure repartition des élèves entre les deux salles
+Début du travail de diplôme
+- Présentation de M. Garcia et M. Bonvin le matin pour expliquer le déroulement et les règles du travail de diplôme
+- Mise en place du poste de travail dans la salle R.105 pour assurer une meilleure répartition des élèves entre les deux salles
 - Mise en place des outils de gestion de projet
