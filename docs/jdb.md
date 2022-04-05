@@ -86,7 +86,7 @@ Liens de recherche:
 - [Exemple de client XDMCP en C](https://github.com/astrand/xdmcpc)
 - [XAuth Whitesheet](https://www.x.org/releases/current/doc/man/man1/xauth.1.xhtml)
 
-Préparation documentation technique, mise à jour journal de bord
+Préparation documentation technique, mise à jour du journal de bord
 
 ## 2022-03-16
 Avancements sur la documentation en anticipation du rendu finale du travail de semestre, ainsi que le rendu du cahier des charges pour le travail de diplôme
@@ -105,8 +105,20 @@ Début du travail de diplôme
 - Mise en place du poste de travail dans la salle R.105 pour assurer une meilleure répartition des élèves entre les deux salles
 - Mise en place de l'outil de gestion de projet YouTrack
 
+YouTrack est un outil fait par JetBrains comme Confluence fait. Il permet de la planification de projet Kanban/Agile, de la planification prévisionnel avec Gantt, des timesheets pour la planification effectif ainsi que créer un wiki pour le projet. L'outil permet également de créer des rapports sur tous ces éléments et donc facilite la création d'annexe en plus de la gestion de projet. 
+
 Visite de l'HEPIA de 15h50 à 18h
 
 ## 2022-04-05
 - Création des tâches essentielles dans YouTrack et planning prévisionnel
 - Envoi d'un email à M. Zeltner, l'enseignant de suivi concernant le démarrage du projet et le planning prévisionnel
+- Définition des tests de compatibilité et tests unitaires
+- Mise en place du pipeline CI de Github Actions qui exécute cargo test.
+
+Le pipeline Continuous Integration (CI) de Github Actions permet d'exécuter cargo test a chaque push vers Github. Github garde un log des tests exécutés et les erreurs/résultats obtenus. J'ai rencontré un problème avec les dépendances du projet qui n'étaient pas installé dans le container utilisé pour les tests unitaires. J'ai donc identifié et mis une étape qui installe les dépendances nécessaires suivantes afin de résoudre le problème :
+(Format: nom de la dépendance (nom du paquet ubuntu))
+- Pango (librust-pango-dev)
+- ATK (librust-atk-dev)
+- Soup (libsoup2.4-dev)
+- Webkit2GTK (libwebkit2gtk-4.0-dev)
+- NPM (npm)
