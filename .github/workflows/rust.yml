@@ -17,7 +17,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Install dependencies
+      run: |
+            sudo apt-get update
+            sudo apt-get install librust-pango-dev librust-atk-dev libsoup2.4-dev libwebkit2gtk-4.0-dev npm
     - name: Build
-      run: cargo build --verbose
+      run: |
+            cd src/web
+            npm install
+            cargo build --verbose
     - name: Run tests
       run: cargo test --verbose
