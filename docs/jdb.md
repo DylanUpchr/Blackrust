@@ -59,13 +59,13 @@ Ajout des éléments dans l'interface ainsi que les appels aux fonctions (pas en
 Ajout des fonctions pour récupérer les interface réseau depuis NetworkManager
 
 ## 2022-03-09
-Ajout des bindings Rust et JS pour appeler les fonctions dans network_mgr pour récuperer les interfaces afin pouvoir affecter cela depuis l'interface utilisateur et d'avoir des objets "Interface" dans les profiles réseau.
+Ajout des bindings Rust et JS pour appeler les fonctions dans network_mgr pour récupérer les interfaces afin pouvoir affecter cela depuis l'interface utilisateur et d'avoir des objets "Interface" dans les profiles réseau.
 
 ## 2022-03-10
 Terminé la création de profile (codé les fonctions définies)
 
 ## 2022-03-12
-Changement du répertoire par défaut pour les configurations de /etc/blackrust/data/ à ~/.config/blackrust/data. Ceci permet à l'application de créer le répertoire si elle n'existe pas ainsi que garde les profiles de connexion de l'utilisateur sécurisés.
+Changement du répertoire par défaut pour les configurations de /etc/blackrust/data/ à ~/.config/blackrust/data. Ceci permet à l'application de créer le répertoire si elle n'existe pas ainsi que garde les profiles de connexion de l'utilisateur sécurisé.
 
 Ajout de vérifications que le chemin vers la quel on écrit le fichier qui contient les profiles de connexion existe, et sinon on crée le chemin et écrit dans le fichier afin de sauvegarder les profiles.
 
@@ -103,4 +103,10 @@ Exemples de CI/Versioning, projet Barrier KVM
 Début du travail de diplôme
 - Présentation de M. Garcia et M. Bonvin le matin pour expliquer le déroulement et les règles du travail de diplôme
 - Mise en place du poste de travail dans la salle R.105 pour assurer une meilleure répartition des élèves entre les deux salles
-- Mise en place des outils de gestion de projet
+- Mise en place de l'outil de gestion de projet YouTrack
+
+Visite de l'HEPIA de 15h50 à 18h
+
+## 2022-04-05
+- Création des tâches essentielles dans YouTrack et planning prévisionnel
+- Envoi d'un email à M. Zeltner, l'enseignant de suivi concernant le démarrage du projet et le planning prévisionnel

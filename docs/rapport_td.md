@@ -1,8 +1,8 @@
 # Rapport du Travail de dîplome
 ## Résumé / Abstract
-Blackrust v0 est un logiciel multi-architecture pour linux qui, au lancement de la machine, proposera des sessions d'accès distant utilisant divers protocoles ainsi qu'une session locale hors-ligne.
+Blackrust v0 est un logiciel multiarchitecture pour Linux qui, au lancement de la machine, proposera des sessions d'accès distant utilisant divers protocoles ainsi qu'une session locale hors-ligne.
 
-Ce projet est un client léger qui a pour but de réduire la taille et le coût des moultes machines données aux employés dans une entreprise. Ces clients légers se connecteraient à un serveur central où résideraient les espaces de travail des utilisateurs avec d'avantage de puissance de calcul.
+Ce projet est un client léger qui a pour but de réduire la taille et le coût des moultes machines données aux employés dans une entreprise. Ces clients légers se connecteraient à un serveur central où résideraient les espaces de travail des utilisateurs avec davantage de puissance de calcul.
 
 ---
 
@@ -12,7 +12,7 @@ This project is a thin client, which aims to reduce the size and cost of the man
 ## Introduction
 
 ## Analyse de l'existant
-analyse concurencielle, parler de valeur ajoutée (multi plateforme, OSS vitesse, sécurité)
+analyse concurencielle, parler de valeur ajoutée (multiplateforme, OSS vitesse, sécurité)
 ## Cahier des charges
 [Lien vers le cahier des charges](index.md)
 ## Analyse fonctionelle
@@ -20,7 +20,7 @@ L'analyse fonctionnelle contient les maquettes, l'architecture du programme et l
 ### Architecture
 #### Modules internes
 ![Analyse système](./img/blackrust-systems-analysis.png)
-Le programme est décomposé en 5 modules principaux:
+Le programme est décomposé en 5 modules principaux :
 
 - Main (DM): Point d'entrée du programme et aperçu graphique
 - ConfigMgr: CRUD pour les options de connexion sauvegardées
@@ -49,7 +49,7 @@ Web-view est un crate qui agit en tant que navigateur web qui affiche le rendu H
 ##### Xrandr
 Xrandr permet de récupérer des informations sur le ou les écrans d'affichage, comme taille, DPI, disposition des moniteurs, etc.
 ##### Serde / Serde-JSON
-Serde implémente des fonctionnalités de serialisation et déserialisation des instances d'objets vers et depuis le JavaScript Object Notation (JSON).
+Serde implémente des fonctionnalités de sérialisation et désérialisation des instances d'objets vers et depuis le JavaScript Object Notation (JSON).
 ##### Image-base64
 Image-base64 est un crate qui encode ou "traduit" des fichiers image en texte base64. **Ceci est nécessaire pour l'instant à cause de WebView qui ne peut pas référencer des fichiers et que traiter du HTML pur. Ceci pourra changer en implémentant Actix (Serveur Web) et Yew (Framework WASM pour Rust)**
 ##### Regex
@@ -63,44 +63,91 @@ Le crate Regex implémente des expressions régulières utilisées pour la véri
 
 ## Analyse organique
 ### Choix du langage
-**INSPIRATION**
-Rust is blazing fast and reliable with its rich type system and ownership model. It has a tough learning curve but is well worth the effort. Rust has been voted the most loved programming language in Stack Overflow's Developer Survey six years in a row: 2016, 2017, 2018, 2019, 2020 and 2021.
-
-Rust also helps developers write safer code with its rich type system and ownership model. Say goodbye to hard to track down race condition bugs in JavaScript! In fact, with Rust, most of your bugs will be caught by the compiler before your app even runs. And don't worry, when your app does run into an error, you can still get full stack-traces for your Rust code in the browser console.
-
-Doxygen-like rustdoc, integrated documentation tools from function headers and comments
-
-Rust is a statically-typed programming language designed for performance and safety, especially safe concurrency and memory management.
-Rust solves problems that C/C++ developers have been struggling with for a long time: memory errors and concurrent programming. This is seen as its main benefit.
-
-Safe rust (forced ownership) vs unsafe rust (greater flexibility but code needs to be thoroughly checked)
-
-cargo check, compiler messages
-
-Integrated unit tests 
-
-**TEXT**
-
-J'ai choisi Rust comme langage pour le travail de diplôme car c'est une langage moderne. Rust est connu pour son fiabilité, sécurité et rapidité.
+J'ai choisi Rust comme langage pour le travail de semestre, car c'est un langage moderne. Rust est connu pour sa fiabilité, sécurité et rapidité.
 
 #### Rapidité
-statically-typed, no gc due to ownership, monomorphization
+Rust est connu pour sa rapidité grâce à certains caractéristiques :
+- Rust est statiquement typé, donc après la vérification de cargo check, pleins de vérifications au runtime peuvent être sautées
+- Rust n'as pas de Garbage Collector, la mémoire est alloué et libéré selon "l'espérance de vie" d'une variable et donc ces derniers n'existent aussi longtemps que nécessaire. Ceci réduit les ressources consommées par un Garbage Collector et enlève les tâches répétitives de gérance de mémoire manuelle
+- Rust utilise le LLVM pour générer du code assembly optimisé, qui est comparable au GCC en termes de performances du programme final
+#### Compilateur
+L'outil de compilation de Rust, nommée cargo, a plusieurs rôles :
+- Package manager, pour les "crates" qui sont les paquets/modules officiels et de la communauté
+- Validateur du code, cargo check vérifie plusieurs aspects avant de compiler le programme :
+    - Que la gérance du mémoire est bien fait et ne viole pas les règles d'appartenance ou d'emprunt de références
+    - Que les variables sont nommées en snake case, sinon il affiche des warnings
+    - Qu'il n'y a pas du code "mort", donc pas utilisé, sinon il affiche des warnings
+- Compilateur, bien entendu si le code ne contient pas d'erreur de syntaxe, ni de gérance de mémoire le programme est compilée et rends un éxécutable dans le dossier target
+
+Les messages d'erreurs de cargo sont assez riches comparés aux autres langages. Cargo peut décrire l'erreur détectée en détail et même selon le type d'erreur, il peut suggérer des solutions. Si cela ne suffit pas, le traçage de la pile d'appels est accessible et peut aider avec le débogage traditionnel.
 #### Sécurité / Fiabilité
-Memory safe, dual-mode safe/unsafe
+De base, le langage Rust est assez sécure et fiable grâce aux faites suivantes :
+- Rust est "memory-safe", qui signifie qu'il ne permet pas d'avoir des pointeurs null ou invalide
+- Les courses de données sont également impossible, grâce au système de "appartenance", qui impose qu'une instance ou référence variable ne peut être utilisé par une fonction à la fois.
+- La gestion d'erreur est très avancé et devrait être au cœur de la conception d'une fonction. Cette approche permet d'être toujours certain que le déroulement se passe comme prévu et les cas de bords qui pourraient compromettre la sécurité de l'application sont évités.
+- Fonctionnalités de tests unitaires intégrées
 
 #### Multi-plateforme
+Rust est un langage avec un compilateur portable comme le langage C, donc qui peut être compilé sur la plupart des plateformes avec certaines garanties de fonctionnalité. Rust catégorise ces garanties dans un système de tiers. Les tiers sont ainsi :
+
+- Tier 1: Garantie d'exécution, un programme en Rust pure est capable de compiler et de s'exécuter sans problèmes
+    - Exemples : x86_64 Windows, x86_64 MacOS, x86_64 Linux, AArch64 Linux (ARM64)
+- Tier 2: Garantie de compiler, un programme en Rust pure est capable d'être compilé, mais n'as pas une garantie 100% de fonctionner parfaitement lors de l'éxécution
+    - Exemples: iOS, Android, RISC-V, MIPS/MIPS64, PowerPC/PowerPC64 
+- Tier 3: Pas de garanties de compilation ni d'exécution, mais ont une possibilité de fonctionner et pour certains des programmes ont déjà été faites
+    - Exemples : Apple tvOS, Nintendo 3DS, CUDA, EFI
 
 ### Normes
 #### Nommage
 ##### Rust
+Rust impose le snake case (exemple_nom) pour les noms des fonctions et des variables et pascal case (ExempleNom) pour le nom des objets.
 ##### JS/HTML
+Pour le JS et HTML j'ai choisi d'utiliser le camel case (exempleNom) pour les variables, noms des fonctions et nommage des composants HTML
 #### Commentaires
+Les fichiers ont comme entête le suivant :
+```
+/** File
+ * Author:		Dylan Upchurch
+ * Date:		2022-01-01
+ * Desc:		File purpose
+ */ 
+```
+
+Les fonctions sont précédées par un entête comme le suivant :
+```
+/** Function
+ * Name:	fn_name
+ * Purpose:	Ce que fait la fonction
+ * Args:	(Type) nom_arg: Description argument
+ * Returns: Type Description valeur de retour
+ */
+```
+
+Les structs sont précédés par un entête comme le suivant :
+```
+/** Struct
+     * Name:	     StructName
+     * Purpose:      A quoi sert le struct
+     * Properties:   (Type) nom: Description propriété
+     */
+```
+
+Les enums sont précédés par un entête comme le suivant :
+```
+/** Enum
+ * Name:    NomEnum
+ * Members: NomMembre: Description du membre
+ */
+ ```
+
 #### Commits
+Les messages de commits n'ont pas de norme spéciale, le seul forme respectée s'agit d'un commentaire descriptif bref en anglais qui explique ce que contient le commit. Les différentes actions sont séparées par des virgules. Exemple de message de commit : ("Added functionnality X, removed unused code")
+
 ### Organisation
 SCRUM, Sprints, Agile
 ### 
 ### Environnement de travail
-L'environnement de travail utilisé lors du développement de ce projet consistes-en:
+L'environnement de travail utilisé lors du développement de ce projet consistes-en :
 
 - Ordinateur de l'école avec Arch Linux installé dessus,
 - Visual Studio Code comme IDE
@@ -111,10 +158,16 @@ L'environnement de travail utilisé lors du développement de ce projet consiste
 - WebView (Inclusion du CSS/JS et images encodées en base64)
 - Définition des dépendances clés du projet à installer
 - Compilation Multi-plateforme
-## Difficultés à venir
-- 
 ## Tests
-### Tests de compatabilité hardware (Integration)
+### Tests unitaires
+### Tests de compatibilité hardware (Intégration)
+Les tests d'intégration hardware servent à informer la portée possible de déploiement du programme. Rust est conçu pour être multiplateforme, mais il y a certaines dépendances qui auront besoin d'être vérifiées avant d'être sûr de la compatibilité avec les architectures système visées.
+#### Procédure définit
+1. Installer Blackrust et ses dépendances
+2. Lancer Blackrust
+3. Observer des possibles délais/lag avec l'interface WebView/WebAssembly
+4. Lancer une session d'accès distant avec RDP, XDMCP et VNC
+5. Observer délais/lag avec session d'accès distant
 
 ## Planning
 ### Prévisionnel
