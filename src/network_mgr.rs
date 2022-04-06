@@ -213,3 +213,12 @@ pub fn exec_nmcli_command(args: Vec<&str>) -> Result<String, String> {
     }
 
 }
+
+#[cfg(test)]
+mod test {
+	use super::*;
+	#[test] 
+	fn get_all_interfaces_test(){
+		assert_ne!(get_all_interfaces().unwrap().len(), 0);
+	}
+}

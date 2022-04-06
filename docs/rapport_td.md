@@ -57,8 +57,10 @@ Le crate Regex implémente des expressions régulières utilisées pour la véri
 ### Maquettes
 
 ## Sécurité
+De base Rust est conçu pour être une langue très sécurisée, mais il existe toujours la possibilité des failles dans le programme et le périphérique du programme. Dans cette rubrique, je vais mentionner les risques de sécurité identifiés et des mitigations possibles.
 ### Failles possibles
-
+#### Fuite d'accès/tokens dans un commit
+Github secrets
 ## Data flow diagram
 
 ## Analyse organique
@@ -77,7 +79,7 @@ L'outil de compilation de Rust, nommée cargo, a plusieurs rôles :
     - Que la gérance du mémoire est bien fait et ne viole pas les règles d'appartenance ou d'emprunt de références
     - Que les variables sont nommées en snake case, sinon il affiche des warnings
     - Qu'il n'y a pas du code "mort", donc pas utilisé, sinon il affiche des warnings
-- Compilateur, bien entendu si le code ne contient pas d'erreur de syntaxe, ni de gérance de mémoire le programme est compilée et rends un éxécutable dans le dossier target
+- Compilateur, bien entendu si le code ne contient pas d'erreur de syntaxe, ni de gérance de mémoire le programme est compilée et rends un exécutable dans le dossier target
 
 Les messages d'erreurs de cargo sont assez riches comparés aux autres langages. Cargo peut décrire l'erreur détectée en détail et même selon le type d'erreur, il peut suggérer des solutions. Si cela ne suffit pas, le traçage de la pile d'appels est accessible et peut aider avec le débogage traditionnel.
 #### Sécurité / Fiabilité
@@ -86,6 +88,9 @@ De base, le langage Rust est assez sécure et fiable grâce aux faites suivantes
 - Les courses de données sont également impossible, grâce au système de "appartenance", qui impose qu'une instance ou référence variable ne peut être utilisé par une fonction à la fois.
 - La gestion d'erreur est très avancé et devrait être au cœur de la conception d'une fonction. Cette approche permet d'être toujours certain que le déroulement se passe comme prévu et les cas de bords qui pourraient compromettre la sécurité de l'application sont évités.
 - Fonctionnalités de tests unitaires intégrées
+
+#### Tests unitaires
+Rust contient une suite de tests unitaires permettant de fiabiliser le développement continu.
 
 #### Multi-plateforme
 Rust est un langage avec un compilateur portable comme le langage C, donc qui peut être compilé sur la plupart des plateformes avec certaines garanties de fonctionnalité. Rust catégorise ces garanties dans un système de tiers. Les tiers sont ainsi :
@@ -144,8 +149,7 @@ Les enums sont précédés par un entête comme le suivant :
 Les messages de commits n'ont pas de norme spéciale, le seul forme respectée s'agit d'un commentaire descriptif bref en anglais qui explique ce que contient le commit. Les différentes actions sont séparées par des virgules. Exemple de message de commit : ("Added functionnality X, removed unused code")
 
 ### Organisation
-SCRUM, Sprints, Agile
-### 
+La gestion du projet se fait ave l'outil YouTrack. Ce dernier propose des fonctionnalités Gantt, Kanban, relevée d'horaires et de génération de rapports sur ces derniers. 
 ### Environnement de travail
 L'environnement de travail utilisé lors du développement de ce projet consistes-en :
 
@@ -154,12 +158,9 @@ L'environnement de travail utilisé lors du développement de ce projet consiste
 - Raspberry Pi 4 8G
 
 ## Difficultés rencontrées
-- Appréhension de Rust
-- WebView (Inclusion du CSS/JS et images encodées en base64)
-- Définition des dépendances clés du projet à installer
-- Compilation Multi-plateforme
 ## Tests
 ### Tests unitaires
+Les tests unitaires se font avec l'outil en ligne de commande ´´´cargo test´´´. Les tests sont exécutés pour chaque commit envoyé au repo sur Github
 ### Tests de compatibilité hardware (Intégration)
 Les tests d'intégration hardware servent à informer la portée possible de déploiement du programme. Rust est conçu pour être multiplateforme, mais il y a certaines dépendances qui auront besoin d'être vérifiées avant d'être sûr de la compatibilité avec les architectures système visées.
 #### Procédure définit
@@ -171,6 +172,7 @@ Les tests d'intégration hardware servent à informer la portée possible de dé
 
 ## Planning
 ### Prévisionnel
+Le planning prévisionniel à été établi avec la fonctionnalité Gantt de l'outil YouTrack que j'utilise pour la gestion du projet. J'ai choisi de faire avec cet outil car je peut générer de diverses types de rapports sur les tâches effectuées et le temps que ces derniers ont pris.
 ### Effectif
 
 ## Livrables

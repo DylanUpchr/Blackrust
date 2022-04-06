@@ -122,3 +122,12 @@ Le pipeline Continuous Integration (CI) de Github Actions permet d'exécuter car
 - Soup (libsoup2.4-dev)
 - Webkit2GTK (libwebkit2gtk-4.0-dev)
 - NPM (npm)
+
+## 2022-04-06
+Entretien avec M. Zeltner, sujet traités
+- Revue du démarrage du programme
+- Tâches à faire
+- Planification prévisionniel
+- Outil de gestion YouTrack 
+- Planning du travail de diplôme
+
