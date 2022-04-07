@@ -131,3 +131,8 @@ Entretien avec M. Zeltner, sujet traités
 - Outil de gestion YouTrack 
 - Planning du travail de diplôme
 
+Définition des périmètres de tests unitaires
+Documentation
+
+## 2022-04-07
+Gestion des erreur en remplacant des appels a unwrap() avec des match statements pour définir les actions à entreprendre lorsqu'un erreur survient.

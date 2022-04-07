@@ -10,7 +10,7 @@ extern crate image_base64;
 use web_view::*;
 use regex::Regex;
 use regex::Captures;
-use blackrust_lib::profile::{Profile,NetworkManagerProfile};
+use blackrust_lib::profile::{Profile, Profiles, NetworkManagerProfile};
 mod config_mgr;
 mod network_mgr;
 mod remote_session_mgr;
@@ -22,9 +22,15 @@ mod remote_session_mgr;
  * Returns:	None
  */
 fn main() {
-	let webview: WebView<'static, &'static str>;
-	webview = open_webview();
-	webview.run().unwrap();
+	match open_webview() {
+		Ok(result) => {
+			match result.run() {
+				Ok(_) => (),
+				_ => (println!("Could not run WebView"))
+			}
+		},
+		_ => (println!("Could not open WebView"))
+	}
 }
 
 /** Function
@@ -33,10 +39,10 @@ fn main() {
  * Args:	None
  * Returns:	None
  */
-fn open_webview() -> WebView<'static, &'static str> {
+fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 	let html = combined_html_css_js();
 	let mut webview: WebView<'static, &'static str>;
-	webview = web_view::builder()
+	let webview_result = web_view::builder()
 		.content(Content::Html(html))
 		.size(1280, 720)
 		.frameless(true)
@@ -44,123 +50,159 @@ fn open_webview() -> WebView<'static, &'static str> {
 		.user_data("")
 		.invoke_handler(|webview, arg| {
 			use Cmd::*;
-			match serde_json::from_str(arg).unwrap() {
-				Init => (),
-				Debug { value } => (println!("{}", value)),
-				Connect { profile } => ({
-					println!("{:?}", profile);
-					remote_session_mgr::connect(profile);
-				}),
-				QueryConnectionProfiles { callback, query } => (
-					webview.eval(
-						&format!("{}({})", 
-							callback,
-							serde_json::to_string(
-								&config_mgr::get_profiles(query).unwrap()
-							).unwrap()
+			match serde_json::from_str::<Cmd>(arg) {
+				Ok(cmd) => (
+					match cmd {
+						Init => (),
+						Debug { value } => (println!("{}", value)),
+						Connect { profile } => ({
+							println!("{:?}", profile);
+							remote_session_mgr::connect(profile);
+						}),
+						QueryConnectionProfiles { callback, query } => ({
+							match &config_mgr::get_profiles(query) {
+								Ok(profiles) => webview.eval(
+									&format!("{}({})", 
+										callback,
+										serde_json::to_string(
+											profiles
+										).unwrap()
+									)
+								)?,
+								Err(message) => (println!("{}", message))
+							};
+						}),
+						LoadConnectionProfile { callback, id } => ({
+							match &config_mgr::get_profile_by_id(id) {
+								Ok(profile) => webview.eval(
+									&format!("{}({})",
+										callback,
+										serde_json::to_string(
+											profile
+										).unwrap()
+									)
+								)?,
+								Err(message) => (println!("{}", message))
+							}
+						}),
+						CreateConnectionProfile => ({
+							let id = config_mgr::create_profile().unwrap();
+							match &config_mgr::get_profiles("".to_string()) {
+								Ok(profile) => webview.eval(
+									&format!("loadQueriedConnectionProfilesSettings({})",
+										serde_json::to_string(
+											profile
+										).unwrap()
+									)
+								)?,
+								Err(message) => (println!("{}", message))
+							}
+							match &config_mgr::get_profile_by_id(id){
+								Ok(profile) => (webview.eval(
+									&format!("loadSelectedConnectionProfileSettings({})",
+										serde_json::to_string(
+											profile
+										).unwrap()
+									)
+								)?),
+								Err(message) => (println!("{}", message))
+							}
+						}),
+						SaveConnectionProfile { profile } => (
+							config_mgr::save_profile(profile)
+						),
+						DeleteConnectionProfile { profile } => (
+							config_mgr::delete_profile(profile)
+						),
+						GetNetworkProfiles => (
+							match &network_mgr::load_all_profiles() {
+								Ok(profiles) => (webview.eval(
+									&format!("loadNetworkProfiles({})",
+										serde_json::to_string(
+											profiles
+										).unwrap()
+									)
+								)?),
+								Err(message) => (println!("{}", message))
+							}
+						),
+						LoadNetworkProfile { callback, id } => (
+							match &network_mgr::get_simple_profile_by_id(id) {
+								Ok(profile) => (webview.eval(
+									&format!("{}({})",
+										callback,
+										serde_json::to_string(
+											profile
+										).unwrap()
+									)
+								)?),
+								Err(message) => (println!("{}", message))
+							}
+						),
+						CreateNetworkProfile => ({
+							let id = network_mgr::create_profile().unwrap();
+							match &network_mgr::load_all_profiles() {
+								Ok(profiles) => (webview.eval(
+									&format!("loadNetworkProfiles({})",
+										serde_json::to_string(
+											profiles
+										).unwrap()
+									)
+								)?),
+								Err(message) => (println!("{}", message))
+							}
+							match &network_mgr::get_detailed_profile_by_id(id) {
+								Ok(profile) => (webview.eval(
+									&format!("loadSelectedNetworkProfile({})",
+										serde_json::to_string(
+											profile
+										).unwrap()
+									)
+								)?),
+								Err(message) => (println!("{}", message))
+							}
+						}),
+						SaveNetworkProfile { profile } => (
+							match network_mgr::modify_profile(profile) {
+								Err(message) => (println!("{}", message)),
+								_ => ()
+							}
+						),
+						DeleteNetworkProfile { profile } => (
+							match network_mgr::delete_profile(profile) {
+								Err(message) => (println!("{}", message)),
+								_ => ()
+							}
+						),
+						GetNetworkInterfaces => (
+							match &network_mgr::get_all_interfaces() {
+								Ok(interfaces) => (webview.eval(
+									&format!("loadNetworkInterfaces({})",
+										serde_json::to_string(
+											interfaces
+										).unwrap()
+									)
+								)?),
+								Err(message) => (println!("{}", message))
+							}
 						)
-					)?
+					}
 				),
-				LoadConnectionProfile { callback, id } => (
-					webview.eval(
-						&format!("{}({})",
-							callback,
-							serde_json::to_string(
-								&config_mgr::get_profile_by_id(id).unwrap()
-							).unwrap()
-						)
-					)?
-				),
-				CreateConnectionProfile => ({
-					let id = config_mgr::create_profile().unwrap();
-					webview.eval(
-						&format!("loadQueriedConnectionProfilesSettings({})",
-							serde_json::to_string(
-								&config_mgr::get_profiles("".to_string()).unwrap()
-							).unwrap()
-						)
-					)?;
-					webview.eval(
-						&format!("loadSelectedConnectionProfileSettings({})",
-							serde_json::to_string(
-								&config_mgr::get_profile_by_id(
-									id
-								).unwrap()
-							).unwrap()
-						)
-					)?
-				}),
-				SaveConnectionProfile { profile } => (
-					config_mgr::save_profile(profile)
-				),
-				DeleteConnectionProfile { profile } => (
-					config_mgr::delete_profile(profile)
-				),
-				GetNetworkProfiles => (
-					webview.eval(
-						&format!("loadNetworkProfiles({})",
-							serde_json::to_string(
-								&network_mgr::load_all_profiles().unwrap()
-							).unwrap()
-						)
-					)?
-				),
-				LoadNetworkProfile { callback, id } => (
-					webview.eval(
-						&format!("{}({})",
-							callback,
-							serde_json::to_string(
-								&network_mgr::get_simple_profile_by_id(id).unwrap()
-							).unwrap()
-						)
-					)?
-				),
-				CreateNetworkProfile => ({
-					let id = network_mgr::create_profile().unwrap();
-					webview.eval(
-						&format!("loadNetworkProfiles({})",
-							serde_json::to_string(
-								&network_mgr::load_all_profiles().unwrap()
-							).unwrap()
-						)
-					)?;
-					webview.eval(
-						&format!("loadSelectedNetworkProfile({})",
-							serde_json::to_string(
-								&network_mgr::get_detailed_profile_by_id(
-									id
-								).unwrap()
-							).unwrap()
-						)
-					)?
-				}),
-				SaveNetworkProfile { profile } => (
-					network_mgr::modify_profile(profile).unwrap()
-				),
-				DeleteNetworkProfile { profile } => (
-					network_mgr::delete_profile(profile).unwrap()
-				),
-				GetNetworkInterfaces => (
-					webview.eval(
-						&format!("loadNetworkInterfaces({})",
-							serde_json::to_string(
-								&network_mgr::get_all_interfaces().unwrap()
-							).unwrap()
-						)
-					)?
-				)
+				_ => (println!("Could not match command"))
 			}
 			Ok(())
 		})
-		.build()
-		.unwrap();
-
-	network_mgr::get_all_interfaces().unwrap();
-
-	let hostname = network_mgr::get_hostname();
-	webview.eval(&format!("setHostname({:?})", hostname)).unwrap();
-	return webview;
-
+		.build();
+	
+	match webview_result {
+		Ok(result) => ({
+			webview = result;
+			let hostname = network_mgr::get_hostname();
+			webview.eval(&format!("setHostname({:?})", hostname)).unwrap();
+			Ok(webview)
+		}),
+		Err(message) => (println!("{}", message))
+	}
 }
 
 /** Function
