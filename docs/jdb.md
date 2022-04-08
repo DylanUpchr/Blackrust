@@ -127,7 +127,7 @@ Le pipeline Continuous Integration (CI) de Github Actions permet d'exécuter car
 Entretien avec M. Zeltner, sujet traités
 - Revue du démarrage du programme
 - Tâches à faire
-- Planification prévisionniel
+- Planification prévisionnel
 - Outil de gestion YouTrack 
 - Planning du travail de diplôme
 
@@ -135,4 +135,7 @@ Définition des périmètres de tests unitaires
 Documentation
 
 ## 2022-04-07
-Gestion des erreur en remplacant des appels a unwrap() avec des match statements pour définir les actions à entreprendre lorsqu'un erreur survient.
+Gestion des erreurs dans le crate main en remplaçant des appels a unwrap() avec des match statements pour définir les actions à entreprendre lorsqu'une erreur survient.
+
+## 2022-04-08
+Gestion des erreurs dans le crate network_mgr en remplaçant des appels a unwrap() avec des match statements pour définir les actions à entreprendre lorsqu'une erreur survient.

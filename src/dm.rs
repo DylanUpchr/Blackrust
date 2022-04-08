@@ -10,7 +10,7 @@ extern crate image_base64;
 use web_view::*;
 use regex::Regex;
 use regex::Captures;
-use blackrust_lib::profile::{Profile, Profiles, NetworkManagerProfile};
+use blackrust_lib::profile::{Profile, NetworkManagerProfile};
 mod config_mgr;
 mod network_mgr;
 mod remote_session_mgr;
@@ -29,7 +29,7 @@ fn main() {
 				_ => (println!("Could not run WebView"))
 			}
 		},
-		_ => (println!("Could not open WebView"))
+		Err(message) => (println!("{}", message))
 	}
 }
 
@@ -188,7 +188,7 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 						)
 					}
 				),
-				_ => (println!("Could not match command"))
+				_ => (println!("Could not match command: {}", arg))
 			}
 			Ok(())
 		})
@@ -197,11 +197,13 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 	match webview_result {
 		Ok(result) => ({
 			webview = result;
-			let hostname = network_mgr::get_hostname();
-			webview.eval(&format!("setHostname({:?})", hostname)).unwrap();
+			match network_mgr::get_hostname() {
+				Ok(hostname) => webview.eval(&format!("setHostname({:?})", hostname)).unwrap(),
+				Err(message) => (println!("{}", message))
+			}
 			Ok(webview)
 		}),
-		Err(message) => (println!("{}", message))
+		Err(_) => Err(String::from("Could not build webview"))
 	}
 }
 

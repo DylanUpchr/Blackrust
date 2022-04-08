@@ -15,8 +15,8 @@ use blackrust_lib::profile::{NetworkManagerProfile,NetworkManagerProfileType,Int
  * Args:	None
  * Returns: (String) System hostname
  */
-pub fn get_hostname() -> String {
-    exec_nmcli_command(vec!("general", "hostname")).unwrap()
+pub fn get_hostname() -> Result<String, String> {
+    exec_nmcli_command(vec!("general", "hostname"))
 }
 
 /** Function
@@ -27,19 +27,23 @@ pub fn get_hostname() -> String {
  */
 pub fn get_all_interfaces() -> Result<Vec<Interface>, String> {
     let mut result: Vec<Interface> = vec!();
-    let stdout = exec_nmcli_command(vec!("--fields", "GENERAL.DEVICE,GENERAL.HWADDR,GENERAL.TYPE", "device", "show")).unwrap();
-    let stdout_lines: Vec<&str> = stdout.split("\n").collect::<Vec<&str>>();
-    let re = Regex::new("\\s{2,}").unwrap();
-    let fields: Vec<Vec<&str>> = stdout_lines.into_iter().filter(|&line| {
-        line != ""
-    }).map(|line| {
-            re.split(line).collect::<Vec<&str>>()
-    }).collect::<Vec<Vec<&str>>>();
+    match exec_nmcli_command(vec!("--fields", "GENERAL.DEVICE,GENERAL.HWADDR,GENERAL.TYPE", "device", "show")) {
+        Ok(stdout) => {
+            let stdout_lines: Vec<&str> = stdout.split("\n").collect::<Vec<&str>>();
+            let re = Regex::new("\\s{2,}").unwrap();
+            let fields: Vec<Vec<&str>> = stdout_lines.into_iter().filter(|&line| {
+                line != ""
+            }).map(|line| {
+                    re.split(line).collect::<Vec<&str>>()
+            }).collect::<Vec<Vec<&str>>>();
 
-    for (name, hw_addr, interface_type) in fields.into_iter().tuples(){
-        result.push(Interface::new3(name[1].to_string(), hw_addr[1].to_string(), interface_type[1].to_string()));
+            for (name, hw_addr, interface_type) in fields.into_iter().tuples(){
+                result.push(Interface::new3(name[1].to_string(), hw_addr[1].to_string(), interface_type[1].to_string()));
+            }
+            Ok(result)
+        },
+        Err(message) => Err(message)
     }
-    Ok(result)
 }
 
 /** Function
@@ -88,24 +92,29 @@ pub fn load_all_profiles() -> Result<Vec<NetworkManagerProfile>, String>{
     use std::str::FromStr;
 
     let mut profiles: Vec<NetworkManagerProfile> = vec!();
-    let stdout = exec_nmcli_command(vec!("connection", "show")).unwrap();
-    let mut stdout_lines: Vec<&str> = stdout.split("\n").collect::<Vec<&str>>();
-    stdout_lines.remove(0);
-    let re = Regex::new("\\s{2,}").unwrap();
-    stdout_lines.into_iter().for_each(|mut line| {
-        if line != "" {
-            line = line.trim();
-            let line_data = re.split(line).collect::<Vec<&str>>();
-            let profile = NetworkManagerProfile::new4(
-                line_data[0].to_string(), 
-                line_data[1].to_string(), 
-                NetworkManagerProfileType::from_str(&line_data[2].to_string()).unwrap(), 
-                get_interface_by_name(line_data[3].to_string()).unwrap()
-            );
-            profiles.push(profile);
-        }
-    });
-    Ok(profiles)
+    match exec_nmcli_command(vec!("connection", "show")) {
+        Ok(stdout) => {
+            let mut stdout_lines: Vec<&str> = stdout.split("\n").collect::<Vec<&str>>();
+            stdout_lines.remove(0);
+            let re = Regex::new("\\s{2,}").unwrap();
+            stdout_lines.into_iter().for_each(|mut line| {
+                if line != "" {
+                    line = line.trim();
+                    let line_data = re.split(line).collect::<Vec<&str>>();
+                    let profile = NetworkManagerProfile::new4(
+                        line_data[0].to_string(), 
+                        line_data[1].to_string(), 
+                        NetworkManagerProfileType::from_str(&line_data[2].to_string()).unwrap(), 
+                        get_interface_by_name(line_data[3].to_string()).unwrap()
+                    );
+                    profiles.push(profile);
+                }
+            });
+            Ok(profiles)
+        },
+        Err(message) => Err(message)
+    }
+    
 }
 
 /** Function
