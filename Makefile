@@ -21,7 +21,7 @@ build:
 	cargo build $(release)
 	cargo build $(release)
 
-all: build install
+all: build
  
 help:
 	@echo "usage: make $(prog) [debug=1]"

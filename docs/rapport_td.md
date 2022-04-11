@@ -231,10 +231,10 @@ L'environnement de travail utilisé lors du développement de ce projet consiste
 - Blackrust
 
 ## Difficultés rencontrées
-### Installation de la sousdépendance keyboard-config interompait l'installation de dépendances dans un runner Github Actions CI
-Lors de l'installation du pquets ```xserver-xorg```, le dépendance de ce dernier ```keyboard-config``` demande un saisi utilisateur qui ne peut pas être effectué dans l'exécution automatique du script de test. Donc la solution pour cela est d'exporter une variable d'environnement ```export DEBIAN_FRONTEND=noninteractive``` avant de procéder à l'installation. Ceci force keyboard-config à prendre un valeur par défaut et laisser le reste de l'installation se poursuivre.
-### Tests unitaires utilisant le serveur d'affichage ne réuissent pas sur Github Actions CI
-Pour certains tests unitaires, un serveur d'affichage X.Org est nécessaire mais cela n'est pas installé dans les containeurs de runner Github Actions CI. Donc la solution pour cela est de installer les paquets ```xserver-xorg``` et ```xserver-xorg-video-dummy```. Ceci permet de faire un serveur X11 en mode headless afin de valider que le programme s'exécute et affiche l'interface WebView. Afin de spécifier le fait que nous voulons utiliser le driver ```xserver-xorg-video-dummy```, nous devons créer un fichier de configuration comme la suivante et exécuter ```X :0 -config .github/workflows/xorg-dummy.conf &``` à la racine du projet :
+### Installation de la sous dépendance keyboard-config interrompait l'installation de dépendances dans un runner Github Actions CI
+Lors de l'installation du paquet ```xserver-xorg```, la dépendance de ce dernier ```keyboard-config``` demande un saisi utilisateur qui ne peut pas être effectué dans l'exécution automatique du script de test. Donc la solution pour cela est d'exporter une variable d'environnement lors de l'installation des dépendances, ```sudo DEBIAN_FRONTEND=noninteractive apt-get -y install ...```. Ceci force keyboard-config à prendre une valeur par défaut et laisser le reste de l'installation se poursuivre.
+### Tests unitaires utilisant le serveur d'affichage ne réusissent pas sur Github Actions CI
+Pour certains tests unitaires, un serveur d'affichage X.Org est nécessaire mais, cela n'est pas installé dans les containeurs de runner Github Actions CI. Donc la solution pour cela est d'installer les paquets ```xserver-xorg``` et ```xserver-xorg-video-dummy```. Ceci permet de faire un serveur X11 en mode headless afin de valider que le programme s'exécute et affiche l'interface WebView. Afin de spécifier le fait que nous voulons utiliser le driver ```xserver-xorg-video-dummy```, nous devons créer un fichier de configuration comme la suivante et exécuter ```X :0 -config .github/workflows/xorg-dummy.conf &``` à la racine du projet :
 
 ```conf
 # Source: https://techoverflow.net/2019/02/23/how-to-run-x-server-using-xserver-xorg-video-dummy-driver-on-ubuntu/
@@ -264,18 +264,20 @@ Section "Screen"
   EndSubSection
 EndSection
 ```
+### Échec du test unitaire open_webview_test causée par la récupération de nom d'hôte
+Lors du test unitaire open_webview_test qui vérifie que le WebView peut être construit et affiché dans le serveur d'affichage, la récupération du nom d'hôte provoque un SIGABRT (process abort signal) alors que le test s'est bien effectué. Ceci est le cas car, le test ferme l'application juste après que l'appel est fait et en conséquence fait une erreur quand il ne peut pas exécuter le code JS permettant d'afficher le résultat. La solution à ce problème et de déplacer l'appel vers network_mgr pour récupérer le nom d'hôte dans le invoke "init" du WebView afin de retarder l'appel et ne pas provoquer d'appels qui ne pourront pas être aboutis.
 ## Tests
 ### Tests unitaires
 Les tests unitaires se font avec l'outil en ligne de commande ```cargo test```. Les tests sont exécutés pour chaque commit envoyé au repo sur Github
 #### Périmètre des tests
-Les scénarios suivantes sont testées:
+Les scénarios suivants sont testés :
 
 - Les paniques
 - Lancement du WebView
 - La génération de la page web réussit
 - Que la génération de profile se crée, lit, modifie, et supprime
 - Que la génération de configuration réseau se crée, lit, modifie et supprime
-- Que l'envoi et la reception de packet TCP/UDP s'effectue
+- Que l'envoi et la rréceptionde packet TCP/UDP s'effectue
 ### Tests de compatibilité hardware (Intégration)
 Les tests d'intégration hardware servent à informer la portée possible de déploiement du programme. Rust est conçu pour être multiplateforme, mais il y a certaines dépendances qui auront besoin d'être vérifiées avant d'être sûr de la compatibilité avec les architectures système visées.
 #### Procédure définit
@@ -287,7 +289,7 @@ Les tests d'intégration hardware servent à informer la portée possible de dé
 
 ## Planning
 ### Prévisionnel
-Le planning prévisionnel a été établi avec la fonctionnalité Gantt de l'outil YouTrack que j'utilise pour la gestion du projet. J'ai choisi de faire avec cet outil car, je peux générer de divers types de rapports sur les tâches effectuées et le temps que ces derniers ont pris.
+Le planning prévisionnel a été établi avec la fonctionnalité Gantt de l'outil YouTrack que j'utilise pour la gestion du projet. J'ai choisi de faire avec cet outil car, je peux générer de divers types de rapports sur les tâches accomplies et le temps que ces derniers ont pris.
 ![Planning prévisionnel](./img/planning_previsionnel.png)
 ### Effectif
 

@@ -20,11 +20,9 @@ jobs:
       run: |
             sudo apt-get update
             sudo DEBIAN_FRONTEND=noninteractive apt-get -y install rustc librust-pango-dev librust-atk-dev libsoup2.4-dev libwebkit2gtk-4.0-dev npm xserver-xorg xserver-xorg-video-dummy
-    - name: Build
+    - name: Make & Run X11
       run: |
-            cd src/web
-            npm install
-            cargo build --verbose
+            make build
             sudo X :0 -config ../../.github/workflows/xorg-dummy.conf &
     - name: Run tests
       run: DISPLAY=:0 cargo test --verbose

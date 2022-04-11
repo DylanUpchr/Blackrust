@@ -211,14 +211,19 @@ pub fn delete_profile(profile: NetworkManagerProfile) -> Result<(), String>{
  * Returns: (Result<String, String>) Command stdout or stderr
  */
 pub fn exec_nmcli_command(args: Vec<&str>) -> Result<String, String> {
-    let output: Output =  Command::new("nmcli").args(args).output().unwrap();
+    let command =  Command::new("nmcli").args(args.clone()).output();
     
-    if output.stderr.is_empty() && !output.stdout.is_empty() {
-        Ok(str::from_utf8(&output.stdout).unwrap().to_string())
-    } else if !output.stderr.is_empty(){
-        Err(str::from_utf8(&output.stderr).unwrap().to_string())
-    } else {
-        Ok(format!("Unknown status: {}", output.status))
+    match command {
+        Ok(output) => ({
+            if output.stderr.is_empty() && !output.stdout.is_empty() {
+                Ok(str::from_utf8(&output.stdout).unwrap().to_string())
+            } else if !output.stderr.is_empty(){
+                Err(str::from_utf8(&output.stderr).unwrap().to_string())
+            } else {
+                Ok(format!("Unknown status: {}", output.status))
+            }
+        }),
+        Err(_) => Err(format!("Could not execute nmcli command with args: {:?}", args).to_string())
     }
 
 }

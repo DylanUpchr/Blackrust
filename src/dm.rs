@@ -53,7 +53,11 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 			match serde_json::from_str::<Cmd>(arg) {
 				Ok(cmd) => (
 					match cmd {
-						Init => (),
+						Init => (
+							match network_mgr::get_hostname() {
+								Ok(hostname) => webview.eval(&format!("setHostname({:?})", hostname)).unwrap(),
+								Err(message) => (println!("{}", message))
+							}),
 						Debug { value } => (println!("{}", value)),
 						Connect { profile } => ({
 							println!("{:?}", profile);
@@ -195,14 +199,7 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 		.build();
 	
 	match webview_result {
-		Ok(result) => ({
-			webview = result;
-			match network_mgr::get_hostname() {
-				Ok(hostname) => webview.eval(&format!("setHostname({:?})", hostname)).unwrap(),
-				Err(message) => (println!("{}", message))
-			}
-			Ok(webview)
-		}),
+		Ok(webview) => Ok(webview),
 		Err(_) => Err(String::from("Could not build webview"))
 	}
 }
