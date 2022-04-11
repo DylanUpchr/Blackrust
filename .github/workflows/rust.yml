@@ -8,21 +8,22 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  PKG_CONFIG_PATH: '/usr/lib/pkgconfig'
 
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
     - uses: actions/checkout@v3
     - name: Install dependencies
       run: |
-            sudo apt-get update
-            sudo apt-get install librust-pango-dev librust-atk-dev libsoup2.4-dev libwebkit2gtk-4.0-dev npm
+            apt-get update
+            export DEBIAN_FRONTEND=noninteractive
+            apt-get -y install librust-pango-dev librust-atk-dev libsoup2.4-dev libwebkit2gtk-4.0-dev npm xserver-xorg
     - name: Build
       run: |
+            /usr/X11/bin/startx
             cd src/web
             npm install
             cargo build --verbose
