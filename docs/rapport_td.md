@@ -195,7 +195,7 @@ Les enums sont précédés par un entête comme le suivant :
  * Name:    NomEnum
  * Members: NomMembre: Description du membre
  */
- ```
+```
  #### JS
 Les fonctions sont précédées par un entête comme le suivant :
 ```
@@ -231,7 +231,39 @@ L'environnement de travail utilisé lors du développement de ce projet consiste
 - Blackrust
 
 ## Difficultés rencontrées
-### 
+### Installation de la sousdépendance keyboard-config interompait l'installation de dépendances dans un runner Github Actions CI
+Lors de l'installation du pquets ```xserver-xorg```, le dépendance de ce dernier ```keyboard-config``` demande un saisi utilisateur qui ne peut pas être effectué dans l'exécution automatique du script de test. Donc la solution pour cela est d'exporter une variable d'environnement ```export DEBIAN_FRONTEND=noninteractive``` avant de procéder à l'installation. Ceci force keyboard-config à prendre un valeur par défaut et laisser le reste de l'installation se poursuivre.
+### Tests unitaires utilisant le serveur d'affichage ne réuissent pas sur Github Actions CI
+Pour certains tests unitaires, un serveur d'affichage X.Org est nécessaire mais cela n'est pas installé dans les containeurs de runner Github Actions CI. Donc la solution pour cela est de installer les paquets ```xserver-xorg``` et ```xserver-xorg-video-dummy```. Ceci permet de faire un serveur X11 en mode headless afin de valider que le programme s'exécute et affiche l'interface WebView. Afin de spécifier le fait que nous voulons utiliser le driver ```xserver-xorg-video-dummy```, nous devons créer un fichier de configuration comme la suivante et exécuter ```X :0 -config .github/workflows/xorg-dummy.conf &``` à la racine du projet :
+
+```conf
+# Source: https://techoverflow.net/2019/02/23/how-to-run-x-server-using-xserver-xorg-video-dummy-driver-on-ubuntu/
+Section "Monitor"
+  Identifier "Monitor0"
+  HorizSync 28.0-80.0
+  VertRefresh 48.0-75.0
+  # https://arachnoid.com/modelines/
+  # 1920x1080 @ 60.00 Hz (GTF) hsync: 67.08 kHz; pclk: 172.80 MHz
+  Modeline "1920x1080_60.00" 172.80 1920 2040 2248 2576 1080 1081 1084 1118 -HSync +Vsync
+EndSection
+
+Section "Device"
+  Identifier "Card0"
+  Driver "dummy"
+  VideoRam 256000
+EndSection
+
+Section "Screen"
+  DefaultDepth 24
+  Identifier "Screen0"
+  Device "Card0"
+  Monitor "Monitor0"
+  SubSection "Display"
+    Depth 24
+    Modes "1920x1080_60.00"
+  EndSubSection
+EndSection
+```
 ## Tests
 ### Tests unitaires
 Les tests unitaires se font avec l'outil en ligne de commande ```cargo test```. Les tests sont exécutés pour chaque commit envoyé au repo sur Github
