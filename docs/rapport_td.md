@@ -12,7 +12,59 @@ This project is a thin client, which aims to reduce the size and cost of the man
 ## Introduction
 
 ## Analyse de l'existant
-analyse concurencielle, parler de valeur ajoutée (multiplateforme, OSS vitesse, sécurité)
+Il existe déjà plusieurs solutions pour l'accès distant multiprotocole mais la plupart se limitent en termes de disponibilité sur les différentes architectures système ou sont propriétaires / payant.
+
+La valeur ajoutée proposée par ma solution est que ceci est léger, sécurisée, multiplateforme et rapide, permettant de tourner sur des machines avec peu de puissance de processeur, laissant de la puissance pour le décodage du flux vidéo de la session distante afin d'offrir une bonne expérience utilisateur. Ma solution est également open source, gratuit et multiplateforme. Ceci permet l'accès ouvert et de l'extensibilité pour les utilisateurs avec des capacités de développement Rust.
+
+Ce qui distingue Blackrust encore plus des autres prestations est son concept. Les autres applications sont des applications desktop faits pour êtres lancés une fois qu'on est déjà connecté sur une session locale, alors que Blackrust se lance avant la session locale et est un Display Manager / client distant. Cela veut dire que l'utilisateur a la possibilité d'uniquement lancer une ou plusieurs sessions distantes ou locales.
+
+Les solutions suivantes sont la concurrence directe/indirecte dans ce segment du marché:
+
+### [Remmina](https://remmina.org/)
+Remmina est un client de desktop remote pour linux écrit en C et qui utilise la librairie GTK+ pour se connecter à plusieurs types de sessions distants tels que  SSH, VNC, RDP, NX, XDMCP, et même des interfaces HTTP/HTTPS qu'on retrouve sur des routeurs.
+
+Ce logiciel remplit le même besoin et on ressemble beaucoup à ce projet, mais il y a une différence principale entre les deux. Blackrust sera disponible dès le lancement du client, et prendra directement en charge le lancement de la session distant ou de la session locale selon le choix de l'utilisateur. Remmina est une application GTK+ qui est lancée sur le bureau donc intrinsèquement utilise plus de ressources que Blackrust.
+
+Ce programme est gratuit, open source et sous la licence Copyleft.
+
+#### Avantages
+- Remmina propose les protocoles NX et HTTP/HTTPS en plus de celles de Blackrust
+- Système modulaire de plugins pour les protocoles distant
+- Interface simple, mais fonctionnel
+- Open source
+
+#### Inconvenients
+- Doit être lancé depuis le bureau Linux
+
+### [MobaXterm](https://mobaxterm.mobatek.net/)
+MobaXTerm est un client d'accès distant (SSH, telnet, rlogin, Mosh, RDP, VNC et XDMCP), terminal avec serveur Xorg intégré, et une compilation d'outils système (CygUtils liste matériel/processus ainsi qu'un package manager) et réseau (Serveurs HTTP/telnet/FTP/NFS/VNC/Cron, tunnels SSH, SSH Keygen, netstat, WakeOnLAN, nmap, CygUtils packet capture).
+
+En plus de tout cela, il propose quelques jeux simples et un éditeur de texte. MobaXterm est un environnement de bureau Linux complet sur Windows et va bien au-delà de la portée de l'accès distant sur la quel Blackrust se concentre.
+
+Il existe une version gratuite pour l'utilisation personnelle ainsi qu'une version payante avec davantage de fonctionnalités pour les utilisateurs professionnels.
+
+Ce programme est propriétaire et distribué sous des licences EULA propres à l'entreprise qui l'a développé, Mobatek.
+
+#### Avantages
+- Environnement de bureau Linux complet (accès distant, outils, jeux) sur Windows 
+- Système modulaire de plugins pour les outils
+- Nombre d'outils convenables pour un utilisateur expérimenté / développeur
+- Propriétaire
+
+#### Inconvénients
+- Doit être lancé depuis le bureau Windows
+- Interface complexe
+- Nombre d'outils imposant et possiblement intimidant pour l'utilisateur moyen.
+
+### [ThinLinc](https://www.cendio.com/)
+ThinLinc est un environnement d'accès distant complet basé sur le VNC qui utilise l'authentification par tunnel SSH avec les entreprises comme publique cible. 
+
+Ils proposent une solution propriétaire qui utilise des librairies open source, afin d'avoir un système client/serveur pour les clients légers interne, et même du télétravail selon la configuration réseau. Ils font partie de la concurrence à ce projet, car ils se situent dans le même domaine et remplissent le même cas d'utilisation, mais ils proposent un écosystème d'accès distant complet alors que Blackrust est un client polyvalent pour les installations basiques de RDP/VNC/SSH/XDMCP.
+
+### [Citrix](https://www.citrix.com/)
+Citrix est un environnement d'accès distant complet basé sur le RDP/RDS qui propose de meilleures performances que le RDP/RDS basique avec les entreprises comme publique cible. 
+
+Ils proposent une solution propriétaire qui utilise des librairies open source, afin d'avoir un système client/serveur pour les clients légers interne, et même du télétravail selon la configuration réseau. Ils font partie de la concurrence à ce projet, car ils se situent dans le même domaine et remplissent le même cas d'utilisation, mais ils proposent un écosystème d'accès distant complet alors que Blackrust est un client polyvalent pour les installations basiques de RDP/VNC/SSH/XDMCP.
 ## Cahier des charges
 [Lien vers le cahier des charges](index.md)
 ## Analyse fonctionelle
@@ -31,7 +83,7 @@ Le programme est décomposé en 5 modules principaux :
         - VNC
         - RDP
         - SSH
-- BlackrustLib: Fonctions commun à plusieurs modules, librairie interne
+- BlackrustLib: Fonctions communes à plusieurs modules, librairie interne
 ##### Main
 Le module main est le point d'entrée principale de l'application, lance l'aperçu WebView qui permet d'interfacer avec l'application et appeler les autres modules
 ##### ConfigMgr
@@ -90,7 +142,7 @@ De base, le langage Rust est assez sécure et fiable grâce aux faites suivantes
 - Fonctionnalités de tests unitaires intégrées
 
 #### Tests unitaires
-Rust contient une suite de tests unitaires permettant de fiabiliser le développement continu.
+Rust contient une suite de tests unitaires permettant de fiabiliser le développement continu. Les tests sont des fonctions marquées avec un flag ```#[test] ``` et exécutées avec l'outil interne ```cargo test```.
 
 #### Multi-plateforme
 Rust est un langage avec un compilateur portable comme le langage C, donc qui peut être compilé sur la plupart des plateformes avec certaines garanties de fonctionnalité. Rust catégorise ces garanties dans un système de tiers. Les tiers sont ainsi :
@@ -108,7 +160,7 @@ Rust est un langage avec un compilateur portable comme le langage C, donc qui pe
 Rust impose le snake case (exemple_nom) pour les noms des fonctions et des variables et pascal case (ExempleNom) pour le nom des objets.
 ##### JS/HTML
 Pour le JS et HTML j'ai choisi d'utiliser le camel case (exempleNom) pour les variables, noms des fonctions et nommage des composants HTML
-#### Commentaires
+#### Commentaires Rust/JS
 Les fichiers ont comme entête le suivant :
 ```
 /** File
@@ -117,14 +169,14 @@ Les fichiers ont comme entête le suivant :
  * Desc:		File purpose
  */ 
 ```
-
+##### Rust
 Les fonctions sont précédées par un entête comme le suivant :
 ```
 /** Function
  * Name:	fn_name
  * Purpose:	Ce que fait la fonction
  * Args:	(Type) nom_arg: Description argument
- * Returns: Type Description valeur de retour
+ * Returns: (Type) Description valeur de retour
  */
 ```
 
@@ -144,23 +196,54 @@ Les enums sont précédés par un entête comme le suivant :
  * Members: NomMembre: Description du membre
  */
  ```
+ #### JS
+Les fonctions sont précédées par un entête comme le suivant :
+```
+/** Function
+ * Name:	functionName
+ * Purpose:	Ce que fait la fonction
+ * Args:	nom_arg: Description argument
+ * Returns: (Type) Description valeur de retour
+ */
+```
 
 #### Commits
 Les messages de commits n'ont pas de norme spéciale, le seul forme respectée s'agit d'un commentaire descriptif bref en anglais qui explique ce que contient le commit. Les différentes actions sont séparées par des virgules. Exemple de message de commit : ("Added functionnality X, removed unused code")
 
 ### Organisation
-La gestion du projet se fait ave l'outil YouTrack. Ce dernier propose des fonctionnalités Gantt, Kanban, relevée d'horaires et de génération de rapports sur ces derniers. 
+La gestion du projet se fait avec l'outil YouTrack. Ce dernier propose des fonctionnalités Gantt, Kanban, relevée d'horaires et de génération de rapports sur ces derniers. 
 ### Environnement de travail
 L'environnement de travail utilisé lors du développement de ce projet consistes-en :
 
-- Ordinateur de l'école avec Arch Linux installé dessus,
-- Visual Studio Code comme IDE
-- Raspberry Pi 4 8G
+#### Matériel
+- Ordinateur de l'école "upchr-arch"
+- Raspberry Pi Model 4B (4GB) "Testbed-Rpi"
+- Jetson Nano Developer Kit "Testbed-JN"
+#### Software
+##### Arch Linux (upchr-arch)
+- Visual Studio Code
+- Rust "Stable"
+##### Raspbian / Debian 11 Bullseye (Testbed-Rpi)
+- Blackrust
+##### Arch Linux (Testbed-Rpi)
+- Blackrust
+##### Linux4Tegra (Testbed-JN)
+- Blackrust
 
 ## Difficultés rencontrées
+### 
 ## Tests
 ### Tests unitaires
-Les tests unitaires se font avec l'outil en ligne de commande ´´´cargo test´´´. Les tests sont exécutés pour chaque commit envoyé au repo sur Github
+Les tests unitaires se font avec l'outil en ligne de commande ```cargo test```. Les tests sont exécutés pour chaque commit envoyé au repo sur Github
+#### Périmètre des tests
+Les scénarios suivantes sont testées:
+
+- Les paniques
+- Lancement du WebView
+- La génération de la page web réussit
+- Que la génération de profile se crée, lit, modifie, et supprime
+- Que la génération de configuration réseau se crée, lit, modifie et supprime
+- Que l'envoi et la reception de packet TCP/UDP s'effectue
 ### Tests de compatibilité hardware (Intégration)
 Les tests d'intégration hardware servent à informer la portée possible de déploiement du programme. Rust est conçu pour être multiplateforme, mais il y a certaines dépendances qui auront besoin d'être vérifiées avant d'être sûr de la compatibilité avec les architectures système visées.
 #### Procédure définit
@@ -172,7 +255,8 @@ Les tests d'intégration hardware servent à informer la portée possible de dé
 
 ## Planning
 ### Prévisionnel
-Le planning prévisionniel à été établi avec la fonctionnalité Gantt de l'outil YouTrack que j'utilise pour la gestion du projet. J'ai choisi de faire avec cet outil car je peut générer de diverses types de rapports sur les tâches effectuées et le temps que ces derniers ont pris.
+Le planning prévisionnel a été établi avec la fonctionnalité Gantt de l'outil YouTrack que j'utilise pour la gestion du projet. J'ai choisi de faire avec cet outil car, je peux générer de divers types de rapports sur les tâches effectuées et le temps que ces derniers ont pris.
+![Planning prévisionnel](./img/planning_previsionnel.png)
 ### Effectif
 
 ## Livrables

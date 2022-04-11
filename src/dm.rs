@@ -277,3 +277,15 @@ pub enum Cmd {
 	DeleteNetworkProfile { profile: NetworkManagerProfile },
 	GetNetworkInterfaces
 }
+
+#[cfg(test)]
+mod test {
+	use super::*;
+	#[test]
+	fn open_webview_test(){
+		match open_webview() {
+			Ok(_) => assert!(true),
+			Err(message) => assert!(false, "{}", message)
+		}
+	}
+}
