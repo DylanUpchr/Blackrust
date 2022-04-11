@@ -18,14 +18,13 @@ jobs:
     - uses: actions/checkout@v3
     - name: Install dependencies
       run: |
-            apt-get update
-            export DEBIAN_FRONTEND=noninteractive
-            apt-get -y install rustc librust-pango-dev librust-atk-dev libsoup2.4-dev libwebkit2gtk-4.0-dev npm xserver-xorg xserver-xorg-video-dummy
+            sudo apt-get update
+            sudo DEBIAN_FRONTEND=noninteractive apt-get -y install rustc librust-pango-dev librust-atk-dev libsoup2.4-dev libwebkit2gtk-4.0-dev npm xserver-xorg xserver-xorg-video-dummy
     - name: Build
       run: |
             cd src/web
             npm install
             cargo build --verbose
-            X :0 -config ../../.github/workflows/xorg-dummy.conf &
+            sudo X :0 -config ../../.github/workflows/xorg-dummy.conf &
     - name: Run tests
       run: DISPLAY=:0 cargo test --verbose
