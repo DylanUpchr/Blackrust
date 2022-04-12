@@ -279,6 +279,30 @@ Les scénarios suivants sont testés :
 - Que la génération de configuration réseau se crée, lit, modifie et supprime
 - Que l'envoi et la rréceptionde packet TCP/UDP s'effectue
 
+##### Format description des tests
+Le format choisi pour décrire les tests unitaires est le suivant :
+```md
+###### fn_name_test
+| Propriété | Valeur |
+|-|-|
+| **Nom** | ```fn_name_test``` |
+| **Nom de la fonction testée** | ```fn_name``` |
+| **Fichier** | ```file.rs``` |
+| **Description** | Description du test, qu'est ce qu'on assure en l'exécutant |
+| **Critères d'acceptation** | Critère de réussite |
+| **Critères d'échec** | Critère d'échec |
+```
+Ce qui donne le rendu suivant :
+###### fn_name_test
+| Propriété | Valeur |
+|-|-|
+| **Nom** | ```fn_name_test``` |
+| **Nom de la fonction testée** | ```fn_name``` |
+| **Fichier** | ```file.rs``` |
+| **Description** | Description du test, qu'est ce qu'on assure en l'exécutant |
+| **Critères d'acceptation** | Critère de réussite |
+| **Critères d'échec** | Critère d'échec |
+
 ##### Description des tests
 ###### open_webview_test
 | Propriété | Valeur |
@@ -292,6 +316,26 @@ Les scénarios suivants sont testés :
 | **Critères d'échec** | Valeur de type Err est émis par open_webview avec un message d'erreur qui indique que l'objet s'est bien instanciée |
 || Le WebView lance une exception indiquant qu'il n'a pas pu se lancer dans le serveur Xorg headless (mock d'interface/dummy)
 
+###### base64_encode_images_test
+| Propriété | Valeur |
+|-|-|
+| **Nom** | ```base64_encode_images_test``` |
+| **Nom de la fonction testée** | ```base64_encode_images``` |
+| **Fichier** | ```dm.rs``` |
+| **Description** | Test unitaire qui assure qu'une balise ```<img>``` est détecté et que la valeur de la propriété src, qui est un chemin relatif vers l'image, soit transformée en string base64 afin d'encoder les images dans l'HTML |
+| **Critères d'acceptation** | String contenant le HTML encodée émis et conforme au résultat attendu |
+| **Critères d'échec** | String contenant le HTML encodée émis mais non conforme au résultat attendu |
+|| Panique du fonction base64_encode_images |
+
+###### exec_nmcli_command_test
+| Propriété | Valeur |
+|-|-|
+| **Nom** | ```exec_nmcli_command_test```|
+| **Nom de la fonction testée** | ```exec_nmcli_command```|
+| **Fichier** | ```network_mgr.rs``` |
+| **Description** | Test unitaire qui assure que les commandes nmcli s'exécutent et que la gestion d'erreur fonctionne |
+| **Critères d'acceptation** | Valeur de type Ok est émis par exec_nmcli_command avec le rendu stdout de la commande |
+| **Critères d'échec** | Panic ou valeur de Err est émis par exec_nmcli_command avec la sortie d'erreur stderr de la commande |
 
 ### Tests de compatibilité hardware (Intégration)
 Les tests d'intégration hardware servent à informer la portée possible de déploiement du programme. Rust est conçu pour être multiplateforme, mais il y a certaines dépendances qui auront besoin d'être vérifiées avant d'être sûr de la compatibilité avec les architectures système visées.

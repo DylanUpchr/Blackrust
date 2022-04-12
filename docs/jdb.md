@@ -148,4 +148,8 @@ Suppression du test unitaire qui testait que la longueur de la liste d'interface
 Test unitaire de l'affichage avec un serveur X11 headless (alors un mock d'interface visuel / interface dummy/virtuel) sur le Github Runner. Sur un poste local le test réussi tout seul avec le serveur X11 réel, mais pour les tests faits en container CI un écran virtuel est requis. Le test vérifie que le WebView se construit et se lance sur un serveur X11.
 
 ## 2022-04-12
-Documentation des tests
+Ajout du crate rstest pour les "data-driven" tests unitaires, ceci permet de définir des cas de tests et alimenter les fonctions de tests avec des données afin de tester plusieurs scénarios.
+Ajout et documentation des tests unitaires:
+- open_webview_test
+- base64_encode_images_test
+- exec_nmcli_command_test

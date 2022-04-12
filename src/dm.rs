@@ -213,7 +213,7 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 fn combined_html_css_js() -> String {
 	format!(
 		"{}{}{}{}",
-		base64_encode_images(include_str!("web/index.html")),
+		base64_encode_images(include_str!("web/index.html"), "./src/web/"),
 		inline_style(include_str!("web/style.css")),
 		inline_script(include_str!("web/functions.js")),
 		inline_script(include_str!("web/node_modules/@fortawesome/fontawesome-free/js/all.min.js"))
@@ -226,9 +226,8 @@ fn combined_html_css_js() -> String {
  * Args:	(&str) HTML webpage with image paths in src attributes
  * Returns:	(String) HTML webpage with base64 image strings in src attributes
  */
-fn base64_encode_images(html: &str) -> String {
-	let web_dir_prefix = "./src/web/";
-    let re = Regex::new(r"(\./img/.*\.png)").unwrap();
+fn base64_encode_images(html: &str, web_dir_prefix: &str) -> String {
+    let re = Regex::new(r"(\./.*\.png)").unwrap();
     let result = re.replace_all(html, |caps: &Captures| {
         format!("{}", image_base64::to_base64(&format!("{}{}", web_dir_prefix, &caps[0])))
     });
@@ -284,5 +283,14 @@ mod test {
 			Ok(_) => assert!(true),
 			Err(message) => assert!(false, "{}", message)
 		}
+	}
+	#[test]
+	fn base64_encode_images_test(){
+		let test_img_path = "./img/base64_8x8_image.png";
+		let test_img_path_prefix = "./test_resources/";
+		let test_img_base64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH5gQMCyARQP6g9gAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAB+SURBVAjXdY6xDoQgEAUf5BLK7eiFmGjEXzH6wXyFGKv1A+i2g2qvuPacbqoZo6oAeu8iAoCInHMAPgBqraUU5gdAjCGl5L1Hay3nvO3HME7DOG37kXNurVkRYX7O6wYA4Lxu5kdELF6wRBRjWJf55+syxxiIyKjq37h52/0CrmdF/bk0+fgAAAAASUVORK5CYII=";
+		let html_unencoded = String::from(format!(r#"<img src="{}"></img>"#, test_img_path));
+		let html_encoded = String::from(format!(r#"<img src="{}"></img>"#, test_img_base64));
+		assert_eq!(html_encoded, base64_encode_images(&html_unencoded, test_img_path_prefix));
 	}
 }
