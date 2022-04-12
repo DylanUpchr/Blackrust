@@ -16,7 +16,23 @@ use blackrust_lib::profile::{NetworkManagerProfile,NetworkManagerProfileType,Int
  * Returns: (String) System hostname
  */
 pub fn get_hostname() -> Result<String, String> {
-    exec_nmcli_command(vec!("general", "hostname"))
+    match exec_nmcli_command(vec!("general", "hostname")) {
+        Ok(stdout) => Ok(stdout),
+        Err(stderr) => Err(stderr) //TODO localized error message instead of stderr
+    }
+}
+
+/** Function
+ * Name:	set_hostname
+ * Purpose:	Set system hostname
+ * Args:	(&str) hostname to set
+ * Returns: Result<String, String> Changed hostname or stderr from command
+ */
+pub fn set_hostname(hostname: &str) -> Result<String, String> {
+    match exec_nmcli_command(vec!("general", "hostname", hostname)) {
+        Ok(stdout) => Ok(stdout),
+        Err(stderr) => Err(stderr) //TODO localized error message instead of stderr
+    }
 }
 
 /** Function
@@ -70,27 +86,12 @@ pub fn get_interface_by_name(name: String) -> Result<Interface, String>{
 }
 
 /** Function
- * Name:	set_hostname
- * Purpose:	Set system hostname
- * Args:	(&str) hostname to set
- * Returns: Result<String, String> Changed hostname or stderr from command
- */
-pub fn set_hostname(hostname: &str) -> Result<String, String> {
-    match exec_nmcli_command(vec!("general", "hostname", hostname)) {
-        Ok(stdout) => Ok(stdout),
-        Err(stderr) => Err(stderr) //TODO localized error message instead of stderr
-    }
-}
-
-/** Function
  * Name:	load_profiles
  * Purpose:	Load saved profiles from NetworkManager
  * Args:	None
  * Returns: (Vec<NetworkManagerProfile>) NetworkManager profiles
  */
 pub fn load_all_profiles() -> Result<Vec<NetworkManagerProfile>, String>{
-    use std::str::FromStr;
-
     let mut profiles: Vec<NetworkManagerProfile> = vec!();
     match exec_nmcli_command(vec!("connection", "show")) {
         Ok(stdout) => {
@@ -160,9 +161,20 @@ pub fn get_detailed_profile_by_id(id: String) -> Result<NetworkManagerProfile, S
  * Args:	None
  * Returns:	(Result<String, String>) NetworkManagerProfile id or error string
  */
-pub fn create_profile() -> Result<String, String>{
-    let new_id: String = String::new();
-    Ok(new_id)
+pub fn create_profile(profile_type: NetworkManagerProfileType) -> Result<String, String>{
+    match exec_nmcli_command(vec!("connection", "add", "type", profile_type.to_str())) {
+        Ok(stdout) => {
+            let re = Regex::new("(?P<id>([\\w]+-){4}([\\w]+))").unwrap();
+            let caps = re.captures(&stdout);
+            match caps {
+                Some(cap) => {
+                    Ok(String::from(cap.name("id").unwrap().as_str()))
+                },
+                None => Err(String::from("Could not create network connection profile."))
+            }
+        },
+        Err(message) => Err(message)
+    }
 }
 
 /** Function
@@ -238,5 +250,45 @@ mod test {
             Ok(_) => assert!(expected),
             Err(_) => assert!(!expected)
         }
+    }
+    #[test]
+    fn get_hostname_test(){
+
+    }
+    #[rstest]
+    fn set_hostname_test(){
+
+    }
+    #[test]
+    fn get_all_interfaces_test(){
+
+    }
+    #[test]
+    fn get_interface_by_name(){
+
+    }
+    #[test]
+    fn load_all_profiles_test(){
+
+    }
+    #[test]
+    fn create_profile_test(){
+
+    }
+    #[test]
+    fn get_simple_profile_by_id_test(){
+
+    }
+    #[test]
+    fn get_detailed_profile_by_id_test(){
+
+    }
+    #[rstest]
+    fn modify_profile_test(){
+
+    }
+    #[test]
+    fn delete_profile_test(){
+
     }
 }

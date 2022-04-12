@@ -31,7 +31,6 @@ fn main() {
 		},
 		Err(message) => (println!("{}", message))
 	}
-	println!("{:?}", network_mgr::exec_nmcli_command(vec!("show")));
 }
 
 /** Function
@@ -144,8 +143,8 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 								Err(message) => (println!("{}", message))
 							}
 						),
-						CreateNetworkProfile => ({
-							let id = network_mgr::create_profile().unwrap();
+						CreateNetworkProfile { profile_type } => ({
+							let id = network_mgr::create_profile(blackrust_lib::profile::NetworkManagerProfileType::from_str(&profile_type).unwrap()).unwrap();
 							match &network_mgr::load_all_profiles() {
 								Ok(profiles) => (webview.eval(
 									&format!("loadNetworkProfiles({})",
@@ -269,7 +268,7 @@ pub enum Cmd {
 	DeleteConnectionProfile { profile: Profile },
 	GetNetworkProfiles,
 	LoadNetworkProfile { callback: String, id: String },
-	CreateNetworkProfile,
+	CreateNetworkProfile { profile_type: String } ,
 	SaveNetworkProfile { profile: NetworkManagerProfile },
 	DeleteNetworkProfile { profile: NetworkManagerProfile },
 	GetNetworkInterfaces
