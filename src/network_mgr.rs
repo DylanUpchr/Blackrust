@@ -3,7 +3,7 @@
  * Date:		2021-02-03
  * Desc:		Blackrust network manager crate
  */
-use std::process::{Command, Output};
+use std::process::Command;
 use std::str;
 use regex::Regex;
 use itertools::Itertools;

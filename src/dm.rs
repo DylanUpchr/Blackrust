@@ -41,7 +41,6 @@ fn main() {
  */
 fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 	let html = combined_html_css_js();
-	let mut webview: WebView<'static, &'static str>;
 	let webview_result = web_view::builder()
 		.content(Content::Html(html))
 		.size(1280, 720)
@@ -189,7 +188,17 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 								)?),
 								Err(message) => (println!("{}", message))
 							}
-						)
+						),
+						GetHostname => (
+							match network_mgr::get_hostname() {
+								Ok(hostname) => webview.eval(&format!("setHostname({:?})", hostname)).unwrap(),
+								Err(message) => (println!("{}", message))
+							}),
+						SetHostname { hostname } => (
+							match network_mgr::set_hostname(&hostname) {
+								Ok(hostname) => webview.eval(&format!("setHostname({:?})", hostname)).unwrap(),
+								Err(message) => (println!("{}", message))
+							})
 					}
 				),
 				_ => (println!("Could not match command: {}", arg))
@@ -271,7 +280,9 @@ pub enum Cmd {
 	CreateNetworkProfile { profile_type: String } ,
 	SaveNetworkProfile { profile: NetworkManagerProfile },
 	DeleteNetworkProfile { profile: NetworkManagerProfile },
-	GetNetworkInterfaces
+	GetNetworkInterfaces,
+	GetHostname,
+	SetHostname { hostname: String }
 }
 
 #[cfg(test)]
