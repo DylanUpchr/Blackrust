@@ -278,6 +278,21 @@ Les scénarios suivants sont testés :
 - Que la génération de profile se crée, lit, modifie, et supprime
 - Que la génération de configuration réseau se crée, lit, modifie et supprime
 - Que l'envoi et la rréceptionde packet TCP/UDP s'effectue
+
+##### Description des tests
+###### open_webview_test
+| Propriété | Valeur |
+|-|-|
+| **Nom** | ```open_webview_test```|
+| **Nom de la fonction testée** | ```open_webview```|
+| **Fichier** | ```dm.rs``` |
+| **Description** | Test unitaire qui assure que la construction et affichage de l'interface WebView est réussi |
+| **Critères d'acceptation** | Valeur de type Ok est émis par open_webview qui indique que l'objet s'est bien instanciée |
+|| Le WebView se lance dans le serveur Xorg headless (mock d'interface/dummy)|
+| **Critères d'échec** | Valeur de type Err est émis par open_webview avec un message d'erreur qui indique que l'objet s'est bien instanciée |
+|| Le WebView lance une exception indiquant qu'il n'a pas pu se lancer dans le serveur Xorg headless (mock d'interface/dummy)
+
+
 ### Tests de compatibilité hardware (Intégration)
 Les tests d'intégration hardware servent à informer la portée possible de déploiement du programme. Rust est conçu pour être multiplateforme, mais il y a certaines dépendances qui auront besoin d'être vérifiées avant d'être sûr de la compatibilité avec les architectures système visées.
 #### Procédure définit

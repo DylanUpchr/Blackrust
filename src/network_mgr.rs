@@ -230,5 +230,16 @@ pub fn exec_nmcli_command(args: Vec<&str>) -> Result<String, String> {
 
 #[cfg(test)]
 mod test {
+    use rstest::rstest;
 	use super::*;
+    #[rstest]
+    #[case(vec!("connection", "show"))]
+    #[should_panic]
+    #[case(vec!("show"))]
+    fn exec_nmcli_command(#[case] input: Vec<&str>){
+        match exec_nmcli_command(input) {
+            Ok(_) => assert!(true),
+            Err(message) => assert!(false, "{}", message)
+        }
+    }
 }

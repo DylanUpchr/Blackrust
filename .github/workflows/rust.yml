@@ -19,7 +19,7 @@ jobs:
     - name: Install dependencies
       run: |
             sudo apt-get update
-            sudo DEBIAN_FRONTEND=noninteractive apt-get -y install rustc librust-pango-dev librust-atk-dev libsoup2.4-dev libwebkit2gtk-4.0-dev npm xserver-xorg xserver-xorg-video-dummy
+            sudo DEBIAN_FRONTEND=noninteractive apt-get -y install rustc librust-pango-dev librust-atk-dev libsoup2.4-dev libwebkit2gtk-4.0-dev npm xserver-xorg xserver-xorg-video-dummy network-manager
     - name: Make & Run X11
       run: |
             make build

@@ -17,7 +17,7 @@ toml = "*"
 itertools = "*"
 dirs = "*"
 byteorder = "*"
-datatest-stable = "*"
+rstest = "*"
 blackrust_lib = {path = "blackrust_lib"}
 
 [[bin]]

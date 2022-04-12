@@ -142,4 +142,10 @@ Gestion des erreurs dans le crate network_mgr en remplaçant des appels a unwrap
 
 Résolution du problème de panic lors du chargement de profile dans l'interface de réglages réseau. Le problème était que l'objet n'était pas sérialisé et donc je ne pouvais pas envoyer la propriété demandée. La solution était de parse le string JSON et récupérer la propriété souhaitée.
 
-Suppression du test unitaire qui testait que la longeur de la liste d'interfaces réseau soit supérieur à 0, qui ne réussi pas car le runner de Github Actions n'as pas d'interface réseau ou n'as pas NetworkManager installé. Solutions possibles: Utiliser tokio test pour assurer que le resultat est du type "Ok" ou istaller et démarrer NetworkManager sur le runner github
+Suppression du test unitaire qui testait que la longueur de la liste d'interfaces réseau soit supérieur à 0, qui ne réussi pas car, le runner de Github Actions n'as pas d'interface réseau ou n'as pas NetworkManager installé. Solutions possibles: Faire un match statement sur le résultat et laisser le test paniquer et échouer si cela ne fonctionne pas. Le tests sont marqués comme échoué lors d'une panique donc une vérification pour un retour Err qui n'est pas implémenté n'est pas requis.
+
+## 2022-04-11
+Test unitaire de l'affichage avec un serveur X11 headless (alors un mock d'interface visuel / interface dummy/virtuel) sur le Github Runner. Sur un poste local le test réussi tout seul avec le serveur X11 réel, mais pour les tests faits en container CI un écran virtuel est requis. Le test vérifie que le WebView se construit et se lance sur un serveur X11.
+
+## 2022-04-12
+Documentation des tests
