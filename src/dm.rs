@@ -31,6 +31,7 @@ fn main() {
 		},
 		Err(message) => (println!("{}", message))
 	}
+	println!("{:?}", network_mgr::exec_nmcli_command(vec!("show")));
 }
 
 /** Function

@@ -212,7 +212,6 @@ pub fn delete_profile(profile: NetworkManagerProfile) -> Result<(), String>{
  */
 pub fn exec_nmcli_command(args: Vec<&str>) -> Result<String, String> {
     let command =  Command::new("nmcli").args(args.clone()).output();
-    
     match command {
         Ok(output) => ({
             if output.stderr.is_empty() && !output.stdout.is_empty() {
@@ -232,13 +231,12 @@ mod test {
     use rstest::rstest;
 	use super::*;
     #[rstest]
-    #[case(vec!("connection", "show"))]
-    #[should_panic]
-    #[case(vec!("show"))]
-    fn exec_nmcli_command_test(#[case] input: Vec<&str>){
+    #[case(vec!("connection", "show"), true)]
+    #[case(vec!("show"), false)]
+    fn exec_nmcli_command_test(#[case] input: Vec<&str>, #[case] expected: bool){
         match exec_nmcli_command(input) {
-            Ok(_) => assert!(true),
-            Err(message) => assert!(false, "{}", message)
+            Ok(_) => assert!(expected),
+            Err(_) => assert!(!expected)
         }
     }
 }
