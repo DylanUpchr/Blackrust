@@ -23,6 +23,6 @@ jobs:
     - name: Make & Run X11
       run: |
             make build
-            sudo X :0 -config ../../.github/workflows/xorg-dummy.conf &
+            sudo X :0 -config .github/workflows/xorg-dummy.conf &
     - name: Run tests
       run: DISPLAY=:0 cargo test --verbose
