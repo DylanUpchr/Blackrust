@@ -225,7 +225,6 @@ pub fn exec_nmcli_command(args: Vec<&str>) -> Result<String, String> {
         }),
         Err(_) => Err(format!("Could not execute nmcli command with args: {:?}", args).to_string())
     }
-
 }
 
 #[cfg(test)]
@@ -236,7 +235,7 @@ mod test {
     #[case(vec!("connection", "show"))]
     #[should_panic]
     #[case(vec!("show"))]
-    fn exec_nmcli_command(#[case] input: Vec<&str>){
+    fn exec_nmcli_command_test(#[case] input: Vec<&str>){
         match exec_nmcli_command(input) {
             Ok(_) => assert!(true),
             Err(message) => assert!(false, "{}", message)
