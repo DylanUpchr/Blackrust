@@ -259,7 +259,7 @@ mod test {
         }
     }
     #[rstest]
-    #[case(get_hostname().unwrap(), true)]
+    #[case(String::from("arch"), true)]
     #[case(String::from("-invalid"), false)]
     fn set_hostname_test(#[case] input: String, #[case] expected: bool){
         println!("{}", input.len());
