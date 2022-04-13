@@ -248,23 +248,32 @@ mod test {
     fn exec_nmcli_command_test(#[case] input: Vec<&str>, #[case] expected: bool){
         match exec_nmcli_command(input) {
             Ok(_) => assert!(expected),
-            Err(_) => assert!(!expected)
+            Err(message) => assert!(!expected, "{}", message)
         }
     }
     #[test]
     fn get_hostname_test(){
-
+        match get_hostname() {
+            Ok(_) => assert!(true),
+			Err(message) => assert!(false, "{}", message)
+        }
     }
     #[rstest]
-    fn set_hostname_test(){
-
+    #[case(get_hostname().unwrap(), true)]
+    #[case(String::from("-invalid"), false)]
+    fn set_hostname_test(#[case] input: String, #[case] expected: bool){
+        println!("{}", input.len());
+        match set_hostname(&input) {
+            Ok(_) => assert!(expected),
+            Err(message) => assert!(!expected, "{}", message)
+        }
     }
     #[test]
     fn get_all_interfaces_test(){
 
     }
     #[test]
-    fn get_interface_by_name(){
+    fn get_interface_by_name_test(){
 
     }
     #[test]

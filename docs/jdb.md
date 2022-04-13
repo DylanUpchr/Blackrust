@@ -149,7 +149,18 @@ Test unitaire de l'affichage avec un serveur X11 headless (alors un mock d'inter
 
 ## 2022-04-12
 Ajout du crate rstest pour les "data-driven" tests unitaires, ceci permet de définir des cas de tests et alimenter les fonctions de tests avec des données afin de tester plusieurs scénarios.
-Ajout et documentation des tests unitaires:
+Ajout, implémentation et documentation des tests unitaires:
 - open_webview_test
 - base64_encode_images_test
 - exec_nmcli_command_test
+- get_hostname_test
+- set_hostname_test
+Planification des tests unitaires pour le module network_mgr:
+- get_all_interfaces_test
+- get_interface_by_name_test
+- load_all_profiles_test
+- create_profile_test
+- get_simple_profile_by_id_test
+- get_detailed_profile_by_id_test
+- modify_profile_test
+- delete_profile_test
