@@ -242,6 +242,7 @@ pub fn exec_nmcli_command(args: Vec<&str>) -> Result<String, String> {
 mod test {
     use rstest::rstest;
 	use super::*;
+
     #[rstest]
     #[case(vec!("connection", "show"), true)]
     #[case(vec!("show"), false)]
@@ -270,29 +271,46 @@ mod test {
     }
     #[test]
     fn get_all_interfaces_test(){
-
+        match get_all_interfaces() {
+            Ok(_) => assert!(true),
+            Err(message) => assert!(false, "{}", message)
+        }
     }
     #[test]
     fn get_interface_by_name_test(){
-
+        let interface_name = String::from("lo");        match get_interface_by_name(interface_name) {
+            Ok(_) => assert!(true),
+            Err(message) => assert!(false, "{}", message)
+        }
     }
     #[test]
     fn load_all_profiles_test(){
-
+        match load_all_profiles() {
+            Ok(_) => assert!(true),
+            Err(message) => assert!(false, "{}", message)
+        }
     }
     #[test]
     fn create_profile_test(){
-
+        match create_profile(NetworkManagerProfileType::Ethernet) {
+            Ok(id) => assert!(id != ""),
+            Err(message) => assert!(false, "{}", message)
+        }
     }
+    #[rstest]
     #[test]
     fn get_simple_profile_by_id_test(){
-
+        /*match get_simple_profile_by_id() {
+            Ok(_) => assert!(true),
+            Err(message) => assert!(false, "{}", message)
+        }*/
     }
     #[test]
     fn get_detailed_profile_by_id_test(){
 
     }
     #[rstest]
+    #[test]
     fn modify_profile_test(){
 
     }

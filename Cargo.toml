@@ -17,8 +17,11 @@ toml = "*"
 itertools = "*"
 dirs = "*"
 byteorder = "*"
-rstest = "*"
 blackrust_lib = {path = "blackrust_lib"}
+
+
+[dev-dependencies]
+rstest = "*"
 
 [[bin]]
 name = "blackrust"
