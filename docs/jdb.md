@@ -164,3 +164,17 @@ Planification des tests unitaires pour le module network_mgr:
 - get_detailed_profile_by_id_test
 - modify_profile_test
 - delete_profile_test
+
+## 2022-04-13
+Je rencontre un problème de droits révelé par le test unitaire pour set le hostname de la machine. Les droits définis par [Polkit](https://wiki.archlinux.org/title/Polkit) (org.freedesktop.NetworkManager.settings.modify.hostname) requière des droits administrateur et donc le programme ne peut pas changer le nom d'hôte de la machine locale. La solution est de définir la règle suivant avec un fichier .rule contenant suivant polkit copiée dans le répertoire ```/usr/share/polkit/rules.d/```:
+```js
+polkit.addRule(function(action, subject) {
+    if (subject.user == "blackrust") {
+        polkit.log("action=" + action);
+        polkit.log("subject=" + subject);
+        if (action.id.indexOf("org.freedesktop.NetworkManager.settings.modify.hostname") == 0) {
+            return polkit.Result.YES;
+        }
+    }
+});
+```

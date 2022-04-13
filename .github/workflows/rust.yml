@@ -19,7 +19,12 @@ jobs:
     - name: Install dependencies
       run: |
             sudo apt-get update
-            sudo DEBIAN_FRONTEND=noninteractive apt-get -y install rustc librust-pango-dev librust-atk-dev libsoup2.4-dev libwebkit2gtk-4.0-dev npm xserver-xorg xserver-xorg-video-dummy network-manager
+            sudo DEBIAN_FRONTEND=noninteractive apt-get -y install rustc librust-pango-dev librust-atk-dev libsoup2.4-dev libwebkit2gtk-4.0-dev npm xserver-xorg xserver-xorg-video-dummy network-manager p11-kit
+    - name: Setup
+      run: |
+            sudo useradd -r blackrust
+            sudo su - blackrust
+            sudo cp ./blackrust.rules /usr/share/polkit-1/rules.d/
     - name: Make & Run X11
       run: |
             make build

@@ -1,0 +1,9 @@
+polkit.addRule(function(action, subject) {
+    if (subject.user == "blackrust") {
+        polkit.log("action=" + action);
+        polkit.log("subject=" + subject);
+        if (action.id.indexOf("org.freedesktop.NetworkManager.settings.modify.hostname") == 0) {
+            return polkit.Result.YES;
+        }
+    }
+});
