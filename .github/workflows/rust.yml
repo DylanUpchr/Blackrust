@@ -23,11 +23,10 @@ jobs:
     - name: Setup
       run: |
             sudo useradd -r blackrust
-            sudo su - blackrust
             sudo cp ./blackrust.rules /usr/share/polkit-1/rules.d/
     - name: Make & Run X11
       run: |
             make build
             sudo X :0 -config .github/workflows/xorg-dummy.conf &
     - name: Run tests
-      run: DISPLAY=:0 cargo test --verbose
+      run: DISPLAY=:0 sudo cargo test --verbose

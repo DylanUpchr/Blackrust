@@ -17,7 +17,7 @@ use blackrust_lib::profile::{NetworkManagerProfile,NetworkManagerProfileType,Int
  */
 pub fn get_hostname() -> Result<String, String> {
     match exec_nmcli_command(vec!("general", "hostname")) {
-        Ok(stdout) => Ok(stdout),
+        Ok(stdout) => Ok(stdout.trim().to_string()),
         Err(stderr) => Err(stderr) //TODO localized error message instead of stderr
     }
 }
@@ -259,7 +259,7 @@ mod test {
         }
     }
     #[rstest]
-    #[case(String::from("arch"), true)]
+    #[case(get_hostname().unwrap(), true)]
     #[case(String::from("-invalid"), false)]
     fn set_hostname_test(#[case] input: String, #[case] expected: bool){
         println!("{}", input.len());

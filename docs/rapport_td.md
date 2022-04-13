@@ -337,6 +337,107 @@ Ce qui donne le rendu suivant :
 | **Critères d'acceptation** | Valeur de type Ok est émis par exec_nmcli_command avec le rendu stdout de la commande |
 | **Critères d'échec** | Panic ou valeur de Err est émis par exec_nmcli_command avec la sortie d'erreur stderr de la commande |
 
+###### get_hostname_test
+| Propriété | Valeur |
+|-|-|
+| **Nom** | ```get_hostname_test``` |
+| **Nom de la fonction testée** | ```get_hostname``` |
+| **Fichier** | ```network_mgr.rs``` |
+| **Description** | Test unitaire qui assure que la récupération du nom d'hôte réussi|
+| **Critères d'acceptation** | Valeur de type Ok contenant le nom d'hôte est émis par get_hostname |
+| **Critères d'échec** | Valeur de type Err est émis avec le message d'erreur de l'appel exec_nmcli_command |
+
+###### set_hostname_test
+| Propriété | Valeur |
+|-|-|
+| **Nom** | ```set_hostname_test``` |
+| **Nom de la fonction testée** | ```set_hostname``` |
+| **Fichier** | ```network_mgr.rs``` |
+| **Description** | Test unitaire qui assure que l'affectation de nom d'hôte réussi avec un hostname valide et échoue avec un hostname invalide|
+| **Critères d'acceptation** | Lors de l'affectation du nom d'hôte "valid", un valeur de type Ok est émis |
+|| Lors de l'affectation du nom d'hôte "-invalid", un valeur de type Err avec le message d'erreur de l'appel exec_nmcli_command est émis |
+| **Critères d'échec** | Valeur de type Err est émis avec le message d'erreur de l'appel exec_nmcli_command lors d'une affectation de nom d'hôte valide |
+
+###### get_all_interfaces_test
+| Propriété | Valeur |
+|-|-|
+| **Nom** | ```get_all_interfaces_test``` |
+| **Nom de la fonction testée** | ```get_all_interfaces``` |
+| **Fichier** | ```network_mgr.rs``` |
+| **Description** | Test unitaire qui assure que la récuperation de la liste des interfaces depuis l'outil en ligne de commande de NetworkManager réussi |
+| **Critères d'acceptation** | Critère de réussite |
+| **Critères d'échec** | Critère d'échec |
+
+###### get_interface_by_name_test
+| Propriété | Valeur |
+|-|-|
+| **Nom** | ```get_interface_by_name_test``` |
+| **Nom de la fonction testée** | ```get_interface_by_name``` |
+| **Fichier** | ```network_mgr.rs``` |
+| **Description** | Test unitaire qui assure que la récuperation d'une interface depuis son nom avec l'outil en ligne de commande de NetworkManager réussi|
+| **Critères d'acceptation** | Critère de réussite |
+| **Critères d'échec** | Critère d'échec |
+
+###### load_all_profiles_test
+| Propriété | Valeur |
+|-|-|
+| **Nom** | ```load_all_profiles_test``` |
+| **Nom de la fonction testée** | ```load_all_profiles``` |
+| **Fichier** | ```network_mgr.rs``` |
+| **Description** | Test unitaire qui assure que la récuperation de la liste de profiles de connexion réseau depuis l'outil en ligne de commande de NetworkManager réussi |
+| **Critères d'acceptation** | Critère de réussite |
+| **Critères d'échec** | Critère d'échec |
+
+###### create_profile_test
+| Propriété | Valeur |
+|-|-|
+| **Nom** | ```create_profile_test``` |
+| **Nom de la fonction testée** | ```create_profile``` |
+| **Fichier** | ```network_mgr.rs``` |
+| **Description** | Test unitaire qui assure que la création de profile de connexion réseau avec l'outil en ligne de commande de NetworkManager réussi |
+| **Critères d'acceptation** | Critère de réussite |
+| **Critères d'échec** | Critère d'échec |
+
+###### get_simple_profile_by_id_test
+| Propriété | Valeur |
+|-|-|
+| **Nom** | ```get_simple_profile_by_id_test``` |
+| **Nom de la fonction testée** | ```get_simple_profile_by_id``` |
+| **Fichier** | ```network_mgr.rs``` |
+| **Description** | Test unitaire qui assure que la récuperation d'un profile de connexion réseau depuis son nom avec l'outil en ligne de commande de NetworkManager réussi |
+| **Critères d'acceptation** | Critère de réussite |
+| **Critères d'échec** | Critère d'échec |
+
+###### get_detailed_profile_by_id_test
+| Propriété | Valeur |
+|-|-|
+| **Nom** | ```get_detailed_profile_by_id_test``` |
+| **Nom de la fonction testée** | ```get_detailed_profile_by_id``` |
+| **Fichier** | ```network_mgr.rs``` |
+| **Description** | Test unitaire qui assure que la récuperation d'un profile de connexion réseau depuis son nom avec l'outil en ligne de commande de NetworkManager réussi |
+| **Critères d'acceptation** | Critère de réussite |
+| **Critères d'échec** | Critère d'échec |
+
+###### modify_profile_test
+| Propriété | Valeur |
+|-|-|
+| **Nom** | ```modify_profile_test``` |
+| **Nom de la fonction testée** | ```modify_profile_test``` |
+| **Fichier** | ```network_mgr.rs``` |
+| **Description** | Test unitaire qui assure que la modification de la d'un profile de connexion réseau avec l'outil en ligne de commande de NetworkManager réussi |
+| **Critères d'acceptation** | Critère de réussite |
+| **Critères d'échec** | Critère d'échec |
+
+###### delete_profile_test
+| Propriété | Valeur |
+|-|-|
+| **Nom** | ```delete_profile_test``` |
+| **Nom de la fonction testée** | ```delete_profile``` |
+| **Fichier** | ```network_mgr.rs``` |
+| **Description** | Test unitaire qui assure que la suppression de la d'un profile de connexion réseau avec l'outil en ligne de commande de NetworkManager réussi |
+| **Critères d'acceptation** | Critère de réussite |
+| **Critères d'échec** | Critère d'échec |
+
 ### Tests de compatibilité hardware (Intégration)
 Les tests d'intégration hardware servent à informer la portée possible de déploiement du programme. Rust est conçu pour être multiplateforme, mais il y a certaines dépendances qui auront besoin d'être vérifiées avant d'être sûr de la compatibilité avec les architectures système visées.
 #### Procédure définit
