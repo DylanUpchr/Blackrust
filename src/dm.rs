@@ -7,13 +7,14 @@
 extern crate serde_derive;
 extern crate serde_json;
 extern crate image_base64;
+mod config_mgr;
+mod network_mgr;
+mod remote_session_mgr;
 use web_view::*;
 use regex::Regex;
 use regex::Captures;
 use blackrust_lib::profile::{Profile, NetworkManagerProfile};
-mod config_mgr;
-mod network_mgr;
-mod remote_session_mgr;
+use network_mgr::{NetworkManager, NetworkTool};
 
 /** Function
  * Name:	main
@@ -49,11 +50,12 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 		.user_data("")
 		.invoke_handler(|webview, arg| {
 			use Cmd::*;
+			let network_tool = network_mgr::NetworkManager::new();
 			match serde_json::from_str::<Cmd>(arg) {
 				Ok(cmd) => (
 					match cmd {
 						Init => (
-							match network_mgr::get_hostname() {
+							match network_mgr::get_hostname(&network_tool) {
 								Ok(hostname) => webview.eval(&format!("setHostname({:?})", hostname)).unwrap(),
 								Err(message) => (println!("{}", message))
 							}),
@@ -118,7 +120,7 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 							config_mgr::delete_profile(profile)
 						),
 						GetNetworkProfiles => (
-							match &network_mgr::load_all_profiles() {
+							match &network_mgr::load_all_profiles(&network_tool) {
 								Ok(profiles) => (webview.eval(
 									&format!("loadNetworkProfiles({})",
 										serde_json::to_string(
@@ -130,7 +132,7 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 							}
 						),
 						LoadNetworkProfile { callback, id } => (
-							match &network_mgr::get_simple_profile_by_id(id) {
+							match &network_mgr::get_simple_profile_by_id(&network_tool, id) {
 								Ok(profile) => (webview.eval(
 									&format!("{}({})",
 										callback,
@@ -143,8 +145,8 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 							}
 						),
 						CreateNetworkProfile { profile_type } => ({
-							let id = network_mgr::create_profile(blackrust_lib::profile::NetworkManagerProfileType::from_str(&profile_type).unwrap()).unwrap();
-							match &network_mgr::load_all_profiles() {
+							let id = network_mgr::create_profile(&network_tool, blackrust_lib::profile::NetworkManagerProfileType::from_str(&profile_type).unwrap()).unwrap();
+							match &network_mgr::load_all_profiles(&network_tool) {
 								Ok(profiles) => (webview.eval(
 									&format!("loadNetworkProfiles({})",
 										serde_json::to_string(
@@ -154,7 +156,7 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 								)?),
 								Err(message) => (println!("{}", message))
 							}
-							match &network_mgr::get_detailed_profile_by_id(id) {
+							match &network_mgr::get_detailed_profile_by_id(&network_tool, id) {
 								Ok(profile) => (webview.eval(
 									&format!("loadSelectedNetworkProfile({})",
 										serde_json::to_string(
@@ -166,19 +168,19 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 							}
 						}),
 						SaveNetworkProfile { profile } => (
-							match network_mgr::modify_profile(profile) {
+							match network_mgr::modify_profile(&network_tool, profile) {
 								Err(message) => (println!("{}", message)),
 								_ => ()
 							}
 						),
 						DeleteNetworkProfile { profile } => (
-							match network_mgr::delete_profile(profile) {
+							match network_mgr::delete_profile(&network_tool, profile) {
 								Err(message) => (println!("{}", message)),
 								_ => ()
 							}
 						),
 						GetNetworkInterfaces => (
-							match &network_mgr::get_all_interfaces() {
+							match &network_mgr::get_all_interfaces(&network_tool) {
 								Ok(interfaces) => (webview.eval(
 									&format!("loadNetworkInterfaces({})",
 										serde_json::to_string(
@@ -190,12 +192,12 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 							}
 						),
 						GetHostname => (
-							match network_mgr::get_hostname() {
+							match network_mgr::get_hostname(&network_tool) {
 								Ok(hostname) => webview.eval(&format!("setHostname({:?})", hostname)).unwrap(),
 								Err(message) => (println!("{}", message))
 							}),
 						SetHostname { hostname } => (
-							match network_mgr::set_hostname(&hostname) {
+							match network_mgr::set_hostname(&network_tool, &hostname) {
 								Ok(hostname) => webview.eval(&format!("setHostname({:?})", hostname)).unwrap(),
 								Err(message) => (println!("{}", message))
 							})

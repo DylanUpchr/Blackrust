@@ -19,9 +19,9 @@ dirs = "*"
 byteorder = "*"
 blackrust_lib = {path = "blackrust_lib"}
 
-
 [dev-dependencies]
 rstest = "*"
+mockall = "*"
 
 [[bin]]
 name = "blackrust"

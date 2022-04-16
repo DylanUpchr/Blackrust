@@ -27,7 +27,7 @@ pub mod profile{
      *          Wifi: A Wifi connection profile
      *          Wireguard: A Wireguard VPN connection profile
      */
-    #[derive(Debug, Serialize, Deserialize, Clone)]
+    #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
     pub enum NetworkManagerProfileType{
         Ethernet,
         Wifi,
@@ -85,7 +85,7 @@ pub mod profile{
      * Properties:   (String) name: Name of Interface
      *               (String) mac_addr: Hardware MAC address
      */
-    #[derive(Debug, Serialize, Deserialize, Clone)]
+    #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
     pub struct Interface{
         pub name: String,
         pub mac_addr: String,
@@ -146,7 +146,7 @@ pub mod profile{
      *               (NetworkManagerProfileType) profile_type: Type of the profile (Ethernet, Wifi, etc.)
      *               (String) interface: Name of interface to apply configuration to
      **/
-    #[derive(Debug, Serialize, Deserialize, Clone)]
+    #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
     pub struct NetworkManagerProfile{
         pub name: String,
         pub uuid: String,
