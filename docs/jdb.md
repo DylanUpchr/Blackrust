@@ -166,7 +166,7 @@ Planification des tests unitaires pour le module network_mgr:
 - delete_profile_test
 
 ## 2022-04-13
-Je rencontre un problème de droits révelé par le test unitaire pour set le hostname de la machine. Les droits définis par [Polkit](https://wiki.archlinux.org/title/Polkit) (org.freedesktop.NetworkManager.settings.modify.hostname) requière des droits administrateur et donc le programme ne peut pas changer le nom d'hôte de la machine locale. La solution est de définir la règle suivant avec un fichier .rule contenant suivant polkit copiée dans le répertoire ```/usr/share/polkit/rules.d/```:
+Je rencontre un problème de droits révélé par le test unitaire pour set le hostname de la machine. Les droits définis par [Polkit](https://wiki.archlinux.org/title/Polkit) (org.freedesktop.NetworkManager.settings.modify.hostname) requière des droits administrateur et donc le programme ne peut pas changer le nom d'hôte de la machine locale. La solution est de définir la règle suivant avec un fichier .rule contenant suivant polkit copiée dans le répertoire ```/usr/share/polkit/rules.d/```:
 ```js
 polkit.addRule(function(action, subject) {
     if (subject.user == "blackrust") {
@@ -178,3 +178,25 @@ polkit.addRule(function(action, subject) {
     }
 });
 ```
+
+## 2022-04-16
+En implémentant les tests unitaires dans le module network_mgr, j'ai réalisé que dû au fait de l'exécution en parallèle des tests unitaires, je ne peux pas faire des actions séquentielles (comme ajout, modification et suppression d'un profile sans laisser de traces) avec l'outil de configuration de réseau. Ceci veut donc dire qu'il faudrait faire un mock de l'outil afin de tester les fonctions qui l'appèlent sans que l'outil affecte le système. 
+
+J'ai pu faire cela avec le crate [mockall](https://docs.rs/mockall/latest/mockall/). Ce crate ressemble au paquet Moq pour C#, en qu'on peut créer des mocks de fonctions avec des paramètres extensibles, tels que les paramètres à la quel on s'y attend, combien d'appels on s'y attend et quel retour de la fonction on s'y attend. Ceci permet d'intercepter l'appel à la fonction de l'outil réseau et en même temps retourner une valeur ressemblante à la réalité afin de tester les transformations de données faites par les fonctions testées.
+
+Afin de tester plusieurs cas sans redéfinir les tests à chaque fois j'ai utilisé le crate [rstest](https://docs.rs/rstest/latest/rstest/), qui permet de faire du Data-driven testing, donc de fournir des tableaux de données à la fonction de test et ce dernier prends ces données en paramètre qui nous permet de rendre les tests dynamiques propose un meilleur code coverage avec moins de fonctions de test.
+
+Avec ces deux crates, j'ai implémenté la liste suivante de tests:
+- exec_command_test: Test sans mock qu'un appel peut être fait à l'outil desirée
+- get_hostname_test: Test avec mock pour récupérer le nom d'hote du système et pour la gestion d'erreur de ceci
+- set_hostname_test: Test avec mock pour affecter le nom d'hote du système et pour la gestion d'erreur de ceci
+- get_all_interfaces_test: Test avec mock pour récuperer les interfaces réseau du système et pour la gestion d'erreur de ceci
+- get_interface_by_name_test: Test avec mock pour récupérer un interface réseau du système par son nom et pour la gestion d'erreur de ceci
+- load_all_profiles_test: Test avec mock pour récupérer les profiles de connexion réseau du système et pour la gestion d'erreur de ceci
+- create_profile_test: Test avec mock pour créer un profile de connexion réseau et pour la gestion d'erreur de ceci
+- get_simple_profile_by_id_test: Test avec mock pour récupérer un profile de connexion réseau du système par son identifiant unique et pour la gestion d'erreur de ceci
+- delete_profile_test: Test avec mock pour supprimer un profile de connexion réseau et pour la gestion d'erreur de ceci
+
+Ce qui reste les tests suivants à faire dans le module network_mgr une fois que les fonctions sont correctement implémentées:
+- get_detailed_profile_by_id_test: Test avec mock pour récupérer un profile de connexion réseau du système par son identifiant unique et pour la gestion d'erreur de ceci
+- modify_profile_test: Test avec mock pour modifier un profile de connexion réseau et pour la gestion d'erreur de ceci

@@ -14,7 +14,7 @@ use web_view::*;
 use regex::Regex;
 use regex::Captures;
 use blackrust_lib::profile::{Profile, NetworkManagerProfile};
-use network_mgr::{NetworkManager, NetworkTool};
+use network_mgr::NetworkManager;
 
 /** Function
  * Name:	main
@@ -50,7 +50,7 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 		.user_data("")
 		.invoke_handler(|webview, arg| {
 			use Cmd::*;
-			let network_tool = network_mgr::NetworkManager::new();
+			let network_tool = NetworkManager::new();
 			match serde_json::from_str::<Cmd>(arg) {
 				Ok(cmd) => (
 					match cmd {

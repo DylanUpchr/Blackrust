@@ -71,7 +71,7 @@ Ils proposent une solution propriétaire qui utilise des librairies open source,
 L'analyse fonctionnelle contient les maquettes, l'architecture du programme et les diagrammes explicitant son fonctionnement
 ### Architecture
 #### Modules internes
-![Analyse système](./img/blackrust-systems-analysis.png)
+![Analyse système](./img/blackrust-systems-analysis.svg)
 Le programme est décomposé en 5 modules principaux :
 
 - Main (DM): Point d'entrée du programme et aperçu graphique
@@ -268,7 +268,9 @@ EndSection
 Lors du test unitaire open_webview_test qui vérifie que le WebView peut être construit et affiché dans le serveur d'affichage, la récupération du nom d'hôte provoque un SIGABRT (process abort signal) alors que le test s'est bien effectué. Ceci est le cas car, le test ferme l'application juste après que l'appel est fait et en conséquence fait une erreur quand il ne peut pas exécuter le code JS permettant d'afficher le résultat. La solution à ce problème et de déplacer l'appel vers network_mgr pour récupérer le nom d'hôte dans le invoke "init" du WebView afin de retarder l'appel et ne pas provoquer d'appels qui ne pourront pas être aboutis.
 ## Tests
 ### Tests unitaires
-Les tests unitaires se font avec l'outil en ligne de commande ```cargo test```. Les tests sont exécutés pour chaque commit envoyé au repo sur Github
+Rust propose des tests unitaires prallèlisés intégré dans les outils de base. L'outil en ligne de commande est ```cargo test```. De plus, les tests peuvent être étendus avec des crates prévu à cet effet comme rstest ou mockall, qui sont des crates qui proposent des tests data-driven et du mocking automatique pour des traits/structs. 
+
+Les tests sont exécutés lors du développement sur la machine locale, ainsi que sur Github grâce à Github Actions à chaque push vers le repo. Les tests de Github Actions sont exécutés dans un containeur sain ou les étapes de setup nécessaire sont refait à chaque push pour s'assurer que le build peut être déployé et utilisé sur un système vièrge et qu'il n'y a pas de problèmes d'état entre deux builds liée à la machine de test.
 #### Périmètre des tests
 Les scénarios suivants sont testés :
 
@@ -277,7 +279,7 @@ Les scénarios suivants sont testés :
 - La génération de la page web réussit
 - Que la génération de profile se crée, lit, modifie, et supprime
 - Que la génération de configuration réseau se crée, lit, modifie et supprime
-- Que l'envoi et la rréceptionde packet TCP/UDP s'effectue
+- Que l'envoi et la réception de packet TCP/UDP s'effectue
 
 ##### Format description des tests
 Le format choisi pour décrire les tests unitaires est le suivant :
@@ -287,10 +289,13 @@ Le format choisi pour décrire les tests unitaires est le suivant :
 |-|-|
 | **Nom** | ```fn_name_test``` |
 | **Nom de la fonction testée** | ```fn_name``` |
+| **Description de la fonction testée** | A quoi sert la fonction testée |
 | **Fichier** | ```file.rs``` |
-| **Description** | Description du test, qu'est ce qu'on assure en l'exécutant |
-| **Critères d'acceptation** | Critère de réussite |
-| **Critères d'échec** | Critère d'échec |
+| **Cas *n*** ||
+| *Description* | Description du cas testée |
+| *Type de résultat attendu* | Réussite/Échec |
+| *Critère(s) d'acceptation* ||
+| *Critère(s) d'échec* ||
 ```
 Ce qui donne le rendu suivant :
 ###### fn_name_test
@@ -298,145 +303,241 @@ Ce qui donne le rendu suivant :
 |-|-|
 | **Nom** | ```fn_name_test``` |
 | **Nom de la fonction testée** | ```fn_name``` |
+| **Description de la fonction testée** | A quoi sert la fonction testée |
 | **Fichier** | ```file.rs``` |
-| **Description** | Description du test, qu'est ce qu'on assure en l'exécutant |
-| **Critères d'acceptation** | Critère de réussite |
-| **Critères d'échec** | Critère d'échec |
+| **Cas *n*** ||
+| *Description* | Description du cas testée |
+| *Type de résultat attendu* | Réussite/Échec |
+| *Critère(s) d'acceptation* ||
+| *Critère(s) d'échec* ||
 
 ##### Description des tests
 ###### open_webview_test
 | Propriété | Valeur |
 |-|-|
-| **Nom** | ```open_webview_test```|
-| **Nom de la fonction testée** | ```open_webview```|
+| **Nom** | ```open_webview_test``` |
+| **Nom de la fonction testée** | ```open_webview``` |
+| **Description de la fonction testée** | La fonction ```open_webview``` sert à instancier et lancer l'interface WebView depuis les sources HTML/CSS/JS. |
 | **Fichier** | ```dm.rs``` |
-| **Description** | Test unitaire qui assure que la construction et affichage de l'interface WebView est réussi |
-| **Critères d'acceptation** | Valeur de type Ok est émis par open_webview qui indique que l'objet s'est bien instanciée |
+| **Cas 1** ||
+| *Description* | Cas qui assure que la construction et affichage de l'interface WebView est réussi |
+| *Type de résultat attendu* | Réussite |
+| *Critère(s) d'acceptation* | Valeur de type Ok est émis par open_webview qui indique que l'objet s'est bien instanciée |
 || Le WebView se lance dans le serveur Xorg headless (mock d'interface/dummy)|
-| **Critères d'échec** | Valeur de type Err est émis par open_webview avec un message d'erreur qui indique que l'objet s'est bien instanciée |
-|| Le WebView lance une exception indiquant qu'il n'a pas pu se lancer dans le serveur Xorg headless (mock d'interface/dummy)
+| *Critère(s) d'échec* | Valeur de type Err est émis par open_webview avec un message d'erreur qui indique que l'objet s'est bien instanciée |
+|| Le WebView lance une exception indiquant qu'il n'a pas pu se lancer dans le serveur Xorg headless (mock d'interface/dummy) |
 
 ###### base64_encode_images_test
 | Propriété | Valeur |
 |-|-|
 | **Nom** | ```base64_encode_images_test``` |
 | **Nom de la fonction testée** | ```base64_encode_images``` |
+| **Description de la fonction testée** | La fonction ```base64_encode_images``` utilise une expression régulière (RegEx) dans un premier temps pour détecter des balises ```<img>``` avec un attribut ```src``` qui a comme valeur un chemin vers une image. Dans un deuxième temps, la fonction lit l'image et l'encode en format de chaîne de caractères base64, puis remplace le chemin avec la chaîne base64 avec la même expression régulière afin d'inclure l'image directement dans la page HTML. |
 | **Fichier** | ```dm.rs``` |
-| **Description** | Test unitaire qui assure qu'une balise ```<img>``` est détecté et que la valeur de la propriété src, qui est un chemin relatif vers l'image, soit transformée en string base64 afin d'encoder les images dans l'HTML |
-| **Critères d'acceptation** | String contenant le HTML encodée émis et conforme au résultat attendu |
-| **Critères d'échec** | String contenant le HTML encodée émis mais non conforme au résultat attendu |
-|| Panique du fonction base64_encode_images |
+| **Cas 1** ||
+| *Description* | Cas qui assure que la détection de balise, l'encodage d'image exemple de taille 8 pixel x 8 pixels et finalement le replacement de la valeur de l'attribut ```src``` sont réussis |
+| *Type de résultat attendu* | Réussite |
+| *Critère(s) d'acceptation* | String contenant le HTML encodé émis et conforme au résultat attendu |
+| *Critère(s) d'échec* | String contenant le HTML encodé émis mais, non conforme au résultat attendu |
+|| Panique de la fonction base64_encode_images |
 
-###### exec_nmcli_command_test
+###### exec_command_test
 | Propriété | Valeur |
 |-|-|
-| **Nom** | ```exec_nmcli_command_test```|
-| **Nom de la fonction testée** | ```exec_nmcli_command```|
+| **Nom** | ```exec_command_test``` |
+| **Nom de la fonction testée** | ```exec_command``` |
+| **Description de la fonction testée** | La fonction ```exec_command```, provenant du trait NetworkTool, exécute une commande shell avec les arguments fournis pour l'outil implémentée (dans ce cas ```nmcli``` de NetworkManager) et rend soit le stdout en valeur de type Ok(String) ou le stderr en valeur de type Err(String). |
 | **Fichier** | ```network_mgr.rs``` |
-| **Description** | Test unitaire qui assure que les commandes nmcli s'exécutent et que la gestion d'erreur fonctionne |
-| **Critères d'acceptation** | Valeur de type Ok est émis par exec_nmcli_command avec le rendu stdout de la commande |
-| **Critères d'échec** | Panic ou valeur de Err est émis par exec_nmcli_command avec la sortie d'erreur stderr de la commande |
+| **Cas 1** ||
+| *Description* | Cas qui assure que la commande ```nmcli``` avec les arguments ```connection show``` rends une valeur de type Ok(String). Ceci vérifie qu'une commande valide émets une valeur Ok avec le stdout de la commande. |
+| *Type de résultat attendu* | Réussite |
+| *Critère(s) d'acceptation* | Valeur de type Ok(String) avec stdout comme contenu émis |
+| *Critère(s) d'échec* | Valeur de type Err(String) avec stderr comme contenu émis |
+| **Cas 2** ||
+| *Description* | Cas qui assure que la commande ```nmcli``` avec les arguments ```show``` rends une valeur de type Ok(String). Ceci vérifie qu'une commande invalide émets une valeur Err avec le stderr de la commande. |
+| *Type de résultat attendu* | Échec |
+| *Critère(s) d'acceptation* | Valeur de type Err(String) avec stderr comme contenu est émis |
+| *Critère(s) d'échec* | Valeur de type Ok(String) avec stdout comme contenu est émis |
 
 ###### get_hostname_test
 | Propriété | Valeur |
 |-|-|
 | **Nom** | ```get_hostname_test``` |
 | **Nom de la fonction testée** | ```get_hostname``` |
+| **Description de la fonction testée** | La fonction ```get_hostname``` utilise le NetworkTool fourni pour récupérer le nom d'hôte de la machine. |
 | **Fichier** | ```network_mgr.rs``` |
-| **Description** | Test unitaire qui assure que la récupération du nom d'hôte réussi|
-| **Critères d'acceptation** | Valeur de type Ok contenant le nom d'hôte est émis par get_hostname |
-| **Critères d'échec** | Valeur de type Err est émis avec le message d'erreur de l'appel exec_nmcli_command |
+| **Cas 1** ||
+| *Description* | Cas qui assure avec un MockNetworkTool que la récupération du nom d'hôte de la machine réussi |
+| *Type de résultat attendu* | Réussite |
+| *Critère(s) d'acceptation* | Valeur de type Ok(String) contenant le nom d'hôte est émis |
+| *Critère(s) d'échec* | Valeur de type Err(String) contenant un message d'erreur est émis |
+| **Cas 2** ||
+| *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exécutée émet une erreur |
+| *Type de résultat attendu* | Échec |
+| *Critère(s) d'acceptation* | Valeur de type Err(String) contenant un message d'erreur est émis |
+| *Critère(s) d'échec* | Valeur de type Ok(String) contenant le nom d'hôte est émis |
 
 ###### set_hostname_test
 | Propriété | Valeur |
 |-|-|
 | **Nom** | ```set_hostname_test``` |
 | **Nom de la fonction testée** | ```set_hostname``` |
+| **Description de la fonction testée** | La fonction ```set_hostname``` utilise le NetworkTool fourni pour affecter le nom d'hôte de la machine |
 | **Fichier** | ```network_mgr.rs``` |
-| **Description** | Test unitaire qui assure que l'affectation de nom d'hôte réussi avec un hostname valide et échoue avec un hostname invalide|
-| **Critères d'acceptation** | Lors de l'affectation du nom d'hôte "valid", un valeur de type Ok est émis |
-|| Lors de l'affectation du nom d'hôte "-invalid", un valeur de type Err avec le message d'erreur de l'appel exec_nmcli_command est émis |
-| **Critères d'échec** | Valeur de type Err est émis avec le message d'erreur de l'appel exec_nmcli_command lors d'une affectation de nom d'hôte valide |
+| **Cas 1** ||
+| *Description* | Cas qui assure avec un MockNetworkTool que l'affectation de nom d'hôte réussi. |
+| *Type de résultat attendu* | Réussite |
+| *Critère(s) d'acceptation* | Valeur de type Ok(String) émis |
+| *Critère(s) d'échec* | Valeur de type Err(String) contenant un message d'erreur est émis |
+| **Cas 2** ||
+| *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exécutée émet une erreur. |
+| *Type de résultat attendu* | Échec |
+| *Critère(s) d'acceptation* | Valeur de type Err(String) contenant un message d'erreur est émis |
+| *Critère(s) d'échec* | Valeur de type Ok(String) émis |
 
 ###### get_all_interfaces_test
 | Propriété | Valeur |
 |-|-|
 | **Nom** | ```get_all_interfaces_test``` |
 | **Nom de la fonction testée** | ```get_all_interfaces``` |
+| **Description de la fonction testée** | La fonction ```get_all_interfaces``` utilise le NetworkTool fourni pour récuperer les interfaces réseau de la machine |
 | **Fichier** | ```network_mgr.rs``` |
-| **Description** | Test unitaire qui assure que la récuperation de la liste des interfaces depuis l'outil en ligne de commande de NetworkManager réussi |
-| **Critères d'acceptation** | Critère de réussite |
-| **Critères d'échec** | Critère d'échec |
+| **Cas 1** ||
+| *Description* | Cas qui assure avec un MockNetworkTool que la récupération de la liste d'interfaces réseau réussi |
+| *Type de résultat attendu* | Réussite |
+| *Critère(s) d'acceptation* | Valeur de type Ok(Vec<Interface\>) non-vide émis |
+| *Critère(s) d'échec* | Valeur de type Err(String) contenant un message d'erreur est émis |
+| **Cas 2** ||
+| *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exécutée émet une erreur. |
+| *Type de résultat attendu* | Échec |
+| *Critère(s) d'acceptation* | Valeur de type Err(String) contenant un message d'erreur est émis |
+| *Critère(s) d'échec* | Valeur de type Ok(Vec<Interface\>) émis |
 
 ###### get_interface_by_name_test
 | Propriété | Valeur |
 |-|-|
 | **Nom** | ```get_interface_by_name_test``` |
 | **Nom de la fonction testée** | ```get_interface_by_name``` |
+| **Description de la fonction testée** | La fonction ```get_interface_by_name``` utilise le NetworkTool fourni pour récuperer une interface réseau de la machine depuis son nom |
 | **Fichier** | ```network_mgr.rs``` |
-| **Description** | Test unitaire qui assure que la récuperation d'une interface depuis son nom avec l'outil en ligne de commande de NetworkManager réussi|
-| **Critères d'acceptation** | Critère de réussite |
-| **Critères d'échec** | Critère d'échec |
+| **Cas 1** ||
+| *Description* | Cas qui assure avec un MockNetworkTool que la récupération d'une interface mock loopback fonctionne |
+| *Type de résultat attendu* | Réussite |
+| *Critère(s) d'acceptation* | Valeur de type Some(Interface) contenant une interface avec les propriétés renseignées est émis |
+| *Critère(s) d'échec* | Valeur de type None est émis |
+| **Cas 2** ||
+| *Description* | Cas qui assure avec un MockNetworkTool que dans la possibilité ou il n'y a pas d'interface assignée à un profile, la valeur None est émis |
+| *Type de résultat attendu* | Échec |
+| *Critère(s) d'acceptation* | Valeur de type None est émis |
+| *Critère(s) d'échec* | Valeur de type Some est émis |
+| **Cas 3** ||
+| *Description* | Cas qui assure avec un MockNetworkTool que si l'interface avec le nom donnée n'existe pas, la valeur None est émis |
+| *Type de résultat attendu* | Échec |
+| *Critère(s) d'acceptation* | Valeur de type None est émis |
+| *Critère(s) d'échec* | Valeur de type Some est émis |
 
 ###### load_all_profiles_test
 | Propriété | Valeur |
 |-|-|
 | **Nom** | ```load_all_profiles_test``` |
 | **Nom de la fonction testée** | ```load_all_profiles``` |
+| **Description de la fonction testée** | La fonction ```load_all_profiles``` charge et instancie tout les profiles de connexion stockées par le NetworkTool fourni |
 | **Fichier** | ```network_mgr.rs``` |
-| **Description** | Test unitaire qui assure que la récuperation de la liste de profiles de connexion réseau depuis l'outil en ligne de commande de NetworkManager réussi |
-| **Critères d'acceptation** | Critère de réussite |
-| **Critères d'échec** | Critère d'échec |
+| **Cas 1** ||
+| *Description* | Cas qui assure avec un MockNetworkTool que la récupération de profile fonctionne |
+| *Type de résultat attendu* | Réussite |
+| *Critère(s) d'acceptation* | Valeur de type Ok(Vec<Interface\>) contenant un profile avec les propriétés renseignées est émis|
+| *Critère(s) d'échec* | Valeur de type Err(String) contenant un message d'erreur est émis |
+| **Cas 2** ||
+| *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exécutée émet une erreur. |
+| *Type de résultat attendu* | Échec |
+| *Critère(s) d'acceptation* | Valeur de type Err(String) contenant un message d'erreur est émis |
+| *Critère(s) d'échec* |Valeur de type Ok(Vec<Interface\>) est émis |
 
 ###### create_profile_test
 | Propriété | Valeur |
 |-|-|
 | **Nom** | ```create_profile_test``` |
 | **Nom de la fonction testée** | ```create_profile``` |
+| **Description de la fonction testée** | La fonction ```create_profile``` crée un profile de connexion réseau avec le NetworkTool fourni. |
 | **Fichier** | ```network_mgr.rs``` |
-| **Description** | Test unitaire qui assure que la création de profile de connexion réseau avec l'outil en ligne de commande de NetworkManager réussi |
-| **Critères d'acceptation** | Critère de réussite |
-| **Critères d'échec** | Critère d'échec |
+| **Cas 1** ||
+| *Description* | Cas qui assure avec un MockNetworkTool que la création de profile de connexion réseau fonctionne. |
+| *Type de résultat attendu* | Réussite |
+| *Critère(s) d'acceptation* | Valeur de type Ok(String) contenant l'identifiant du nouveau profile est émis |
+| *Critère(s) d'échec* | Valeur de type Err(String) contenant un message d'erreur est émis |
+| **Cas 2** ||
+| *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exécutée émet une erreur. |
+| *Type de résultat attendu* | Échec |
+| *Critère(s) d'acceptation* | Valeur de type Err(String) contenant un message d'erreur est émis |
+| *Critère(s) d'échec* | Valeur de type Ok(String) est émis|
 
 ###### get_simple_profile_by_id_test
 | Propriété | Valeur |
 |-|-|
 | **Nom** | ```get_simple_profile_by_id_test``` |
 | **Nom de la fonction testée** | ```get_simple_profile_by_id``` |
+| **Description de la fonction testée** | La fonction ```get_simple_profile_by_id``` récupère un profile avec des informations basiques par son identifiant unique. |
 | **Fichier** | ```network_mgr.rs``` |
-| **Description** | Test unitaire qui assure que la récuperation d'un profile de connexion réseau depuis son nom avec l'outil en ligne de commande de NetworkManager réussi |
-| **Critères d'acceptation** | Critère de réussite |
-| **Critères d'échec** | Critère d'échec |
+| **Cas 1** ||
+| *Description* | Cas qui assure avec un MockNetworkTool que la récupération des informations basique depuis un identifiant fonctionne. |
+| *Type de résultat attendu* | Réussite |
+| *Critère(s) d'acceptation* | Valeur de type Ok(NetworkManagerProfile) contenant le profile demandée est émis |
+| *Critère(s) d'échec* | Valeur de type Err(String) contenant un message d'erreur est émis  |
+| **Cas 2** ||
+| *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exécutée émet une erreur ou que le profile demandée n'a pas été trouvée.  |
+| *Type de résultat attendu* | Échec |
+| *Critère(s) d'acceptation* | Valeur de type Err(String) contenant un message d'erreur est émis |
+| *Critère(s) d'échec* | Valeur de type Ok(NetworkManagerProfile) est émis |
 
 ###### get_detailed_profile_by_id_test
 | Propriété | Valeur |
 |-|-|
 | **Nom** | ```get_detailed_profile_by_id_test``` |
 | **Nom de la fonction testée** | ```get_detailed_profile_by_id``` |
+| **Description de la fonction testée** | La fonction ```get_detailed_profile_by_id``` récupère un profile avec des informations détaillées par son identifiant unique. |
 | **Fichier** | ```network_mgr.rs``` |
-| **Description** | Test unitaire qui assure que la récuperation d'un profile de connexion réseau depuis son nom avec l'outil en ligne de commande de NetworkManager réussi |
-| **Critères d'acceptation** | Critère de réussite |
-| **Critères d'échec** | Critère d'échec |
+| **Cas 1** ||
+| *Description* | Cas qui assure avec un MockNetworkTool que la récupération des informations détaillées depuis un identifiant fonctionne. |
+| *Type de résultat attendu* | Réussite |
+| *Critère(s) d'acceptation* | Valeur de type Ok(NetworkManagerProfile) contenant le profile demandée est émis |
+| *Critère(s) d'échec* | Valeur de type Err(String) contenant un message d'erreur est émis |
+| **Cas 2** ||
+| *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exécutée émet une erreur ou que le profile demandée n'a pas été trouvée. |
+| *Type de résultat attendu* | Échec |
+| *Critère(s) d'acceptation* | Valeur de type Err(String) contenant un message d'erreur est émis |
+| *Critère(s) d'échec* | Valeur de type Ok(NetworkManagerProfile) est émis |
 
 ###### modify_profile_test
 | Propriété | Valeur |
 |-|-|
 | **Nom** | ```modify_profile_test``` |
-| **Nom de la fonction testée** | ```modify_profile_test``` |
+| **Nom de la fonction testée** | ```modify_profile``` |
+| **Description de la fonction testée** | La fonction ```modify_profile``` modifie un profile avec le NetworkTool fourni. |
 | **Fichier** | ```network_mgr.rs``` |
-| **Description** | Test unitaire qui assure que la modification de la d'un profile de connexion réseau avec l'outil en ligne de commande de NetworkManager réussi |
-| **Critères d'acceptation** | Critère de réussite |
-| **Critères d'échec** | Critère d'échec |
+| **Cas *n*** ||
+| *Description* | Description du cas testée |
+| *Type de résultat attendu* | Réussite/Échec |
+| *Critère(s) d'acceptation* ||
+| *Critère(s) d'échec* ||
 
 ###### delete_profile_test
 | Propriété | Valeur |
 |-|-|
 | **Nom** | ```delete_profile_test``` |
 | **Nom de la fonction testée** | ```delete_profile``` |
+| **Description de la fonction testée** | La fonction ```delete_profile``` supprime un profile avec le NetworkTool fourni. |
 | **Fichier** | ```network_mgr.rs``` |
-| **Description** | Test unitaire qui assure que la suppression de la d'un profile de connexion réseau avec l'outil en ligne de commande de NetworkManager réussi |
-| **Critères d'acceptation** | Critère de réussite |
-| **Critères d'échec** | Critère d'échec |
+| **Cas 1** ||
+| *Description* | Cas qui assure avec un MockNetworkTool que la suppresion d'un profile fonctionne.  |
+| *Type de résultat attendu* | Réussite |
+| *Critère(s) d'acceptation* | Valeur de type Ok(()) est émis |
+| *Critère(s) d'échec* | Valeur de type Err(String) contenant un message d'erreur est émis |
+| **Cas 1** ||
+| *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exectuée émet une erreur. |
+| *Type de résultat attendu* | Échec |
+| *Critère(s) d'acceptation* | Valeur de type Err(String) contenant un message d'erreur est émis  |
+| *Critère(s) d'échec* | Valeur de type Ok(()) est émis |
 
 ### Tests de compatibilité hardware (Intégration)
 Les tests d'intégration hardware servent à informer la portée possible de déploiement du programme. Rust est conçu pour être multiplateforme, mais il y a certaines dépendances qui auront besoin d'être vérifiées avant d'être sûr de la compatibilité avec les architectures système visées.

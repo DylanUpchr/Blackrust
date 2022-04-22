@@ -112,26 +112,20 @@ pub fn get_all_interfaces(network_tool: &dyn NetworkTool) -> Result<Vec<Interfac
  * Name:	get_interface_by_name
  * Purpose:	Get a network interface by name
  * Args:	(String) Interface name query
- * Returns: Result<Interface, String> Interface or error string
+ * Returns: Option<Interface> Interface
  */
 pub fn get_interface_by_name(
     network_tool: &dyn NetworkTool,
     name: String,
-) -> Result<Interface, String> {
-    let interfaces: Vec<Interface> = get_all_interfaces(network_tool)?;
-    let interface_result: Option<&Interface> = interfaces
+) -> Option<Interface> {
+    match get_all_interfaces(network_tool) {
+        Ok(interfaces) => { match interfaces
         .iter()
-        .find(|interface: &_| interface.name == name);
-
-    match interface_result {
-        Some(interface) => Ok(interface.clone()),
-        None => {
-            if name == "--" {
-                Ok(Interface::new())
-            } else {
-                Err(String::from("Could not find interface."))
-            }
-        }
+        .find(|interface: _| interface.name == name) {
+            Some(interface) => Some(interface.clone()),
+            None => None
+        }},
+        Err(_) => None
     }
 }
 
@@ -157,7 +151,7 @@ pub fn load_all_profiles(network_tool: &dyn NetworkTool) -> Result<Vec<NetworkMa
                         line_data[0].to_string(),
                         line_data[1].to_string(),
                         NetworkManagerProfileType::from_str(&line_data[2].to_string()).unwrap(),
-                        get_interface_by_name(network_tool, line_data[3].to_string()).unwrap(),
+                        get_interface_by_name(network_tool, line_data[3].to_string()),
                     );
                     profiles.push(profile);
                 }
@@ -248,8 +242,8 @@ pub fn modify_profile(
         &profile.uuid,
         "connection.id",
         &profile.name,
-        "connection.interface-name",
-        &profile.interface.name,
+        /*"connection.interface-name",
+        &profile.interface.name,*/
     ]);
 
     match result {
@@ -293,7 +287,11 @@ mod test {
     #[rstest]
     #[case(vec!("general", "hostname"), "host-name", true)]
     #[case(vec!("general", "hostname"), "Could not get hostname", false)]
-    fn get_hostname_test(#[case] input: Vec<&'static str>, #[case] expected_value: String, #[case] expected_status: bool){
+    fn get_hostname_test(
+        #[case] input: Vec<&'static str>, 
+        #[case] expected_value: String, 
+        #[case] expected_status: bool
+    ){
         let mut mock_net_tool = MockNetworkTool::new();
         let return_value = expected_value.clone();
         mock_net_tool.expect_exec_command()
@@ -312,7 +310,12 @@ mod test {
     #[rstest]
     #[case(vec!("general", "hostname", "host-name"), "host-name", "", true)]
     #[case(vec!("general", "hostname", "host-name"), "host-name", "Could not set hostname", false)]
-    fn set_hostname_test(#[case] input: Vec<&'static str>, #[case] hostname: String, #[case] expected_value: String, #[case] expected_status: bool){
+    fn set_hostname_test(
+        #[case] input: Vec<&'static str>, 
+        #[case] hostname: String, 
+        #[case] expected_value: String, 
+        #[case] expected_status: bool
+    ){
         let mut mock_net_tool = MockNetworkTool::new();
         let return_value = expected_value.clone();
         mock_net_tool.expect_exec_command()
@@ -355,7 +358,12 @@ mod test {
         false,
         "Could not get interfaces"
     )]
-    fn get_all_interfaces_test(#[case] input: Vec<&'static str>, #[case] expected_value: Vec<Interface>, #[case] expected_status: bool, #[case] expected_message: String){
+    fn get_all_interfaces_test(
+        #[case] input: Vec<&'static str>, 
+        #[case] expected_value: Vec<Interface>, 
+        #[case] expected_status: bool, 
+        #[case] expected_message: String
+    ){
         let mut mock_net_tool = MockNetworkTool::new();
         let return_interface = expected_value[0].clone();
         let return_message = expected_message.clone();
@@ -387,11 +395,11 @@ mod test {
             "show",
         ], 
         "lo",
-        Interface::new3(
+        Some(Interface::new3(
             "lo".to_string(),
             "00:00:00:00:00:00".to_string(),
             "loopback".to_string()
-        ),
+        )),
         true,
         ""
     )]
@@ -403,8 +411,8 @@ mod test {
             "show",
         ], 
         "--",
-        Interface::new(),
-        true,
+        None,
+        false,
         ""
     )]
     #[case(
@@ -415,11 +423,17 @@ mod test {
             "show",
         ], 
         "",
-        Interface::new(),
+        None,
         false,
         "Could not get interfaces"
     )]
-    fn get_interface_by_name_test(#[case] input: Vec<&'static str>, #[case] interface_name: String, #[case] expected_value: Interface, #[case] expected_status: bool, #[case] expected_message: String){
+    fn get_interface_by_name_test(
+        #[case] input: Vec<&'static str>, 
+        #[case] interface_name: String, 
+        #[case] expected_value: Option<Interface>, 
+        #[case] expected_status: bool, 
+        #[case] expected_message: String
+    ){
         let mut mock_net_tool = MockNetworkTool::new();
         let return_interface = expected_value.clone();
         let return_message = expected_message.clone();
@@ -427,6 +441,7 @@ mod test {
         .withf(move |f| f == &input)
         .times(1)
         .returning(move |_| if expected_status { 
+            let return_interface = return_interface.clone().unwrap();
             Ok(
                 format!(
                     "GENERAL.DEVICE:  {}\nGENERAL.HWADDR:  {}\nGENERAL.TYPE:  {}", 
@@ -438,8 +453,11 @@ mod test {
             Err(return_message.clone())
             });
         match get_interface_by_name(&mock_net_tool, interface_name) {
-            Ok(interface) => assert_eq!(interface, expected_value),
-            Err(message) => assert_eq!(message, expected_message)
+            Some(interface) => {
+                assert!(expected_status); 
+                assert_eq!(interface, expected_value.unwrap())
+            },
+            None => assert!(!expected_status)
         }
     }
     #[rstest]
@@ -449,7 +467,7 @@ mod test {
             "profile".to_string(),
             "00000000-0000-0000-0000-000000000000".to_string(),
             NetworkManagerProfileType::Ethernet,
-            Interface::new()
+            None
         )],
         true,
         ""
@@ -460,7 +478,12 @@ mod test {
         false,
         "Could not load profiles"
     )]
-    fn load_all_profiles_test(#[case] input: Vec<&'static str>, #[case] expected_value: Vec<NetworkManagerProfile>, #[case] expected_status: bool, #[case] expected_message: String){
+    fn load_all_profiles_test(
+        #[case] input: Vec<&'static str>, 
+        #[case] expected_value: Vec<NetworkManagerProfile>, 
+        #[case] expected_status: bool, 
+        #[case] expected_message: String
+    ){
         let mut mock_net_tool = MockNetworkTool::new();
         let return_profile = expected_value[0].clone();
         let return_message = expected_message.clone();
@@ -511,7 +534,13 @@ mod test {
         "Could not create network connection profile".to_string(),
         false
     )]
-    fn create_profile_test(#[case] input: Vec<&'static str>, #[case] profile_id: String, #[case] profile_type: NetworkManagerProfileType, #[case] expected_message: String, #[case] expected_status: bool){
+    fn create_profile_test(
+        #[case] input: Vec<&'static str>, 
+        #[case] profile_id: String, 
+        #[case] profile_type: NetworkManagerProfileType, 
+        #[case] expected_message: String, 
+        #[case] expected_status: bool
+    ){
         let mut mock_net_tool = MockNetworkTool::new();
         let return_profile_id = profile_id.clone();
         let return_error_message = expected_message.clone();
@@ -540,7 +569,7 @@ mod test {
             "profile".to_string(),
             "00000000-0000-0000-0000-000000000000".to_string(),
             NetworkManagerProfileType::Ethernet,
-            Interface::new()
+            None
         ),
         "",
         true
@@ -603,7 +632,7 @@ mod test {
             "profile".to_string(),
             "00000000-0000-0000-0000-000000000000".to_string(),
             NetworkManagerProfileType::Ethernet,
-            Interface::new()
+            None
         ),
         "",
         true
@@ -614,12 +643,17 @@ mod test {
             "profile".to_string(),
             "00000000-0000-0000-0000-000000000000".to_string(),
             NetworkManagerProfileType::Ethernet,
-            Interface::new()
+            None
         ),
         "Could not delete profile",
         false
     )]
-    fn delete_profile_test(#[case] input: Vec<&'static str>, #[case] profile: NetworkManagerProfile, #[case] expected_message: String, #[case] expected_status: bool){
+    fn delete_profile_test(
+        #[case] input: Vec<&'static str>, 
+        #[case] profile: NetworkManagerProfile, 
+        #[case] expected_message: String, 
+        #[case] expected_status: bool
+    ){
         let mut mock_net_tool = MockNetworkTool::new();
         let return_message = expected_message.clone();
         mock_net_tool.expect_exec_command()

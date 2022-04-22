@@ -151,7 +151,7 @@ pub mod profile{
         pub name: String,
         pub uuid: String,
         pub profile_type: NetworkManagerProfileType,
-        pub interface: Interface
+        pub interface: Option<Interface>
     }
 
     /** Struct
@@ -256,7 +256,7 @@ pub mod profile{
                 String::new(), 
                 Uuid::new_v4().to_string(),
                 crate::defaults::NETWORK_MANAGER_PROFILE_TYPE,
-                Interface::new()
+                None
             )
         }
 
@@ -266,10 +266,10 @@ pub mod profile{
          * Args:	(String) name: Name of the profile
          *          (String) uuid: Unique identifier of the profile
          *          (NetworkManagerProfileType) profile_type: Type of the profile (Ethernet, Wifi, etc.)
-         *          (String) interface: Name of interface to apply configuration to
+         *          (Option<Interface>) interface: Interface that the profile uses
          * Returns:	NetworkManagerProfile object
          */
-        pub fn new4(name: String, uuid: String, profile_type: NetworkManagerProfileType, interface: Interface) -> NetworkManagerProfile {
+        pub fn new4(name: String, uuid: String, profile_type: NetworkManagerProfileType, interface: Option<Interface>) -> NetworkManagerProfile {
             return NetworkManagerProfile{
                 name: name,
                 uuid: uuid,
