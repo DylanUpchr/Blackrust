@@ -200,3 +200,9 @@ Avec ces deux crates, j'ai implémenté la liste suivante de tests:
 Ce qui reste les tests suivants à faire dans le module network_mgr une fois que les fonctions sont correctement implémentées:
 - get_detailed_profile_by_id_test: Test avec mock pour récupérer un profile de connexion réseau du système par son identifiant unique et pour la gestion d'erreur de ceci
 - modify_profile_test: Test avec mock pour modifier un profile de connexion réseau et pour la gestion d'erreur de ceci
+
+## 2022-04-22
+Changed interface property to Option<Interface\> and changed get_interface_by_name return to match
+
+Updated test documentation
+

@@ -74,9 +74,9 @@ pub mod profile{
      */
     #[derive(Debug, Serialize, Deserialize, Clone)]
     pub struct Protocol{
-        name: String,
-        port: u16,
-        port_protocol: PortProtocol
+        pub name: String,
+        pub port: u16,
+        pub port_protocol: PortProtocol
     }
 
     /** Struct

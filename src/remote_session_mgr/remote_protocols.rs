@@ -3,11 +3,23 @@
  * Date:		2021-03-13
  * Desc:		Blackrust remote protocols module
  */
-mod xdmcp;
-use std::net::{SocketAddr, UdpSocket};
+pub mod xdmcp;
+use std::net::{SocketAddr, IpAddr, UdpSocket};
 
-pub fn open_udp_socket(addr: SocketAddr) -> std::io::Result<UdpSocket>{
-    let socket: UdpSocket = UdpSocket::bind(addr).unwrap();
-    socket.connect(addr).unwrap();
-    Ok(socket)
+pub trait ProtocolTool {
+
+}
+
+pub fn open_udp_socket(src_addr: IpAddr, dst_addr: IpAddr, dst_port: u16) -> Result<UdpSocket, String>{
+    let src = SocketAddr::new(src_addr, 0);
+    let dst = SocketAddr::new(dst_addr, dst_port);
+    match UdpSocket::bind(src) {
+        Ok(socket) => {
+            match socket.connect(dst){
+                Ok(_) => Ok(socket),
+                _ => Err(format!("Could not connect socket to {}:{}", dst.ip(), dst.port()))
+            }
+        },
+        Err(_) => Err(format!("Could not bind UDP socket to {}:{}", src.ip(), src.port()))
+    }
 }

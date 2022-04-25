@@ -23,7 +23,7 @@ use network_mgr::NetworkManager;
  * Returns:	None
  */
 fn main() {
-	match open_webview() {
+	/*match open_webview() {
 		Ok(result) => {
 			match result.run() {
 				Ok(_) => (),
@@ -31,7 +31,8 @@ fn main() {
 			}
 		},
 		Err(message) => (println!("{}", message))
-	}
+	}*/
+	remote_session_mgr::packet_test();
 }
 
 /** Function
