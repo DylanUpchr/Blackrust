@@ -32,8 +32,13 @@ fn main() {
 		},
 		Err(message) => (println!("{}", message))
 	}*/
-	remote_session_mgr::packet_test();
-}
+	//remote_session_mgr::packet_test();
+	let network_tool = NetworkManager::new();
+	let interfaces = network_mgr::get_all_interfaces(&network_tool).unwrap();
+	let interface = network_mgr::get_interface_by_name(&network_tool, String::from("enp7s0")).unwrap();
+	let addr = network_mgr::get_interface_addresses(&network_tool, interface);
+	println!("{:?}", addr);
+}	
 
 /** Function
  * Name:	open_webview

@@ -206,3 +206,15 @@ Changed interface property to Option<Interface\> and changed get_interface_by_na
 
 Updated test documentation
 
+## 2022-04-24
+Négotiation avec le protocole XDMCP
+
+explain negotiation sequence
+Query server,
+Willing response,
+Request with (tmp hardcoded) display addrs and auth type/data (currently empty)
+Accept response with Xauthority MIT-MAGIC-COOKIE-1
+Manage confirming session in use
+
+## 2022-04-25
+Implémentation de la fonction get_interface_addresses afin de pouvoir récuperer les addresses IPv4/IPv6 d'un interface réseau. Cela est nécessaire car dans la séquence "Request" de la négotiation avec XDMCP, il faut renseigner les adresses IP au serveur.

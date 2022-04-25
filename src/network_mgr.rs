@@ -7,6 +7,8 @@ use std::process::Command;
 use std::str;
 use regex::Regex;
 use itertools::Itertools;
+use std::net::{IpAddr};
+use std::str::FromStr;
 use blackrust_lib::profile::{NetworkManagerProfile,NetworkManagerProfileType,Interface};
 #[cfg(test)]
 use mockall::automock;
@@ -126,6 +128,53 @@ pub fn get_interface_by_name(
             None => None
         }},
         Err(_) => None
+    }
+}
+
+/** Function
+ * Name:	get_interface_addresses
+ * Purpose:	Get a network interfaces addresses
+ * Args:	(NetworkTool) NetworkTool to query 
+ *          (Interface) Interface
+ * Returns: (Result<Vec<IpAddr>, String>) Interface addresses or error message
+ */
+pub fn get_interface_addresses(
+    network_tool: &dyn NetworkTool,
+    interface: Interface
+) -> Result<Vec<IpAddr>, String> {
+    match network_tool.exec_command(vec![
+        "--fields",
+        "IP4.ADDRESS,IP6.ADDRESS",
+        "device",
+        "show",
+        &interface.name
+        ]) {
+        Ok(stdout) => {
+            let mut addrs: Vec<IpAddr> = vec![];
+            let mut stdout_lines: Vec<&str> = stdout.split("\n").collect::<Vec<&str>>();
+            //Expression regulière IPv4/IPv6 trouvé sur Internet https://www.regextester.com/104038
+            let re = Regex::new("((?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|::(?:[0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4}|[0-9a-fA-F]{1,4}::(?:[0-9a-fA-F]{1,4}:){0,5}[0-9a-fA-F]{1,4}|[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}::(?:[0-9a-fA-F]{1,4}:){0,4}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){0,2}[0-9a-fA-F]{1,4}::(?:[0-9a-fA-F]{1,4}:){0,3}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){0,3}[0-9a-fA-F]{1,4}::(?:[0-9a-fA-F]{1,4}:){0,2}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){0,4}[0-9a-fA-F]{1,4}::(?:[0-9a-fA-F]{1,4}:)?[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){0,5}[0-9a-fA-F]{1,4}::[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4}::|(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))").unwrap();
+            stdout_lines.iter().for_each(|line| {
+                match re.captures(line) {
+                    Some(caps) => {
+                        caps.iter().for_each(|cap| {
+                        match cap {
+                                Some(ip) => {
+                                    match IpAddr::from_str(ip.as_str()) {
+                                        Ok(addr) => addrs.push(addr),
+                                        Err(_) => ()
+                                    }
+                                },
+                                None => ()
+                            }
+                        })
+                    },
+                    None => ()
+                }
+            });
+            Ok(addrs)
+        },
+        Err(message) => Err(message),
     }
 }
 
