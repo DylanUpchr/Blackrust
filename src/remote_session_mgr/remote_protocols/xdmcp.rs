@@ -3,9 +3,11 @@
  * Date:		2021-03-13
  * Desc:		Blackrust XDMCP module
  */
-use std::net::UdpSocket;
-//use byteorder::{ByteOrder, NetworkEndian, BigEndian};
+use std::net::{IpAddr, UdpSocket};
 use xrandr::XHandle;
+use crate::network_mgr;
+use crate::network_mgr::{NetworkManager};
+use blackrust_lib::profile::NetworkManagerProfile;
 
 #[derive(Copy, Clone)]
 pub enum ProtocolOpCode {
@@ -70,10 +72,9 @@ pub fn send(socket: &UdpSocket, op: ProtocolOpCode, data: &Vec<u8>){
     let data_len: u16 = data.len().try_into().unwrap();
 
     let mut buf: Vec<u8> = vec!();
-    buf.append(&mut version.to_be_bytes().to_vec());
-    buf.append(&mut op_code.to_be_bytes().to_vec());
-    buf.append(&mut data_len.to_be_bytes().to_vec());
-    buf.append(&mut data.clone());
+    append_card_16(&mut buf, version);
+    append_card_16(&mut buf, op_code);
+    append_array_8(&mut buf, data.to_vec());
     socket.send(&buf).unwrap();
 }
 
@@ -90,7 +91,7 @@ pub fn recv(socket: &UdpSocket) -> Result<(ProtocolOpCode, Vec<u8>), String> {
     }
 }
 
-pub fn open_session(socket: &UdpSocket) {
+pub fn open_session(socket: &UdpSocket, network_profiles: Vec<NetworkManagerProfile>) {
     let mut state: ProtocolState = ProtocolState::Query;
     let mut op: ProtocolOpCode = ProtocolOpCode::Query;
     let mut data: Vec<u8> = vec![0];
@@ -105,8 +106,14 @@ pub fn open_session(socket: &UdpSocket) {
                         op = ProtocolOpCode::Request;
                         state = ProtocolState::AwaitRequestResponse;
                         data = vec!();
-                        build_request_packet(&mut data);
+                        build_request_packet(&mut data, &network_profiles);
                     },
+                    ProtocolOpCode::Accept => {
+                        op = ProtocolOpCode::Manage;
+                        state = ProtocolState::AwaitManageResponse;
+                        data = vec!();
+                        build_manage_packet(&mut data, received_data);
+                    }
                     _ => state = ProtocolState::StopConnection
                 }
             },
@@ -115,18 +122,35 @@ pub fn open_session(socket: &UdpSocket) {
     }
 }
 
-pub fn build_request_packet(data: &mut Vec<u8>){
+fn build_request_packet(data: &mut Vec<u8>, network_profiles: &Vec<NetworkManagerProfile>){
     let outputs = XHandle::open().unwrap()
     .all_outputs().unwrap();
 
     let display_number = outputs.len() as u16;
-    let conn_types: Vec<u16> = vec![0, 0, 6, 6];
-    let conn_addrs: Vec<Vec<u8>> = vec![
-        vec![192, 168, 0, 102],
-        vec![10, 0, 10, 11],
-        vec![42, 4, 238, 65, 0, 131, 48, 252, 13, 73u8, 115, 94, 102, 177, 37, 16],
-        vec![254, 128, 0, 0, 0, 0, 0, 0, 171, 204, 231, 63, 57, 39, 98, 246]
-    ];
+    let mut conn_types: Vec<u16> = vec![];
+    let mut interface_addrs: Vec<IpAddr> = vec![];
+    let mut conn_addrs: Vec<Vec<u8>> = vec![];
+    let network_tool = NetworkManager::new();
+    network_profiles.iter().for_each(|profile| {
+        match &profile.interface {
+            Some(interface) => interface_addrs.append(
+                &mut network_mgr::get_interface_addresses(&network_tool, interface.clone()).unwrap()
+            ),
+            None => ()
+        }
+    });
+    interface_addrs.iter().for_each(|addr: &IpAddr| {
+        match *addr {
+            IpAddr::V4(ip4) => {
+                conn_addrs.push(ip4.octets().to_vec());
+                conn_types.push(0);
+            },
+            IpAddr::V6(ip6) => {
+                conn_addrs.push(ip6.octets().to_vec());
+                conn_types.push(6);
+            }
+        }
+    });
     let auth_name: Vec<u8> = vec![];
     let auth_data: Vec<u8> = vec![];
     let auth_names: Vec<Vec<u8>> = vec![
@@ -136,31 +160,46 @@ pub fn build_request_packet(data: &mut Vec<u8>){
     ];
     let mfr_display_id: Vec<u8> = vec![];
 
-    data.append(&mut display_number.to_be_bytes().to_vec());
-    data.append(&mut (conn_types.len() as u8).to_be_bytes().to_vec());
-    data.append(&mut vec_u16_to_be_vec_u8(conn_types));
-    data.append(&mut (conn_addrs.len() as u8).to_be_bytes().to_vec());
-    conn_addrs.iter().for_each(|x: &Vec<u8>| {
-        data.append(&mut (x.len() as u16).to_be_bytes().to_vec());
-        data.append(&mut x.clone());
-    });
-    data.append(&mut (auth_name.len() as u16).to_be_bytes().to_vec());
-    data.append(&mut auth_name.clone());
-    data.append(&mut (auth_data.len() as u16).to_be_bytes().to_vec());
-    data.append(&mut auth_data.clone());
-    data.append(&mut (auth_names.len() as u8).to_be_bytes().to_vec());
-    auth_names.iter().for_each(|x: &Vec<u8>| {
-        data.append(&mut (x.len() as u16).to_be_bytes().to_vec());
-        data.append(&mut x.clone());
-    });
-    data.append(&mut (mfr_display_id.len() as u16).to_be_bytes().to_vec());
-    data.append(&mut mfr_display_id.clone());
+    append_card_16(data, display_number);
+    append_array_16(data, conn_types);
+    append_array_of_array_8(data, conn_addrs);
+    append_array_8(data, auth_name);
+    append_array_8(data, auth_data);
+    append_array_of_array_8(data, auth_names);
+    append_array_8(data, mfr_display_id);
 }
 
-fn vec_u16_to_be_vec_u8(x: Vec<u16>) -> Vec<u8>{
-    x.iter()
-    .map(|y: &u16| {
-        y.to_be_bytes().to_vec()
+fn build_manage_packet(data: &mut Vec<u8>, received_accept_packet: Vec<u8>) {
+
+}
+
+fn append_card_8(data: &mut Vec<u8>, card_8: u8){
+    data.append(&mut card_8.to_be_bytes().to_vec());
+}
+
+fn append_card_16(data: &mut Vec<u8>, card_16: u16){
+    data.append(&mut card_16.to_be_bytes().to_vec());
+}
+
+fn append_array_16(data: &mut Vec<u8>, array_16: Vec<u16>){
+    append_card_8(data, array_16.len() as u8);
+    data.append(&mut vec_u16_to_be_vec_u8(array_16)); 
+}
+
+fn append_array_8(data: &mut Vec<u8>, array_8: Vec<u8>){
+    append_card_16(data, array_8.len() as u16);
+    data.append(&mut array_8.clone());
+}
+
+fn append_array_of_array_8(data: &mut Vec<u8>, array_of_array_8: Vec<Vec<u8>>){
+    append_card_8(data, array_of_array_8.len() as u8);
+    array_of_array_8.iter().for_each(|array_8: &Vec<u8>| append_array_8(data, array_8.clone()));
+}
+
+fn vec_u16_to_be_vec_u8(array_16: Vec<u16>) -> Vec<u8>{
+    array_16.iter()
+    .map(|card16: &u16| {
+        card16.to_be_bytes().to_vec()
     })
     .collect::<Vec<Vec<u8>>>()
     .concat()

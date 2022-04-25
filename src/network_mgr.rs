@@ -151,23 +151,21 @@ pub fn get_interface_addresses(
         ]) {
         Ok(stdout) => {
             let mut addrs: Vec<IpAddr> = vec![];
-            let mut stdout_lines: Vec<&str> = stdout.split("\n").collect::<Vec<&str>>();
-            //Expression regulière IPv4/IPv6 trouvé sur Internet https://www.regextester.com/104038
+            let stdout_lines: Vec<&str> = stdout.split("\n").collect::<Vec<&str>>();
+            //Expression regulière IPv4/IPv6 trouvé sur Internet https://riptutorial.com/regex/example/14146/match-an-ip-address
             let re = Regex::new("((?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|::(?:[0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4}|[0-9a-fA-F]{1,4}::(?:[0-9a-fA-F]{1,4}:){0,5}[0-9a-fA-F]{1,4}|[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}::(?:[0-9a-fA-F]{1,4}:){0,4}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){0,2}[0-9a-fA-F]{1,4}::(?:[0-9a-fA-F]{1,4}:){0,3}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){0,3}[0-9a-fA-F]{1,4}::(?:[0-9a-fA-F]{1,4}:){0,2}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){0,4}[0-9a-fA-F]{1,4}::(?:[0-9a-fA-F]{1,4}:)?[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){0,5}[0-9a-fA-F]{1,4}::[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4}::|(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))").unwrap();
             stdout_lines.iter().for_each(|line| {
                 match re.captures(line) {
                     Some(caps) => {
-                        caps.iter().for_each(|cap| {
-                        match cap {
-                                Some(ip) => {
-                                    match IpAddr::from_str(ip.as_str()) {
-                                        Ok(addr) => addrs.push(addr),
-                                        Err(_) => ()
-                                    }
-                                },
-                                None => ()
-                            }
-                        })
+                        match caps.get(1) {
+                            Some(ip) => {
+                                match IpAddr::from_str(ip.as_str()) {
+                                    Ok(addr) => addrs.push(addr),
+                                    Err(_) => ()
+                                }
+                            },
+                            None => ()
+                        }
                     },
                     None => ()
                 }

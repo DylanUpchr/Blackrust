@@ -13,7 +13,7 @@ mod remote_session_mgr;
 use web_view::*;
 use regex::Regex;
 use regex::Captures;
-use blackrust_lib::profile::{Profile, NetworkManagerProfile};
+use blackrust_lib::profile::{Profile, NetworkManagerProfile/*, ConnectionSettings, Protocol, PortProtocol, NetworkManagerProfileType, Interface*/};
 use network_mgr::NetworkManager;
 
 /** Function
@@ -23,7 +23,7 @@ use network_mgr::NetworkManager;
  * Returns:	None
  */
 fn main() {
-	/*match open_webview() {
+	match open_webview() {
 		Ok(result) => {
 			match result.run() {
 				Ok(_) => (),
@@ -31,13 +31,29 @@ fn main() {
 			}
 		},
 		Err(message) => (println!("{}", message))
-	}*/
-	//remote_session_mgr::packet_test();
-	let network_tool = NetworkManager::new();
-	let interfaces = network_mgr::get_all_interfaces(&network_tool).unwrap();
-	let interface = network_mgr::get_interface_by_name(&network_tool, String::from("enp7s0")).unwrap();
-	let addr = network_mgr::get_interface_addresses(&network_tool, interface);
-	println!("{:?}", addr);
+	}
+	/*let profile = Profile::new3(
+		"Test".to_string(),
+		ConnectionSettings::new3(
+			"10.0.0.102".to_string(),
+			Protocol::new3(
+				"XDMCP".to_string(),
+				177,
+				PortProtocol::UDP
+			),
+			"".to_string()
+		),
+		vec![NetworkManagerProfile::new4(
+			"".to_string(),
+			"".to_string(),
+			NetworkManagerProfileType::Wireguard,
+			Some(Interface::new3(
+				"wg0-home".to_string(), 
+				"mac_addr".to_string(), 
+				"wireguard".to_string()))
+		)]
+	);
+	remote_session_mgr::connect(profile);*/
 }	
 
 /** Function
@@ -67,7 +83,6 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 							}),
 						Debug { value } => (println!("{}", value)),
 						Connect { profile } => ({
-							println!("{:?}", profile);
 							remote_session_mgr::connect(profile);
 						}),
 						QueryConnectionProfiles { callback, query } => ({

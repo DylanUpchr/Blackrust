@@ -202,9 +202,9 @@ Ce qui reste les tests suivants à faire dans le module network_mgr une fois que
 - modify_profile_test: Test avec mock pour modifier un profile de connexion réseau et pour la gestion d'erreur de ceci
 
 ## 2022-04-22
-Changed interface property to Option<Interface\> and changed get_interface_by_name return to match
+Changement du type de retour de get_interface_by_name, afin d'améliorer la résilience contre des erreurs. L'ancien type était un Result<Interface\, String\>. J'ai trouvé plus pertinent de rendre un Option<Interface\> (Some avec interface si cela existe, le cas echéant None) et de changer également le champ de type Interface dans le struct NetworkManager pour accomoder la possibilité qu'un interface n'est pas assignée à un profile.
 
-Updated test documentation
+Updated test documentation with case-orientated table structure
 
 ## 2022-04-24
 Négotiation avec le protocole XDMCP
@@ -214,7 +214,11 @@ Query server,
 Willing response,
 Request with (tmp hardcoded) display addrs and auth type/data (currently empty)
 Accept response with Xauthority MIT-MAGIC-COOKIE-1
-Manage confirming session in use
+Manage
 
 ## 2022-04-25
-Implémentation de la fonction get_interface_addresses afin de pouvoir récuperer les addresses IPv4/IPv6 d'un interface réseau. Cela est nécessaire car dans la séquence "Request" de la négotiation avec XDMCP, il faut renseigner les adresses IP au serveur.
+Implémentation de la fonction get_interface_addresses afin de pouvoir récuperer les addresses IPv4/IPv6 d'un interface réseau. Cela est nécessaire car dans la séquence "Request" de la négotiation avec XDMCP, il faut renseigner les adresses IP de l'affichage au serveur. Et donc lorsqu'on se connecte avec un profile de connexion XDMCP, lors de la construction du packet Request, les adresses IP sont demandées auprès de network_mgr qui sont ensuite encodée en Big Endian dans le packet.
+
+Factorization of packet building functions
+
+Implemented connect function, todo: match protocol and module to be used, try resolve fqdn if IpAddr::from_str(&profile.connection_settings.ip_fqdn) returns error
