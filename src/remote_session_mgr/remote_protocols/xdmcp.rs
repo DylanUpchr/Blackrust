@@ -83,9 +83,10 @@ pub fn recv(socket: &UdpSocket) -> Result<(ProtocolOpCode, Vec<u8>), String> {
     match socket.recv(&mut buf) {
         Ok(data_len) => {
             let opcode_bytes: [u8; 2] = buf[2..4].try_into().unwrap();
-            Ok((ProtocolOpCode::from_u16(u16::from_be_bytes(opcode_bytes)), buf[5..data_len].to_vec()))
+            Ok((ProtocolOpCode::from_u16(u16::from_be_bytes(opcode_bytes)), buf[..data_len].to_vec()))
         }
         Err(message) => {
+            println!("recv failed: {:?}", message);
             Err(message.to_string())
         }
     }
@@ -123,10 +124,10 @@ pub fn open_session(socket: &UdpSocket, network_profiles: Vec<NetworkManagerProf
 }
 
 fn build_request_packet(data: &mut Vec<u8>, network_profiles: &Vec<NetworkManagerProfile>){
-    let outputs = XHandle::open().unwrap()
-    .all_outputs().unwrap();
+    let monitors = XHandle::open().unwrap()
+    .monitors().unwrap();
 
-    let display_number = outputs.len() as u16;
+    let display_number = monitors.len() as u16;
     let mut conn_types: Vec<u16> = vec![];
     let mut interface_addrs: Vec<IpAddr> = vec![];
     let mut conn_addrs: Vec<Vec<u8>> = vec![];
@@ -170,7 +171,32 @@ fn build_request_packet(data: &mut Vec<u8>, network_profiles: &Vec<NetworkManage
 }
 
 fn build_manage_packet(data: &mut Vec<u8>, received_accept_packet: Vec<u8>) {
+    let monitors = XHandle::open().unwrap()
+    .monitors().unwrap();
 
+    let session_id: u32 = read_card_32(&received_accept_packet, 6);
+    let display_number = monitors.len() as u16;
+    let display_class: Vec<u8> = "MIT-unspecified".as_bytes().to_vec();
+
+    append_card_32(data, session_id);
+    append_card_16(data, display_number);
+    append_array_8(data, display_class);
+}
+
+fn read_card<const LENGTH: usize>(data: &Vec<u8>, offset: usize,) -> [u8; LENGTH] {
+    data[offset..offset+LENGTH].try_into().unwrap()
+}
+
+fn read_card_8(data: &Vec<u8>, offset: usize) -> u8 {
+    u8::from_be_bytes(read_card::<1>(data, offset))
+}
+
+fn read_card_16(data: &Vec<u8>, offset: usize) -> u16 {
+    u16::from_be_bytes(read_card::<2>(data, offset))
+}
+
+fn read_card_32(data: &Vec<u8>, offset: usize) -> u32 {
+    u32::from_be_bytes(read_card::<4>(data, offset))
 }
 
 fn append_card_8(data: &mut Vec<u8>, card_8: u8){
@@ -179,6 +205,10 @@ fn append_card_8(data: &mut Vec<u8>, card_8: u8){
 
 fn append_card_16(data: &mut Vec<u8>, card_16: u16){
     data.append(&mut card_16.to_be_bytes().to_vec());
+}
+
+fn append_card_32(data: &mut Vec<u8>, card_32: u32){
+    data.append(&mut card_32.to_be_bytes().to_vec());
 }
 
 fn append_array_16(data: &mut Vec<u8>, array_16: Vec<u16>){

@@ -86,14 +86,30 @@ Le programme est décomposé en 5 modules principaux :
 - BlackrustLib: Fonctions communes à plusieurs modules, librairie interne
 ##### Main
 Le module main est le point d'entrée principale de l'application, lance l'aperçu WebView qui permet d'interfacer avec l'application et appeler les autres modules
+
+![Crate main](./img/main_crate.svg)
+###### Fonctions
+- open_webview: Instancie et affiche l'interface WebView
+- combined_html_css_js: Concaténation des sources HTML, CSS et JS pour le WebView, qui ne prend que de l'HTML
+- base64_encode_images: Encodage des images en format de données base64, et remplacement des chemins vers les images dans l'HTML avec les données base64
+- inline_style: Formatteur de code CSS en balise ```<style></style>``` HTML
+- inline_script: Formatteur de code JS en balise ```<script></script>``` HTML
+###### Tests unitaires
+- open_webview_test: Test que l'affichage puisse s'instancier et s'afficher, ainsi que la gestion d'erreur de ceci
+- base64_encode_images_test: Test que l'encodage et remplacement des images dans une balise ```<img></img>``` fonctionne
+
 ##### ConfigMgr
 Le module ConfigMgr gère les profils de connexion de session distante avec des fonctions CRUD (Création, Lecture, Mise à Jour, Suppression). Ses fonctionnalités sont appelées depuis le Invoke Handler du WebView et donc depuis le JS de l'interface utilisateur.
+
 ##### NetworkMgr
 Le module NetworkMgr permet de faire des appels vers NetworkManager pour configurer les interfaces réseau afin de pouvoir se connecter au réseau local et éventuellement à un VPN.
+
 ##### RemoteSessionMgr
 Le module RemoteSessionMgr lance les sessions distantes en utilisant les options de connexion soit fournies par l'utilisateur soit par un profile chargé par l'utilisateur. Ce module fait appel aux commandes tel xfreerdp, vncviewer, Xnest ou ssh.
+
 ##### Blackrust-Lib
 Blackrust-Lib est la libraire commune aux modules et contient les définitions de structures de données et les fonctions utilisées par tous les modules.
+
 #### Librairies externes
 Le programme utilise également quelques libraires externes, principalement pour le rendu graphique Web.
 ##### Web-view
