@@ -87,7 +87,7 @@ Le programme est décomposé en 5 modules principaux :
 ##### Main
 Le module main est le point d'entrée principale de l'application, lance l'aperçu WebView qui permet d'interfacer avec l'application et appeler les autres modules
 
-![Crate main](./img/main_crate.svg)
+![Architecture crate Main](./img/main_crate.svg)
 ###### Fonctions
 - open_webview: Instancie et affiche l'interface WebView
 - combined_html_css_js: Concaténation des sources HTML, CSS et JS pour le WebView, qui ne prend que de l'HTML
@@ -101,12 +101,21 @@ Le module main est le point d'entrée principale de l'application, lance l'aper�
 ##### ConfigMgr
 Le module ConfigMgr gère les profils de connexion de session distante avec des fonctions CRUD (Création, Lecture, Mise à Jour, Suppression). Ses fonctionnalités sont appelées depuis le Invoke Handler du WebView et donc depuis le JS de l'interface utilisateur.
 
+![Architecture module ConfigMgr](./img/config_mgr_module.svg)
+###### Fonctions
+###### Tests unitaires
 ##### NetworkMgr
 Le module NetworkMgr permet de faire des appels vers NetworkManager pour configurer les interfaces réseau afin de pouvoir se connecter au réseau local et éventuellement à un VPN.
 
+![Architecture module NetworkMgr](./img/network_mgr_module.svg)
+###### Fonctions
+###### Tests unitaires
 ##### RemoteSessionMgr
 Le module RemoteSessionMgr lance les sessions distantes en utilisant les options de connexion soit fournies par l'utilisateur soit par un profile chargé par l'utilisateur. Ce module fait appel aux commandes tel xfreerdp, vncviewer, Xnest ou ssh.
 
+![Architecture module RemoteSessionMgr](./img/remote_session_mgr_module.svg)
+###### Fonctions
+###### Tests unitaires
 ##### Blackrust-Lib
 Blackrust-Lib est la libraire commune aux modules et contient les définitions de structures de données et les fonctions utilisées par tous les modules.
 
@@ -122,6 +131,11 @@ Serde implémente des fonctionnalités de sérialisation et désérialisation de
 Image-base64 est un crate qui encode ou "traduit" des fichiers image en texte base64. **Ceci est nécessaire pour l'instant à cause de WebView qui ne peut pas référencer des fichiers et que traiter du HTML pur. Ceci pourra changer en implémentant Actix (Serveur Web) et Yew (Framework WASM pour Rust)**
 ##### Regex
 Le crate Regex implémente des expressions régulières utilisées pour la vérification des données saisies par l'utilisateur pour la configuration réseau
+##### TOML
+##### Itertools
+##### Dirs
+##### RSTest
+##### MockAll
 ### Maquettes
 
 ## Sécurité

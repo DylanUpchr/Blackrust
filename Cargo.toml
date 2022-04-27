@@ -16,9 +16,7 @@ regex = "1"
 toml = "*"
 itertools = "*"
 dirs = "*"
-byteorder = "*"
 blackrust_lib = {path = "blackrust_lib"}
-async-net = "*"
 
 [dev-dependencies]
 rstest = "*"
