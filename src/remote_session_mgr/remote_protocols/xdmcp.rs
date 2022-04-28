@@ -8,6 +8,8 @@ use xrandr::XHandle;
 use crate::network_mgr;
 use crate::network_mgr::{NetworkManager};
 use blackrust_lib::profile::NetworkManagerProfile;
+use std::process::Command;
+use std::env;
 
 #[derive(Copy, Clone)]
 pub enum ProtocolOpCode {
@@ -177,10 +179,51 @@ fn build_manage_packet(data: &mut Vec<u8>, received_accept_packet: Vec<u8>) {
     let session_id: u32 = read_card_32(&received_accept_packet, 6);
     let display_number = monitors.len() as u16;
     let display_class: Vec<u8> = "MIT-unspecified".as_bytes().to_vec();
-
+    let mut offset: usize = 10;
+    let manager_auth_name = read_array_8(&received_accept_packet, offset);
+    offset += manager_auth_name.len() + 2;
+    let manager_auth_data = read_array_8(&received_accept_packet, offset);
+    offset += manager_auth_data.len() + 2;
+    let display_auth_name = read_array_8(&received_accept_packet, offset);
+    offset += display_auth_name.len() + 2;
+    let display_auth_name = String::from_utf8(display_auth_name).unwrap();
+    let display_auth_data = read_array_8(&received_accept_packet, offset);
+    add_xauth_cookie(&display_auth_name, display_auth_data, display_number);
     append_card_32(data, session_id);
     append_card_16(data, display_number);
     append_array_8(data, display_class);
+}
+
+fn add_xauth_cookie(auth_name: &str, auth_data: Vec<u8>, display_number: u16) {
+    let authfile_var = env::var("XAUTHORITY");
+    let display_name: &str = &format!("10.0.10.24:{}", display_number);
+    let auth_data_str = &vec_u8_to_string(auth_data);
+    match authfile_var {
+        Ok(authfile_path) => {
+            let args: Vec<&str> = vec![
+                "-f",
+                &authfile_path,
+                "add",
+                display_name,
+                auth_name,
+                auth_data_str
+            ];
+            let command = Command::new("xauth").args(args.clone()).output();
+            match command {
+                Ok(output) => {
+                    if output.stderr.is_empty() && !output.stdout.is_empty() {
+                        //Ok(str::from_utf8(&output.stdout).unwrap().to_string())
+                    } else if !output.stderr.is_empty() {
+                        //Err(str::from_utf8(&output.stderr).unwrap().to_string())
+                    } else {
+                        //Ok(format!("Unknown status: {}", output.status))
+                    }
+                }
+                Err(_) => ()//Err(format!("Could not execute nmcli command with args: {:?}", args).to_string()),
+            }
+        },
+        Err(_) => ()
+    }
 }
 
 fn read_card<const LENGTH: usize>(data: &Vec<u8>, offset: usize,) -> [u8; LENGTH] {
@@ -197,6 +240,15 @@ fn read_card_16(data: &Vec<u8>, offset: usize) -> u16 {
 
 fn read_card_32(data: &Vec<u8>, offset: usize) -> u32 {
     u32::from_be_bytes(read_card::<4>(data, offset))
+}
+
+fn read_array_8(data: &Vec<u8>, offset: usize) -> Vec<u8> {
+    let array_len = read_card_16(data, offset);
+    let mut array_data: Vec<u8> = vec![];
+    for card_offset in 0..array_len {
+        array_data.push(read_card_8(data, offset+2+(card_offset as usize)));
+    }
+    array_data
 }
 
 fn append_card_8(data: &mut Vec<u8>, card_8: u8){
@@ -233,4 +285,12 @@ fn vec_u16_to_be_vec_u8(array_16: Vec<u16>) -> Vec<u8>{
     })
     .collect::<Vec<Vec<u8>>>()
     .concat()
+}
+
+fn vec_u8_to_string(data: Vec<u8>) -> String {
+    let mut result = String::new();
+    for i in 0..data.len() {
+        result.push_str(&format!("{:02X}", data[i]))
+    }
+    result
 }
