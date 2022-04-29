@@ -89,32 +89,84 @@ Le module main est le point d'entrée principale de l'application, lance l'aper�
 
 ![Architecture crate Main](./img/main_crate.svg)
 ###### Fonctions
-- open_webview: Instancie et affiche l'interface WebView
-- combined_html_css_js: Concaténation des sources HTML, CSS et JS pour le WebView, qui ne prend que de l'HTML
-- base64_encode_images: Encodage des images en format de données base64, et remplacement des chemins vers les images dans l'HTML avec les données base64
-- inline_style: Formatteur de code CSS en balise ```<style></style>``` HTML
-- inline_script: Formatteur de code JS en balise ```<script></script>``` HTML
+- ```open_webview```: Instancie et affiche l'interface WebView
+- ```combined_html_css_js```: Concaténation des sources HTML, CSS et JS pour le WebView, qui ne prend que de l'HTML
+- ```base64_encode_images```: Encode des images en format de données base64, et remplacement des chemins vers les images dans l'HTML avec les données base64
+- ```inline_style```: Formate du code CSS en balise ```<style></style>``` HTML
+- ```inline_script```: Formate du code JS en balise ```<script></script>``` HTML
 ###### Tests unitaires
-- open_webview_test: Test que l'affichage puisse s'instancier et s'afficher, ainsi que la gestion d'erreur de ceci
-- base64_encode_images_test: Test que l'encodage et remplacement des images dans une balise ```<img></img>``` fonctionne
+- ```test::open_webview_test```: Test que l'affichage puisse s'instancier et s'afficher, ainsi que la gestion d'erreur de ceci
+- ```test::base64_encode_images_test```: Test que l'encodage et remplacement des images dans une balise ```<img></img>``` fonctionne
 
 ##### ConfigMgr
 Le module ConfigMgr gère les profils de connexion de session distante avec des fonctions CRUD (Création, Lecture, Mise à Jour, Suppression). Ses fonctionnalités sont appelées depuis le Invoke Handler du WebView et donc depuis le JS de l'interface utilisateur.
 
 ![Architecture module ConfigMgr](./img/config_mgr_module.svg)
 ###### Fonctions
+- ```load_all_profiles```: Instancie tout les profiles depuis des enregistrements dans un fichier .toml
+- ```get_profiles```: Récupère tout les profiles de connexion répondant à une requete de recherche
+- ```get_profile_by_id```: Récupère un profile de connexion à partir de son identifiant
+- ```save_profile```: Sauvegarde un profile modifié
+- ```save_profiles```: Sauvegarde tout les profiles dans un fichier .toml
+- ```create_profile```: Instancie et sauvegarde une nouvelle profile
+- ```delete_profile```: Supprime un profile de connexion 
 ###### Tests unitaires
 ##### NetworkMgr
 Le module NetworkMgr permet de faire des appels vers NetworkManager pour configurer les interfaces réseau afin de pouvoir se connecter au réseau local et éventuellement à un VPN.
 
 ![Architecture module NetworkMgr](./img/network_mgr_module.svg)
 ###### Fonctions
+- ```get_hostname```: Récupère le nom d'hôte de la machine locale
+- ```set_hostname```: Affecte le nom d'hôte de la machine locale
+- ```get_all_interfaces```: Récupère les interfaces réseau de la machine locale
+- ```get_interface_by_name```: Récupère une interface selon son nom
+- ```get_interface_address```: Récupère l'adresse IP d'une interface
+- ```load_all_profiles```: Charge tout les profiles réseau depuis l'outil de réseau
+- ```get_simple_profile_by_id```: Récupère des informations basiques sur un profile réseau à partir de son identifiant
+- ```get_detailed_profile_by_id```: Récupère des informations détaillées sur un profile réseau à partir de son identifiant
+- ```create_profile```: Crée un nouveau profile réseau avec l'outil réseau
+- ```modify_profile```: Modifie un profile réseau avec l'outil réseau
+- ```delete_profile```: Supprime  un profile réseau avec l'outil réseau
+- ```exec_command```: Exécute une commande de l'outil réseau
 ###### Tests unitaires
+- ```test::get_hostname_test```: Test que la commande pour récupérer le nom d'hôte est correcte
+- ```test::set_hostname_test```: Test que la commande pour affecter le nom d'hôte est correcte
+- ```test::get_all_interfaces_test```: Test que la commande pour récuperer les interfaces est correcte
+- ```test::get_interface_by_name_test```: Test que la récupération d'interface réussi
+- ```test::get_interface_address_test```: Test que la récupération d'adresse réussi
+- ```test::load_all_profiles_test```: Test que la récupération de profiles réussi
+- ```test::get_simple_profile_by_id_test```: Test que la récupération de profile simple réussi
+- ```test::get_detailed_profile_by_id_test```: Test que la récupération de profile détaillée réussi
+- ```test::create_profile_test```: Test que la commande pour créer un profile est correcte
+- ```test::modify_profile_test```: Test que la commande pour modifier un profile est correcte
+- ```test::delete_profile_test```: Test que la commande pour supprimer un profile est correcte
+- ```test::exec_command_test```: Test que l'outil réseau puisse accepter des commandes correctement
 ##### RemoteSessionMgr
 Le module RemoteSessionMgr lance les sessions distantes en utilisant les options de connexion soit fournies par l'utilisateur soit par un profile chargé par l'utilisateur. Ce module fait appel aux commandes tel xfreerdp, vncviewer, Xnest ou ssh.
 
 ![Architecture module RemoteSessionMgr](./img/remote_session_mgr_module.svg)
 ###### Fonctions
+- ```connect```: Se connecte à un protocol distant du profile de connexion fourni
+- ```remote_protocols::open_udp_socket```: Ouvre un canal de communication UDP entre un serveur distant et la machine actuelle
+- ```remote_protocols::xdmcp::send```: Envoi un packet du protocole XDMCP
+- ```remote_protocols::xdmcp::recv```: Attends la récéption d'un packet du protocole XDMCP
+- ```remote_protocols::xdmcp::open_session```: Négocie une session XDMCP avec un serveur XDMCP distant
+- ```remote_protocols::xdmcp::build_request_packet```: Construit un packet de l'opération Request du protocole XDMCP
+- ```remote_protocols::xdmcp::build_manage_packet```: Construit un packet de l'opération Manage du protocole XDMCP
+- ```remote_protocols::xdmcp::add_xauth_cookie```: Ajoute un cookie d'authentification MIT_MAGIC_COOKIE-1 au XAuthority du système
+- ```remote_protocols::xdmcp::read_card```: Lit un nombre de bytes d'un buffer à un offset donné depuis le buffer
+- ```remote_protocols::xdmcp::read_card_8```: Lit une valeur de taille 1 byte à un offset donné depuis le buffer
+- ```remote_protocols::xdmcp::read_card_16```: Lit une valeur de taille 2 bytes à un offset donné depuis le buffer
+- ```remote_protocols::xdmcp::read_card_32```: Lit une valeur de taille 4 bytes à un offset donné depuis le buffer
+- ```remote_protocols::xdmcp::read_array_8```: Lit un array de valeurs 1 byte de taille variable à un offset donné depuis le buffer
+- ```remote_protocols::xdmcp::append_card_8```: Ajoute une valeur de taille 1 byte à la fin du buffer
+- ```remote_protocols::xdmcp::append_card_16```: Ajoute une valeur de taille 2 bytes à la fin du buffer
+- ```remote_protocols::xdmcp::append_card_32```: Ajoute une valeur de taille 4 bytes à la fin du buffer
+- ```remote_protocols::xdmcp::append_array_8```: Ajoute une array de valeurs 1 byte de taille variable à la fin du buffer
+- ```remote_protocols::xdmcp::append_array_16```: Ajoute une array de valeurs 2 bytes de taille variable à la fin du buffer
+- ```remote_protocols::xdmcp::append_array_of_array_8```
+- ```remote_protocols::xdmcp::vec_u16_to_be_vec_u8```
+- ```remote_protocols::xdmcp::vec_u8_to_string```
 ###### Tests unitaires
 ##### Blackrust-Lib
 Blackrust-Lib est la libraire commune aux modules et contient les définitions de structures de données et les fonctions utilisées par tous les modules.
@@ -132,6 +184,7 @@ Image-base64 est un crate qui encode ou "traduit" des fichiers image en texte ba
 ##### Regex
 Le crate Regex implémente des expressions régulières utilisées pour la vérification des données saisies par l'utilisateur pour la configuration réseau
 ##### TOML
+Le crate TOML est un sérialiseur/déserialiseur des format
 ##### Itertools
 ##### Dirs
 ##### RSTest

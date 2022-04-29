@@ -263,14 +263,14 @@ fn append_card_32(data: &mut Vec<u8>, card_32: u32){
     data.append(&mut card_32.to_be_bytes().to_vec());
 }
 
-fn append_array_16(data: &mut Vec<u8>, array_16: Vec<u16>){
-    append_card_8(data, array_16.len() as u8);
-    data.append(&mut vec_u16_to_be_vec_u8(array_16)); 
-}
-
 fn append_array_8(data: &mut Vec<u8>, array_8: Vec<u8>){
     append_card_16(data, array_8.len() as u16);
     data.append(&mut array_8.clone());
+}
+
+fn append_array_16(data: &mut Vec<u8>, array_16: Vec<u16>){
+    append_card_8(data, array_16.len() as u8);
+    data.append(&mut vec_u16_to_be_vec_u8(array_16)); 
 }
 
 fn append_array_of_array_8(data: &mut Vec<u8>, array_of_array_8: Vec<Vec<u8>>){
