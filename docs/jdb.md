@@ -219,6 +219,25 @@ Manage
 ## 2022-04-25
 Implémentation de la fonction get_interface_addresses afin de pouvoir récuperer les addresses IPv4/IPv6 d'un interface réseau. Cela est nécessaire car dans la séquence "Request" de la négotiation avec XDMCP, il faut renseigner les adresses IP de l'affichage au serveur. Et donc lorsqu'on se connecte avec un profile de connexion XDMCP, lors de la construction du packet Request, les adresses IP sont demandées auprès de network_mgr qui sont ensuite encodée en Big Endian dans le packet.
 
-Factorization of packet building functions
+Factorisation du code pour la construction de paquet en fonctions append_*type* (ex: append_card_8 pour l'ajout d'un byte au buffer pour le paquet).
 
-Implemented connect function, todo: match protocol and module to be used, try resolve fqdn if IpAddr::from_str(&profile.connection_settings.ip_fqdn) returns error
+Première implémentation de la fonction connect afin d'utiliser un profile pour appeler le bon module du protocole utilisée. Pour l'instant vu que uniquement XDMCP est implémentée il n'y a pas encore le matching de protocole qui nécessitera un enum de protocoles implémentées. Egalement, pou rl'instant uniquement un adresse IP est utilisée et quelquechose à rajouter serait le support de FQDN pour indiquer un serveur distant.
+
+## 2022-04-26
+Première évaluation intermédiaire avec M. Zeltner afin d'évaluer ma performance pendant les 2 premières semaines de travail. Le retour de M. Zeltner était plutôt positif du côté technique mais que la documentation nécessitait encore du travail.
+
+Implémentation de la fonction get_interface_addresses qui sert a recuperer les adresses IP d'une interface specifiée. Cela sert pour la négotiation XDMCP car le serveur distant a besoin de connaître l'adresse du serveur Xorg locale.
+
+Séparation des modules blackrust_lib (profile, file, defaults) en plusieurs fichiers (profile.rs, file.rs, defaults.rs) regroupées par lib.rs.
+
+Schématisation du crate main et description de l'architecture dans le documentation technique
+
+## 2022-04-27
+Schématisation des modules config_mgr, network_mgr et remote_session_mgr (avec remote_protocols, xdmcp) et description de l'architecture dans le documentation technique
+
+## 2022-04-28
+Implémentation des fonctions liées au XAuthority, donc l'authorisation par cookie "MIT-MAGIC-COOKIE-1" avec la fonction add_xauth_cookie qui a besoin des nouvelles fonctions de lecture read_card_8, read_card_16, read_card_32 et read_array_8. Il faudrait rendre quelques valeurs dynamiques et ajouter de la gestion d'erreur dans add_xauth_cookie ainsi que des tests unitaires pour tout le fichier.
+
+Recherche sur l'utilisation de Xephyr pour ouvrir un display qui sera la sortie de la session XDMCP. J'avais des problèmes d'authentification avec le cookie car la négociation se passait bien, mais le serveur distant n'arrivait pas à se connecter au display local. 
+Ceci était dû au fait que Xephyr est un serveur X apart et n'utilisait pas le fichier .Xauthority ou les cookies sont stockées. 
+La solution s'agit de passer le chemin du fichier .Xauthority dans le home de l'utilisateur en paramètre -auth lors du lancement de serveur.
