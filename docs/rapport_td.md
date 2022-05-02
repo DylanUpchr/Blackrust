@@ -162,11 +162,11 @@ Le module RemoteSessionMgr lance les sessions distantes en utilisant les options
 - ```remote_protocols::xdmcp::append_card_8```: Ajoute une valeur de taille 1 byte à la fin du buffer
 - ```remote_protocols::xdmcp::append_card_16```: Ajoute une valeur de taille 2 bytes à la fin du buffer
 - ```remote_protocols::xdmcp::append_card_32```: Ajoute une valeur de taille 4 bytes à la fin du buffer
-- ```remote_protocols::xdmcp::append_array_8```: Ajoute une array de valeurs 1 byte de taille variable à la fin du buffer
-- ```remote_protocols::xdmcp::append_array_16```: Ajoute une array de valeurs 2 bytes de taille variable à la fin du buffer
-- ```remote_protocols::xdmcp::append_array_of_array_8```
-- ```remote_protocols::xdmcp::vec_u16_to_be_vec_u8```
-- ```remote_protocols::xdmcp::vec_u8_to_string```
+- ```remote_protocols::xdmcp::append_array_8```: Ajoute un array de valeurs 1 byte de taille variable à la fin du buffer
+- ```remote_protocols::xdmcp::append_array_16```: Ajoute un array de valeurs 2 bytes de taille variable à la fin du buffer
+- ```remote_protocols::xdmcp::append_array_of_array_8```: Ajoute un array de array de valeurs 2 bytes de taille variable à la fin du buffer
+- ```remote_protocols::xdmcp::vec_u16_to_be_vec_u8```: Convertit un vecteur de valeurs de 2 bytes en vecteur de valeurs de 1 byte big-endian
+- ```remote_protocols::xdmcp::vec_u8_to_string``` Convertit un vecteur de valeurs 1 byte en string hexadécimale
 ###### Tests unitaires
 ##### Blackrust-Lib
 Blackrust-Lib est la libraire commune aux modules et contient les définitions de structures de données et les fonctions utilisées par tous les modules.
@@ -184,11 +184,15 @@ Image-base64 est un crate qui encode ou "traduit" des fichiers image en texte ba
 ##### Regex
 Le crate Regex implémente des expressions régulières utilisées pour la vérification des données saisies par l'utilisateur pour la configuration réseau
 ##### TOML
-Le crate TOML est un sérialiseur/déserialiseur des format
+Le crate TOML est un sérialiseur/déserialiseur de TOML, Tom's Obvious, Minimal Language, qui est la langue de markdon utilisé par Rust pour réprésenter des données
 ##### Itertools
+Le crate Itertools propose davantage de fonctions d'opérations sur les itérables
 ##### Dirs
+Le crate Dirs sert à récupérer des chemins utilisateur selon l'utilisateur, comme la répértoire de fichiers de configuration ou la répértoire home.
 ##### RSTest
+Le crate RSTest est un framework de test qui propose des tests unitaires "Data-Driven"
 ##### MockAll
+Le crate MockAll est un framework de test qui permet de moquer des classes qui impémentent des traits.
 ### Maquettes
 
 ## Sécurité

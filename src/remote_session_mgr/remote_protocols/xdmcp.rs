@@ -1,15 +1,15 @@
+use crate::network_mgr;
+use crate::network_mgr::NetworkManager;
+use blackrust_lib::profile::NetworkManagerProfile;
+use std::env;
 /** File
  * Author:		Dylan Upchurch
  * Date:		2021-03-13
  * Desc:		Blackrust XDMCP module
  */
 use std::net::{IpAddr, UdpSocket};
-use xrandr::XHandle;
-use crate::network_mgr;
-use crate::network_mgr::{NetworkManager};
-use blackrust_lib::profile::NetworkManagerProfile;
 use std::process::Command;
-use std::env;
+use xrandr::XHandle;
 
 #[derive(Copy, Clone)]
 pub enum ProtocolOpCode {
@@ -26,10 +26,10 @@ pub enum ProtocolOpCode {
     Refuse,
     Failed,
     KeepAlive,
-    Alive
+    Alive,
 }
 impl ProtocolOpCode {
-    pub fn from_u16(value: u16) -> ProtocolOpCode{
+    pub fn from_u16(value: u16) -> ProtocolOpCode {
         match value {
             1 => ProtocolOpCode::BroadcastQuery,
             2 => ProtocolOpCode::Query,
@@ -45,7 +45,7 @@ impl ProtocolOpCode {
             12 => ProtocolOpCode::Failed,
             13 => ProtocolOpCode::KeepAlive,
             14 => ProtocolOpCode::Alive,
-            _ => ProtocolOpCode::Query
+            _ => ProtocolOpCode::Query,
         }
     }
 }
@@ -65,15 +65,15 @@ enum ProtocolState {
     AwaitManageResponse,
     StopConnection,
     KeepAlive,
-    AwaitAlive
+    AwaitAlive,
 }
 
-pub fn send(socket: &UdpSocket, op: ProtocolOpCode, data: &Vec<u8>){
+pub fn send(socket: &UdpSocket, op: ProtocolOpCode, data: &Vec<u8>) {
     let version: u16 = 1;
     let op_code: u16 = op as u16;
     let data_len: u16 = data.len().try_into().unwrap();
 
-    let mut buf: Vec<u8> = vec!();
+    let mut buf: Vec<u8> = vec![];
     append_card_16(&mut buf, version);
     append_card_16(&mut buf, op_code);
     append_array_8(&mut buf, data.to_vec());
@@ -85,7 +85,10 @@ pub fn recv(socket: &UdpSocket) -> Result<(ProtocolOpCode, Vec<u8>), String> {
     match socket.recv(&mut buf) {
         Ok(data_len) => {
             let opcode_bytes: [u8; 2] = buf[2..4].try_into().unwrap();
-            Ok((ProtocolOpCode::from_u16(u16::from_be_bytes(opcode_bytes)), buf[..data_len].to_vec()))
+            Ok((
+                ProtocolOpCode::from_u16(u16::from_be_bytes(opcode_bytes)),
+                buf[..data_len].to_vec(),
+            ))
         }
         Err(message) => {
             println!("recv failed: {:?}", message);
@@ -108,58 +111,58 @@ pub fn open_session(socket: &UdpSocket, network_profiles: Vec<NetworkManagerProf
                     ProtocolOpCode::Willing => {
                         op = ProtocolOpCode::Request;
                         state = ProtocolState::AwaitRequestResponse;
-                        data = vec!();
+                        data = vec![];
                         build_request_packet(&mut data, &network_profiles);
-                    },
+                    }
                     ProtocolOpCode::Accept => {
                         op = ProtocolOpCode::Manage;
                         state = ProtocolState::AwaitManageResponse;
-                        data = vec!();
+                        data = vec![];
                         build_manage_packet(&mut data, received_data);
                     }
-                    _ => state = ProtocolState::StopConnection
+                    _ => state = ProtocolState::StopConnection,
                 }
-            },
-            _ => state = ProtocolState::StopConnection
+            }
+            _ => state = ProtocolState::StopConnection,
         }
     }
 }
 
-fn build_request_packet(data: &mut Vec<u8>, network_profiles: &Vec<NetworkManagerProfile>){
-    let monitors = XHandle::open().unwrap()
-    .monitors().unwrap();
+fn build_request_packet(data: &mut Vec<u8>, network_profiles: &Vec<NetworkManagerProfile>) {
+    let monitors = XHandle::open().unwrap().monitors().unwrap();
 
     let display_number = monitors.len() as u16;
     let mut conn_types: Vec<u16> = vec![];
     let mut interface_addrs: Vec<IpAddr> = vec![];
     let mut conn_addrs: Vec<Vec<u8>> = vec![];
     let network_tool = NetworkManager::new();
-    network_profiles.iter().for_each(|profile| {
-        match &profile.interface {
+    network_profiles
+        .iter()
+        .for_each(|profile| match &profile.interface {
             Some(interface) => interface_addrs.append(
-                &mut network_mgr::get_interface_addresses(&network_tool, interface.clone()).unwrap()
+                &mut network_mgr::get_interface_addresses(&network_tool, interface.clone())
+                    .unwrap(),
             ),
-            None => ()
-        }
-    });
-    interface_addrs.iter().for_each(|addr: &IpAddr| {
-        match *addr {
+            None => (),
+        });
+    interface_addrs
+        .iter()
+        .for_each(|addr: &IpAddr| match *addr {
             IpAddr::V4(ip4) => {
                 conn_addrs.push(ip4.octets().to_vec());
                 conn_types.push(0);
-            },
+            }
             IpAddr::V6(ip6) => {
                 conn_addrs.push(ip6.octets().to_vec());
                 conn_types.push(6);
             }
-        }
-    });
+        });
     let auth_name: Vec<u8> = vec![];
     let auth_data: Vec<u8> = vec![];
     let auth_names: Vec<Vec<u8>> = vec![
         "MIT-MAGIC-COOKIE-1".as_bytes().to_vec(),
         "XDM-AUTHORIZATION-1".as_bytes().to_vec(),
-        "SUN-DES-1".as_bytes().to_vec()
+        "SUN-DES-1".as_bytes().to_vec(),
     ];
     let mfr_display_id: Vec<u8> = vec![];
 
@@ -173,8 +176,7 @@ fn build_request_packet(data: &mut Vec<u8>, network_profiles: &Vec<NetworkManage
 }
 
 fn build_manage_packet(data: &mut Vec<u8>, received_accept_packet: Vec<u8>) {
-    let monitors = XHandle::open().unwrap()
-    .monitors().unwrap();
+    let monitors = XHandle::open().unwrap().monitors().unwrap();
 
     let session_id: u32 = read_card_32(&received_accept_packet, 6);
     let display_number = monitors.len() as u16;
@@ -189,6 +191,7 @@ fn build_manage_packet(data: &mut Vec<u8>, received_accept_packet: Vec<u8>) {
     let display_auth_name = String::from_utf8(display_auth_name).unwrap();
     let display_auth_data = read_array_8(&received_accept_packet, offset);
     add_xauth_cookie(&display_auth_name, display_auth_data, display_number);
+    open_display(display_number);
     append_card_32(data, session_id);
     append_card_16(data, display_number);
     append_array_8(data, display_class);
@@ -206,7 +209,7 @@ fn add_xauth_cookie(auth_name: &str, auth_data: Vec<u8>, display_number: u16) {
                 "add",
                 display_name,
                 auth_name,
-                auth_data_str
+                auth_data_str,
             ];
             let command = Command::new("xauth").args(args.clone()).output();
             match command {
@@ -219,15 +222,55 @@ fn add_xauth_cookie(auth_name: &str, auth_data: Vec<u8>, display_number: u16) {
                         //Ok(format!("Unknown status: {}", output.status))
                     }
                 }
-                Err(_) => ()//Err(format!("Could not execute nmcli command with args: {:?}", args).to_string()),
+                Err(_) => (), //Err(format!("Could not execute nmcli command with args: {:?}", args).to_string()),
             }
-        },
-        Err(_) => ()
+        }
+        Err(_) => (),
     }
 }
 
-fn read_card<const LENGTH: usize>(data: &Vec<u8>, offset: usize,) -> [u8; LENGTH] {
-    data[offset..offset+LENGTH].try_into().unwrap()
+fn open_display(display_number: u16) {
+    let authfile_var = env::var("XAUTHORITY");
+    let display_string = &format!(":{}", display_number);
+    let vnc_port = &format!("{}", 5900 + display_number);
+    match authfile_var {
+        Ok(authfile_path) => {
+            let xephyr_args = vec![
+                "-listen",
+                "tcp",
+                display_string,
+                "-auth",
+                &authfile_path,
+                "-screen",
+                "800x600",
+            ];
+            let x11vnc_args = vec![
+                "-localhost",
+                "-display",
+                display_string,
+                "-auth",
+                &authfile_path,
+                "-rfbport",
+                vnc_port,
+            ];
+            let xephyr_command = Command::new("Xephyr").args(xephyr_args).spawn();
+            match xephyr_command {
+                Ok(output) => {
+                    let x11vnc_command = Command::new("x11vnc").args(x11vnc_args).spawn();
+                    match x11vnc_command {
+                        Ok(output) => (println!("{:?}", output)),
+                        Err(err) => (println!("{}", err)),
+                    }
+                }
+                Err(_) => (),
+            }
+        }
+        Err(_) => (),
+    }
+}
+
+fn read_card<const LENGTH: usize>(data: &Vec<u8>, offset: usize) -> [u8; LENGTH] {
+    data[offset..offset + LENGTH].try_into().unwrap()
 }
 
 fn read_card_8(data: &Vec<u8>, offset: usize) -> u8 {
@@ -246,45 +289,46 @@ fn read_array_8(data: &Vec<u8>, offset: usize) -> Vec<u8> {
     let array_len = read_card_16(data, offset);
     let mut array_data: Vec<u8> = vec![];
     for card_offset in 0..array_len {
-        array_data.push(read_card_8(data, offset+2+(card_offset as usize)));
+        array_data.push(read_card_8(data, offset + 2 + (card_offset as usize)));
     }
     array_data
 }
 
-fn append_card_8(data: &mut Vec<u8>, card_8: u8){
+fn append_card_8(data: &mut Vec<u8>, card_8: u8) {
     data.append(&mut card_8.to_be_bytes().to_vec());
 }
 
-fn append_card_16(data: &mut Vec<u8>, card_16: u16){
+fn append_card_16(data: &mut Vec<u8>, card_16: u16) {
     data.append(&mut card_16.to_be_bytes().to_vec());
 }
 
-fn append_card_32(data: &mut Vec<u8>, card_32: u32){
+fn append_card_32(data: &mut Vec<u8>, card_32: u32) {
     data.append(&mut card_32.to_be_bytes().to_vec());
 }
 
-fn append_array_8(data: &mut Vec<u8>, array_8: Vec<u8>){
+fn append_array_8(data: &mut Vec<u8>, array_8: Vec<u8>) {
     append_card_16(data, array_8.len() as u16);
     data.append(&mut array_8.clone());
 }
 
-fn append_array_16(data: &mut Vec<u8>, array_16: Vec<u16>){
+fn append_array_16(data: &mut Vec<u8>, array_16: Vec<u16>) {
     append_card_8(data, array_16.len() as u8);
-    data.append(&mut vec_u16_to_be_vec_u8(array_16)); 
+    data.append(&mut vec_u16_to_be_vec_u8(array_16));
 }
 
-fn append_array_of_array_8(data: &mut Vec<u8>, array_of_array_8: Vec<Vec<u8>>){
+fn append_array_of_array_8(data: &mut Vec<u8>, array_of_array_8: Vec<Vec<u8>>) {
     append_card_8(data, array_of_array_8.len() as u8);
-    array_of_array_8.iter().for_each(|array_8: &Vec<u8>| append_array_8(data, array_8.clone()));
+    array_of_array_8
+        .iter()
+        .for_each(|array_8: &Vec<u8>| append_array_8(data, array_8.clone()));
 }
 
-fn vec_u16_to_be_vec_u8(array_16: Vec<u16>) -> Vec<u8>{
-    array_16.iter()
-    .map(|card16: &u16| {
-        card16.to_be_bytes().to_vec()
-    })
-    .collect::<Vec<Vec<u8>>>()
-    .concat()
+fn vec_u16_to_be_vec_u8(array_16: Vec<u16>) -> Vec<u8> {
+    array_16
+        .iter()
+        .map(|card16: &u16| card16.to_be_bytes().to_vec())
+        .collect::<Vec<Vec<u8>>>()
+        .concat()
 }
 
 fn vec_u8_to_string(data: Vec<u8>) -> String {
