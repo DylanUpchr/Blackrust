@@ -39,9 +39,13 @@ L'environnement de travail utilisé lors du développement de ce projet consiste
 ##### Arch Linux (upchr-arch)
 - Visual Studio Code
 - Rust "Stable"
-##### Raspbian / Debian 11 Bullseye (Testbed-Rpi)
-##### Arch Linux (Testbed-Rpi)
-##### Linux4Tegra (Testbed-JN)
+
+#### Raspbian / Debian 11 Bullseye (Testbed-Rpi)
+- Blackrust
+#### Arch Linux (Testbed-Rpi)
+- Blackrust
+#### Linux4Tegra (Testbed-JN)
+- Blackrust
 
 ## Technologies utilisées
 | Type | Nom |
