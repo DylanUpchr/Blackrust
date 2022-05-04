@@ -1,4 +1,4 @@
-site_name: Blackrust - Travail de diplôme
+site_name: Travail de diplôme 2022
 site_author: Dylan Upchurch
 copyright: Copyright &copy; 2022 Dylan Upchurch
 repo_url: https://github.com/DylanUpchr/Blackrust
@@ -6,7 +6,7 @@ repo_name: DylanUpchr/Blackrust
 theme:
   name: material
   logo: img/logo.svg
-  favicon: img/logo.svg
+  favicon: img/favicon.svg
   palette:
     scheme: slate
     primary: red

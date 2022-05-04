@@ -241,3 +241,12 @@ Implémentation des fonctions liées au XAuthority, donc l'authorisation par coo
 Recherche sur l'utilisation de Xephyr pour ouvrir un display qui sera la sortie de la session XDMCP. J'avais des problèmes d'authentification avec le cookie car la négociation se passait bien, mais le serveur distant n'arrivait pas à se connecter au display local. 
 Ceci était dû au fait que Xephyr est un serveur X apart et n'utilisait pas le fichier .Xauthority ou les cookies sont stockées. 
 La solution s'agit de passer le chemin du fichier .Xauthority dans le home de l'utilisateur en paramètre -auth lors du lancement de serveur.
+
+## 2022-04-29
+
+## 2022-05-02
+Discussion avec M. Zeltner sur l'état de la documentation technique. M. Zeltner m'as donné des conseils concernant l'organisation du rapport ainsi que des idées pour le contenu qu'il faut dans l'analyse organique/fonctionnel.
+
+Pour ce qui est de la affichage des sessions, j'ai décidé d'ouvrir la sessions dans un Display X11 et puis connecter l'interface web à cette affichage par le bias d'un serveur VNC en local, donc x11vnc pour hôter le serveur, puis un client JS noVNC dans une page dans le WebView.
+
+Automatisation de l'ouverture d'un Display X avec Xephyr ainsi que l'ouverture d'un serveur x11vnc en localhost
