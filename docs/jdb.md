@@ -204,17 +204,21 @@ Ce qui reste les tests suivants à faire dans le module network_mgr une fois que
 ## 2022-04-22
 Changement du type de retour de get_interface_by_name, afin d'améliorer la résilience contre des erreurs. L'ancien type était un Result<Interface\, String\>. J'ai trouvé plus pertinent de rendre un Option<Interface\> (Some avec interface si cela existe, le cas echéant None) et de changer également le champ de type Interface dans le struct NetworkManager pour accomoder la possibilité qu'un interface n'est pas assignée à un profile.
 
-Updated test documentation with case-orientated table structure
+Ajout de la documentation des tests unitaires dans la documentation avec une structure de tables pour chaque cas.
 
 ## 2022-04-24
-Négotiation avec le protocole XDMCP
+Debut de la négotiation avec le protocole XDMCP
 
-explain negotiation sequence
-Query server,
-Willing response,
-Request with (tmp hardcoded) display addrs and auth type/data (currently empty)
-Accept response with Xauthority MIT-MAGIC-COOKIE-1
-Manage
+La négotiation se fait en envoyant des paquets avec un OpCode (code d'opération/étape dans la négotiation) et des données qui changent selon le OpCode dans le payload.
+
+La séquence de négotiation de sessions sans gestion d'erreur se déroule ainsi:
+- Un paquet avec le OpCode Query et un payload vide est envoyée au serveur distant
+- Le serveur réponds avec un paquet avec le OpCode Willing, qui indique que le serveur est prêt à hôter une session
+- Un paquet avec lée OpCode Request et des données sur le serveur X11 est envoyé au serveur
+- Si le serveur accepte d'hôter la session, un paquet avec le OpCode Accept et des données d'authentification est envoyé au client
+- Finalement le client indique que la session est ouverte et authentifié des son côté avec un paquet portant le OpCode Manage au serveur
+
+Plus d'informations sont disponibles dans la documentation: [Documentation protocole XDMCP](https://www.x.org/releases/X11R7.6/doc/libXdmcp/xdmcp.html)
 
 ## 2022-04-25
 Implémentation de la fonction get_interface_addresses afin de pouvoir récuperer les addresses IPv4/IPv6 d'un interface réseau. Cela est nécessaire car dans la séquence "Request" de la négotiation avec XDMCP, il faut renseigner les adresses IP de l'affichage au serveur. Et donc lorsqu'on se connecte avec un profile de connexion XDMCP, lors de la construction du packet Request, les adresses IP sont demandées auprès de network_mgr qui sont ensuite encodée en Big Endian dans le packet.
@@ -243,10 +247,30 @@ Ceci était dû au fait que Xephyr est un serveur X apart et n'utilisait pas le 
 La solution s'agit de passer le chemin du fichier .Xauthority dans le home de l'utilisateur en paramètre -auth lors du lancement de serveur.
 
 ## 2022-04-29
+Schématisation des différents modules/crates de blackrust afin d'expliquer l'architecture de l'entierté du programme.
+
+Documentation sur l'architecture avec les schémas dans la documentation technique.
 
 ## 2022-05-02
 Discussion avec M. Zeltner sur l'état de la documentation technique. M. Zeltner m'as donné des conseils concernant l'organisation du rapport ainsi que des idées pour le contenu qu'il faut dans l'analyse organique/fonctionnel.
 
-Pour ce qui est de la affichage des sessions, j'ai décidé d'ouvrir la sessions dans un Display X11 et puis connecter l'interface web à cette affichage par le bias d'un serveur VNC en local, donc x11vnc pour hôter le serveur, puis un client JS noVNC dans une page dans le WebView.
+Pour ce qui est de la affichage des sessions, j'ai décidé d'ouvrir la session dans un Display X11 et puis connecter l'interface web à cet affichage par le bias d'un serveur VNC en local, donc x11vnc pour hôter le serveur, puis un client JS noVNC dans une page dans le WebView.
 
-Automatisation de l'ouverture d'un Display X avec Xephyr ainsi que l'ouverture d'un serveur x11vnc en localhost
+Automatisation de l'ouverture d'un Display X avec Xephyr ainsi que l'ouverture d'un serveur x11vnc en localhost.
+
+## 2022-05-03
+Réorganisation des titres dans la documentation technique comme indiqué par M. Zeltner et début du travail sur le poster
+
+## 2022-05-04
+Ajout de nouveaux logos pour le projet trouvés sur looka.com qui propose plein de différents stylesde logos/polices pour le nom sur le logo.
+
+Design du poster
+
+## 2022-05-05
+Visite de Mme. Geneau pour donner du feedback et des conseils sur les posters, redesign du poster en fonction du feedback
+
+## 2022-05-06
+Retours de la part de M. Bonvin et M. Zeltner concernant le schéma explicatif sur le poster et redesign du schéma en fonction du feedback
+
+## 2022-05-08
+Travail sur l'analyse organique dans la documentation technique ainsi que sur le schéma explicatif du poster
