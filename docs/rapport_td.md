@@ -28,38 +28,34 @@ Le cahier des charges contient une analyse concurencielle des autres solutions d
 
 ## Cahier des charges
 [Lien vers le cahier des charges](index.md)
-## Analyse fonctionelle
-L'analyse fonctionnelle contient les maquettes, l'architecture du programme et les diagrammes explicitant son fonctionnement
 
-### Maquettes
-
-##### Blackrust-Lib
+## Libraries
+### Librairie interne
+#### Blackrust-Lib
 Blackrust-Lib est la libraire commune aux modules et contient les définitions de structures de données et les fonctions utilisées par tous les modules.
 
-#### Librairies externes
+### Librairies externes
 Le programme utilise également quelques libraires externes, principalement pour le rendu graphique Web.
-##### Web-view
+#### Web-view
 Web-view est un crate qui agit en tant que navigateur web qui affiche le rendu HTML/CSS/JS.
-##### Xrandr
+#### Xrandr
 Xrandr permet de récupérer des informations sur le ou les écrans d'affichage, comme taille, DPI, disposition des moniteurs, etc.
-##### Serde / Serde-JSON
+#### Serde / Serde-JSON
 Serde implémente des fonctionnalités de sérialisation et désérialisation des instances d'objets vers et depuis le JavaScript Object Notation (JSON).
-##### Image-base64
+#### Image-base64
 Image-base64 est un crate qui encode ou "traduit" des fichiers image en texte base64. **Ceci est nécessaire pour l'instant à cause de WebView qui ne peut pas référencer des fichiers et que traiter du HTML pur. Ceci pourra changer en implémentant Actix (Serveur Web) et Yew (Framework WASM pour Rust)**
-##### Regex
+#### Regex
 Le crate Regex implémente des expressions régulières utilisées pour la vérification des données saisies par l'utilisateur pour la configuration réseau
-##### TOML
+#### TOML
 Le crate TOML est un sérialiseur/déserialiseur de TOML, Tom's Obvious, Minimal Language, qui est la langue de markdon utilisé par Rust pour réprésenter des données
-##### Itertools
+#### Itertools
 Le crate Itertools propose davantage de fonctions d'opérations sur les itérables
-##### Dirs
+#### Dirs
 Le crate Dirs sert à récupérer des chemins utilisateur selon l'utilisateur, comme la répértoire de fichiers de configuration ou la répértoire home.
-##### RSTest
+#### RSTest
 Le crate RSTest est un framework de test qui propose des tests unitaires "Data-Driven"
-##### MockAll
+#### MockAll
 Le crate MockAll est un framework de test qui permet de moquer des classes qui impémentent des traits.
-
-## Data flow diagram
 
 ## Normes
 ### Nommage
@@ -175,14 +171,40 @@ Rust est un langage avec un compilateur portable comme le langage C, donc qui pe
 - Tier 3: Pas de garanties de compilation ni d'exécution, mais ont une possibilité de fonctionner et pour certains des programmes ont déjà été faites
     - Exemples : Apple tvOS, Nintendo 3DS, CUDA, EFI
 
+#### Technologies utilisées
+##### WebView
+Webkit est un moteur de navigateur développé par Apple parmis d'autres. Le moteur est utilisé par de divers application grâce à son API C++ qui propose des fonctionnalités pour afficher du contenu web dans une fênetre avec des fonctionnalités de navigateur commun comme une historique ou la possibilité de retourner en arrière / aller en avant dans la navigation.
 
+Je l'utilise pour l'interface utilisateur qui est une interface Web qui peut communiquer avec le programme Rust.
+##### TOML
+TOML, ou Tom's Obvious Markdown Language, est le langage de markdown pour la sérialisation de données choisi par les développeurs de Rust.
+
+Les fichiers TOML sont utilisées pour stocker les profiles connexions dans le répertoire de configuration par défeaut de l'utilisateur
+##### Github Actions
+Github Actions permet d'éxectuer dans un environnement sain les tests unitaires lors de chaque push chez Github. Cela me propose une historique de tous les résultats de tests et permet d'avoir un pipeline d'intégration continu.
+##### X11
+X11 est le serveur d'affichage utilisée pour déja afficher le programme en locale, mais encore peut être utilisée comme serveur d'affichage distant, soit par négociation XDMCP ou par SSH avec le X11-Forwarding
+##### NetworkManager
+NetworkManager est l'outil de configuration réseau utilisée par mon programme. Cet outil peut configurer, stocker et activer des profiles réseau afin de pouvoir dynamiquement se connecter au différents réseaux locaux ou VPNs selon le profile de connexion choisi.
+##### Polkit
+Polkit, ou PolicyKit est un gestionnaire de droits au sein de Linux. Je l'utilise pour donner certains accèss à l'utilisateur au configuration réseau car certaines commandes NetworkManager nécessitent l'authentification.
+###### XDMCP
+Le protocole distant XDMCP est un des moyens de connexion pour mon application. Elle permet de négotier une connexion entre un serveur X11 locale et un autre distant.
+###### RDP
+Le protocole distant RDP est un des moyens de connexion pour mon application. Elle est une protocole développé par Microsoft pour l'accès distant sur Windows.
+J'exploite ce protocole avec l'outil xfreerdp qui est un client RDP Open-Source fait par la communauté grâce au reverse engineering.
+###### VNC
+Le protocole distant VNC est un des moyens de connexion pour mon application. J'exploite ce protocole avec l'outil vncviewer de RealVNC.
+###### SSH X11-Forwarding
+Le protocole distant SSH X11-Forwarding est un des moyens de connexion pour mon application. Elle permet de lancer des applications graphiques sur un sessions X11 distant, et avoir l'affichage en local par le bias d'une connexion SSH.
+
+## Analyse fonctionnelle
+### Maquettes
+#### Page principale de connexion
+![Home page](./img/home_component.svg)
+#### Template de page de réglages
+![Settings page template](./img/settings_component_template.svg)
 ## Analyse organique
-### Technologies utilisées
-#### WebView
-#### Github Actions
-#### Xorg
-#### NetworkManager
-#### Polkit
 ### Architecture
 #### Modules internes
 ![Analyse système](./img/blackrust-systems-analysis.svg)
@@ -209,6 +231,7 @@ Le module main est le point d'entrée principale de l'application, lance l'aper�
 - ```inline_style```: Formate du code CSS en balise ```<style></style>``` HTML
 - ```inline_script```: Formate du code JS en balise ```<script></script>``` HTML
 ###### Tests unitaires
+###### Data flow
 - ```test::open_webview_test```: Test que l'affichage puisse s'instancier et s'afficher, ainsi que la gestion d'erreur de ceci
 - ```test::base64_encode_images_test```: Test que l'encodage et remplacement des images dans une balise ```<img></img>``` fonctionne
 
@@ -225,6 +248,7 @@ Le module ConfigMgr gère les profils de connexion de session distante avec des 
 - ```create_profile```: Instancie et sauvegarde une nouvelle profile
 - ```delete_profile```: Supprime un profile de connexion 
 ###### Tests unitaires
+###### Data flow
 ##### NetworkMgr
 Le module NetworkMgr permet de faire des appels vers NetworkManager pour configurer les interfaces réseau afin de pouvoir se connecter au réseau local et éventuellement à un VPN.
 
@@ -255,6 +279,7 @@ Le module NetworkMgr permet de faire des appels vers NetworkManager pour configu
 - ```test::modify_profile_test```: Test que la commande pour modifier un profile est correcte
 - ```test::delete_profile_test```: Test que la commande pour supprimer un profile est correcte
 - ```test::exec_command_test```: Test que l'outil réseau puisse accepter des commandes correctement
+###### Data flow
 ##### RemoteSessionMgr
 Le module RemoteSessionMgr lance les sessions distantes en utilisant les options de connexion soit fournies par l'utilisateur soit par un profile chargé par l'utilisateur. Ce module fait appel aux commandes tel xfreerdp, vncviewer, Xnest ou ssh.
 
@@ -282,6 +307,7 @@ Le module RemoteSessionMgr lance les sessions distantes en utilisant les options
 - ```remote_protocols::xdmcp::vec_u16_to_be_vec_u8```: Convertit un vecteur de valeurs de 2 bytes en vecteur de valeurs de 1 byte big-endian
 - ```remote_protocols::xdmcp::vec_u8_to_string``` Convertit un vecteur de valeurs 1 byte en string hexadécimale
 ###### Tests unitaires
+###### Data flow
 
 ## Tests
 ### Tests unitaires

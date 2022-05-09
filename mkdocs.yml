@@ -17,4 +17,4 @@ plugins:
         cover_logo: img/logo.svg
         exclude_pages: 
             - 'rapport_tsem'
-            - 'rapport_stage'
+            - 'rapport_stage' 
