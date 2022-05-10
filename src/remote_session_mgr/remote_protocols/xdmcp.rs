@@ -10,8 +10,10 @@ use std::env;
 use std::net::{IpAddr, UdpSocket};
 use std::process::Command;
 use xrandr::XHandle;
+use tokio::{net, time};
 
-#[derive(Copy, Clone)]
+
+#[derive(Copy, Clone, PartialEq, Eq)]
 pub enum ProtocolOpCode {
     BroadcastQuery = 1,
     Query,
@@ -52,20 +54,15 @@ impl ProtocolOpCode {
 
 #[derive(PartialEq, Eq)]
 enum ProtocolState {
-    Start,
     Query,
     CollectQuery,
-    BroadcastQuery,
-    CollectBroadcastQuery,
-    IndirectQuery,
-    CollectIndirectQuery,
     StartConnection,
     AwaitRequestResponse,
     Manage,
     AwaitManageResponse,
     StopConnection,
-    KeepAlive,
     AwaitAlive,
+    RunSession,
 }
 
 pub fn send(socket: &UdpSocket, op: ProtocolOpCode, data: &Vec<u8>) {
@@ -101,26 +98,49 @@ pub fn open_session(socket: &UdpSocket, network_profiles: Vec<NetworkManagerProf
     let mut state: ProtocolState = ProtocolState::Query;
     let mut op: ProtocolOpCode = ProtocolOpCode::Query;
     let mut data: Vec<u8> = vec![0];
-
-    while state != ProtocolState::StopConnection {
+    state = ProtocolState::CollectQuery;
+    while state != ProtocolState::StopConnection && state != ProtocolState::RunSession {
         send(&socket, op, &data);
         match recv(&socket) {
             Ok((received_op_code, received_data)) => {
                 println!("OpCode: {}", received_op_code as u16);
-                match received_op_code {
-                    ProtocolOpCode::Willing => {
+                match state {
+                    ProtocolState::CollectQuery => {
+                        if received_op_code == ProtocolOpCode::Willing {
+                            op = ProtocolOpCode::Request;
+                            data = vec![];
+                            build_request_packet(&mut data, &network_profiles);
+                            state = ProtocolState::AwaitRequestResponse;
+                        } else if received_op_code == ProtocolOpCode::Unwilling {
+                            state = ProtocolState::StopConnection;
+                        }
+                    }
+                    ProtocolState::StartConnection => {
                         op = ProtocolOpCode::Request;
-                        state = ProtocolState::AwaitRequestResponse;
                         data = vec![];
                         build_request_packet(&mut data, &network_profiles);
+                        state = ProtocolState::AwaitRequestResponse;
                     }
-                    ProtocolOpCode::Accept => {
-                        op = ProtocolOpCode::Manage;
-                        state = ProtocolState::AwaitManageResponse;
-                        data = vec![];
-                        build_manage_packet(&mut data, received_data);
-                    }
-                    _ => state = ProtocolState::StopConnection,
+                    ProtocolState::AwaitRequestResponse => {
+                        if received_op_code == ProtocolOpCode::Accept {
+                            op = ProtocolOpCode::Manage;
+                            data = vec![];
+                            build_manage_packet(&mut data, received_data);
+                            state = ProtocolState::AwaitManageResponse;
+                        } else if received_op_code == ProtocolOpCode::Decline {
+                            state = ProtocolState::StopConnection;
+                        }
+                    },
+                    ProtocolState::AwaitManageResponse => {
+                        if received_op_code == ProtocolOpCode::Refuse {
+                            state = ProtocolState::StartConnection;
+                        } else if received_op_code == ProtocolOpCode::Failed {
+                            state = ProtocolState::StopConnection;
+                        } else {
+                            state = ProtocolState::RunSession;
+                        }
+                    },
+                    _ => {},
                 }
             }
             _ => state = ProtocolState::StopConnection,
