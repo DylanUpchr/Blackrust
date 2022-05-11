@@ -1,17 +1,18 @@
-use crate::network_mgr;
-use crate::network_mgr::NetworkManager;
-use blackrust_lib::profile::NetworkManagerProfile;
-use std::env;
 /** File
  * Author:		Dylan Upchurch
  * Date:		2021-03-13
  * Desc:		Blackrust XDMCP module
  */
+use crate::network_mgr;
+use crate::network_mgr::NetworkManager;
+use blackrust_lib::defaults;
+use blackrust_lib::profile::NetworkManagerProfile;
+use std::env;
 use std::net::{IpAddr, UdpSocket};
 use std::process::Command;
+use std::time::Duration;
+use tokio::time;
 use xrandr::XHandle;
-use tokio::{net, time};
-
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub enum ProtocolOpCode {
@@ -77,8 +78,9 @@ pub fn send(socket: &UdpSocket, op: ProtocolOpCode, data: &Vec<u8>) {
     socket.send(&buf).unwrap();
 }
 
-pub fn recv(socket: &UdpSocket) -> Result<(ProtocolOpCode, Vec<u8>), String> {
+pub async fn recv(socket: &UdpSocket) -> Result<(ProtocolOpCode, Vec<u8>), String> {
     let mut buf: Vec<u8> = vec![0u8; 512];
+    time::sleep(time::Duration::from_millis(1)).await;
     match socket.recv(&mut buf) {
         Ok(data_len) => {
             let opcode_bytes: [u8; 2] = buf[2..4].try_into().unwrap();
@@ -88,62 +90,71 @@ pub fn recv(socket: &UdpSocket) -> Result<(ProtocolOpCode, Vec<u8>), String> {
             ))
         }
         Err(message) => {
-            println!("recv failed: {:?}", message);
             Err(message.to_string())
         }
     }
 }
 
-pub fn open_session(socket: &UdpSocket, network_profiles: Vec<NetworkManagerProfile>) {
+pub async fn open_session(socket: &UdpSocket, network_profiles: Vec<NetworkManagerProfile>) {
     let mut state: ProtocolState = ProtocolState::Query;
     let mut op: ProtocolOpCode = ProtocolOpCode::Query;
     let mut data: Vec<u8> = vec![0];
+    let mut duration: Duration = defaults::NEGOTIATION_TIMEOUT;
     state = ProtocolState::CollectQuery;
     while state != ProtocolState::StopConnection && state != ProtocolState::RunSession {
         send(&socket, op, &data);
-        match recv(&socket) {
-            Ok((received_op_code, received_data)) => {
-                println!("OpCode: {}", received_op_code as u16);
-                match state {
-                    ProtocolState::CollectQuery => {
-                        if received_op_code == ProtocolOpCode::Willing {
-                            op = ProtocolOpCode::Request;
-                            data = vec![];
-                            build_request_packet(&mut data, &network_profiles);
-                            state = ProtocolState::AwaitRequestResponse;
-                        } else if received_op_code == ProtocolOpCode::Unwilling {
-                            state = ProtocolState::StopConnection;
+        if op == ProtocolOpCode::Manage{
+            duration = time::Duration::from_nanos(1);
+        }
+        match time::timeout(duration, recv(&socket)).await {
+            Ok(received_result) => {
+                match received_result {
+                    Ok((received_op_code, received_data)) => {
+                        println!("OpCode: {}", received_op_code as u16);
+                        match state {
+                            ProtocolState::CollectQuery => {
+                                if received_op_code == ProtocolOpCode::Willing {
+                                    op = ProtocolOpCode::Request;
+                                    data = vec![];
+                                    build_request_packet(&mut data, &network_profiles);
+                                    state = ProtocolState::AwaitRequestResponse;
+                                } else if received_op_code == ProtocolOpCode::Unwilling {
+                                    state = ProtocolState::StopConnection;
+                                }
+                            },
+                            ProtocolState::StartConnection => {
+                                op = ProtocolOpCode::Request;
+                                data = vec![];
+                                build_request_packet(&mut data, &network_profiles);
+                                state = ProtocolState::AwaitRequestResponse;
+                            },
+                            ProtocolState::AwaitRequestResponse => {
+                                if received_op_code == ProtocolOpCode::Accept {
+                                    op = ProtocolOpCode::Manage;
+                                    data = vec![];
+                                    build_manage_packet(&mut data, received_data);
+                                    state = ProtocolState::AwaitManageResponse;
+                                } else if received_op_code == ProtocolOpCode::Decline {
+                                    state = ProtocolState::StopConnection;
+                                }
+                            },
+                            ProtocolState::AwaitManageResponse => {
+                                if received_op_code == ProtocolOpCode::Refuse {
+                                    state = ProtocolState::StartConnection;
+                                } else if received_op_code == ProtocolOpCode::Failed {
+                                    state = ProtocolState::StopConnection;
+                                }
+                            },
+                            _ => ()
                         }
                     }
-                    ProtocolState::StartConnection => {
-                        op = ProtocolOpCode::Request;
-                        data = vec![];
-                        build_request_packet(&mut data, &network_profiles);
-                        state = ProtocolState::AwaitRequestResponse;
-                    }
-                    ProtocolState::AwaitRequestResponse => {
-                        if received_op_code == ProtocolOpCode::Accept {
-                            op = ProtocolOpCode::Manage;
-                            data = vec![];
-                            build_manage_packet(&mut data, received_data);
-                            state = ProtocolState::AwaitManageResponse;
-                        } else if received_op_code == ProtocolOpCode::Decline {
-                            state = ProtocolState::StopConnection;
-                        }
-                    },
-                    ProtocolState::AwaitManageResponse => {
-                        if received_op_code == ProtocolOpCode::Refuse {
-                            state = ProtocolState::StartConnection;
-                        } else if received_op_code == ProtocolOpCode::Failed {
-                            state = ProtocolState::StopConnection;
-                        } else {
-                            state = ProtocolState::RunSession;
-                        }
-                    },
-                    _ => {},
-                }
+                    Err(message) => (println!("recv failed: {:?}", message))
+                };
+            },
+            Err(_) => {
+                println!("Timed out");
+                state = ProtocolState::RunSession;
             }
-            _ => state = ProtocolState::StopConnection,
         }
     }
 }
