@@ -1,3 +1,8 @@
+/** File
+ * Author:		Dylan Upchurch
+ * Date:		2021-05-13
+ * Desc:		BlackrustLib Profile module
+ */
 use uuid::Uuid;
 use serde_derive::{Serialize, Deserialize};
 use crate::defaults;

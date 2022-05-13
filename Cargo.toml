@@ -16,7 +16,7 @@ regex = "1"
 toml = "*"
 itertools = "*"
 dirs = "*"
-tokio = { version = "*", features = ["time", "rt", "rt-multi-thread", "macros"] }
+tokio = { version = "*", features = ["time", "rt", "rt-multi-thread", "macros", "net"] }
 futures = "*"
 blackrust_lib = {path = "blackrust_lib"}
 

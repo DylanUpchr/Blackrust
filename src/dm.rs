@@ -15,6 +15,7 @@ use regex::Regex;
 use regex::Captures;
 use blackrust_lib::profile::{Profile, NetworkManagerProfile/*, ConnectionSettings, Protocol, PortProtocol, NetworkManagerProfileType, Interface*/};
 use network_mgr::NetworkManager;
+use remote_session_mgr::RemoteSessionManager;
 
 /** Function
  * Name:	main
@@ -32,28 +33,6 @@ fn main() {
 		},
 		Err(message) => (println!("{}", message))
 	}
-	/*let profile = Profile::new3(
-		"Test".to_string(),
-		ConnectionSettings::new3(
-			"10.0.0.102".to_string(),
-			Protocol::new3(
-				"XDMCP".to_string(),
-				177,
-				PortProtocol::UDP
-			),
-			"".to_string()
-		),
-		vec![NetworkManagerProfile::new4(
-			"".to_string(),
-			"".to_string(),
-			NetworkManagerProfileType::Wireguard,
-			Some(Interface::new3(
-				"wg0-home".to_string(), 
-				"mac_addr".to_string(), 
-				"wireguard".to_string()))
-		)]
-	);
-	remote_session_mgr::connect(profile);*/
 }	
 
 /** Function
@@ -66,21 +45,23 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 	let html = combined_html_css_js();
 	let webview_result = web_view::builder()
 		.content(Content::Html(html))
-		.size(1280, 720)
+		//.size(1280, 720)
 		.frameless(true)
 		.debug(true)
-		.user_data("")
 		.invoke_handler(|webview, arg| {
 			use Cmd::*;
-			let network_tool = NetworkManager::new();
+			let network_tool: NetworkManager = NetworkManager::new();
+			let remote_session_mgr: RemoteSessionManager = RemoteSessionManager::new();
 			match serde_json::from_str::<Cmd>(arg) {
 				Ok(cmd) => (
 					match cmd {
-						Init => (
+						Init => ({
+							remote_session_mgr.attach_to_webview(Box::new(webview));
 							match network_mgr::get_hostname(&network_tool) {
 								Ok(hostname) => webview.eval(&format!("setHostname({:?})", hostname)).unwrap(),
 								Err(message) => (println!("{}", message))
-							}),
+							}
+						}),
 						Debug { value } => (println!("{}", value)),
 						Connect { profile } => ({
 							remote_session_mgr::connect(profile);
@@ -231,7 +212,8 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 		.build();
 	
 	match webview_result {
-		Ok(webview) => Ok(webview),
+		Ok(webview) => {
+			Ok(webview)},
 		Err(_) => Err(String::from("Could not build webview"))
 	}
 }

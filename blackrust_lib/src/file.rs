@@ -1,3 +1,9 @@
+/** File
+ * Author:		Dylan Upchurch
+ * Date:		2022-05-13
+ * Desc:		BlackrustLib File module
+ */
+
 use std::fs;
 use std::path::Path; 
 /** Function

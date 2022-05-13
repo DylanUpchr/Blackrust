@@ -8,10 +8,9 @@ use crate::network_mgr::NetworkManager;
 use blackrust_lib::defaults;
 use blackrust_lib::profile::NetworkManagerProfile;
 use std::env;
-use std::net::{IpAddr, UdpSocket};
+use std::net::IpAddr;
 use std::process::Command;
-use std::time::Duration;
-use tokio::time;
+use tokio::{ time, net::{UdpSocket} };
 use xrandr::XHandle;
 
 #[derive(Copy, Clone, PartialEq, Eq)]
@@ -59,14 +58,13 @@ enum ProtocolState {
     CollectQuery,
     StartConnection,
     AwaitRequestResponse,
-    Manage,
     AwaitManageResponse,
     StopConnection,
     AwaitAlive,
     RunSession,
 }
 
-pub fn send(socket: &UdpSocket, op: ProtocolOpCode, data: &Vec<u8>) {
+pub async fn send(socket: &UdpSocket, op: ProtocolOpCode, data: &Vec<u8>) {
     let version: u16 = 1;
     let op_code: u16 = op as u16;
     let data_len: u16 = data.len().try_into().unwrap();
@@ -75,13 +73,13 @@ pub fn send(socket: &UdpSocket, op: ProtocolOpCode, data: &Vec<u8>) {
     append_card_16(&mut buf, version);
     append_card_16(&mut buf, op_code);
     append_array_8(&mut buf, data.to_vec());
-    socket.send(&buf).unwrap();
+    socket.send(&buf).await;
 }
 
 pub async fn recv(socket: &UdpSocket) -> Result<(ProtocolOpCode, Vec<u8>), String> {
     let mut buf: Vec<u8> = vec![0u8; 512];
     time::sleep(time::Duration::from_millis(1)).await;
-    match socket.recv(&mut buf) {
+    match socket.recv(&mut buf).await {
         Ok(data_len) => {
             let opcode_bytes: [u8; 2] = buf[2..4].try_into().unwrap();
             Ok((
@@ -95,18 +93,14 @@ pub async fn recv(socket: &UdpSocket) -> Result<(ProtocolOpCode, Vec<u8>), Strin
     }
 }
 
-pub async fn open_session(socket: &UdpSocket, network_profiles: Vec<NetworkManagerProfile>) {
+pub async fn open_session(socket: UdpSocket, network_profiles: Vec<NetworkManagerProfile>) {
     let mut state: ProtocolState = ProtocolState::Query;
     let mut op: ProtocolOpCode = ProtocolOpCode::Query;
     let mut data: Vec<u8> = vec![0];
-    let mut duration: Duration = defaults::NEGOTIATION_TIMEOUT;
     state = ProtocolState::CollectQuery;
     while state != ProtocolState::StopConnection && state != ProtocolState::RunSession {
-        send(&socket, op, &data);
-        if op == ProtocolOpCode::Manage{
-            duration = time::Duration::from_nanos(1);
-        }
-        match time::timeout(duration, recv(&socket)).await {
+        send(&socket, op, &data).await;
+        match time::timeout(defaults::NEGOTIATION_TIMEOUT, recv(&socket)).await {
             Ok(received_result) => {
                 match received_result {
                     Ok((received_op_code, received_data)) => {
@@ -230,7 +224,7 @@ fn build_manage_packet(data: &mut Vec<u8>, received_accept_packet: Vec<u8>) {
 
 fn add_xauth_cookie(auth_name: &str, auth_data: Vec<u8>, display_number: u16) {
     let authfile_var = env::var("XAUTHORITY");
-    let display_name: &str = &format!("10.0.10.24:{}", display_number);
+    let display_name: &str = &format!(":{}", display_number);
     let auth_data_str = &vec_u8_to_string(auth_data);
     match authfile_var {
         Ok(authfile_path) => {
@@ -262,41 +256,33 @@ fn add_xauth_cookie(auth_name: &str, auth_data: Vec<u8>, display_number: u16) {
 
 fn open_display(display_number: u16) {
     let authfile_var = env::var("XAUTHORITY");
-    let display_string = &format!(":{}", display_number);
-    let vnc_port = &format!("{}", 5900 + display_number);
+    let home_var = env::var("HOME");
+    let display_string: &str = &format!(":{}", display_number);
     match authfile_var {
         Ok(authfile_path) => {
-            let xephyr_args = vec![
-                "-listen",
-                "tcp",
-                display_string,
-                "-auth",
-                &authfile_path,
-                "-screen",
-                "800x600",
-            ];
-            let x11vnc_args = vec![
-                "-localhost",
-                "-display",
-                display_string,
-                "-auth",
-                &authfile_path,
-                "-rfbport",
-                vnc_port,
-            ];
-            let xephyr_command = Command::new("Xephyr").args(xephyr_args).spawn();
-            match xephyr_command {
-                Ok(output) => {
-                    let x11vnc_command = Command::new("x11vnc").args(x11vnc_args).spawn();
-                    match x11vnc_command {
+            match home_var {
+                Ok(home_dir) => {
+                    let vnc_passwd_path: &str = &format!("{}/.vnc/passwd", home_dir);
+                    let vnc_passwd_arg = &format!("PasswordFile={}", vnc_passwd_path);
+                    let xvnc_args = vec![
+                        display_string,
+                        "-listen",
+                        "tcp",
+                        "-auth",
+                        &authfile_path,
+                        vnc_passwd_arg,
+                        "SecurityTypes=VncAuth"
+                    ];
+                    let xvnc_command = Command::new("Xvnc").args(xvnc_args).spawn();
+                    match xvnc_command {
                         Ok(output) => (println!("{:?}", output)),
-                        Err(err) => (println!("{}", err)),
+                        Err(err) => (println!("{}", err))
                     }
-                }
-                Err(_) => (),
+                },
+                Err(_) => ()
             }
         }
-        Err(_) => (),
+        Err(_) => ()
     }
 }
 
