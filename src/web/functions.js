@@ -1,5 +1,5 @@
 function invoke(arg) {
-    window.webkit.messageHandlers.external.postMessage(JSON.stringify(arg));
+    //window.webkit.messageHandlers.external.postMessage(JSON.stringify(arg));
 }
 
 function init() {
@@ -56,6 +56,7 @@ function init() {
             }
         }
     );
+    document.getElementById("tabBar").appendChild(generateTabButtonHTML("0", "Home", false))
 }
 
 function setTime() {
@@ -311,6 +312,44 @@ function toggleFieldset(sender, fieldsetID) {
         fieldset.classList.add("fieldset-closed");
         sender.innerText = "Show";
     }
+}
+
+function generateTabButtonHTML(tabId, tabName, closable) {
+    let tabButton = document.createElement("div");
+    tabButton.innerHTML = tabName;
+    tabButton.setAttribute("value", tabId);
+    if (closable) {
+        let closeButton = document.createElement("button");
+        closeButton.addEventListener(
+            "click",
+            function(e) {
+                tabBar.removeChild(tabButton);
+                invoke({ cmd: 'disconnect', id: tabId });
+            }
+        );
+        closeButton.innerHTML = "x";
+        tabButton.appendChild(closeButton);
+    }
+    return tabButton
+}
+
+function openSessionTab(id, name, rfb_port) {
+    let tabs = document.getElementsByClassName("tab");
+    tabs.forEach(tab => {
+        tab.classList.remove("currentTab");
+    })
+    let tabBar = document.getElementById("tabBar");
+    tabBar.appendChild(generateTabButtonHTML(id, name, true));
+
+    let tab = document.createElement("div");
+    tab.classList.add("tab");
+    tab.classList.add("currentTab");
+    //Generate noVnc page
+    tabs.appendChild(tab);
+}
+
+function showErrorPopup(message) {
+
 }
 
 function validateCIDR(e) {

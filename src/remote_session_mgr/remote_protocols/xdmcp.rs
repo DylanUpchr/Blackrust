@@ -80,14 +80,22 @@ enum ErrorState {
 
 pub struct XDMCPSession{
     pub id: String,
+    pub name: String,
     pub socket: UdpSocket,
-    pub profile: Profile
+    pub profile: Profile,
+    pub rfb_port: u16
 }
 
 #[async_trait]
 impl Session for XDMCPSession {
     async fn connect(&mut self) -> Result<(), String>{
-        open_session(&self.socket, &self.profile.network_profiles).await
+        match open_session(&self.socket, &self.profile.network_profiles).await {
+            Ok(rfb_port) => {
+                self.rfb_port = rfb_port;
+                Ok(())
+            },
+            Err(message) => Err(message)
+        }
     }
     fn keepalive(&self){
         todo!();
@@ -98,13 +106,21 @@ impl Session for XDMCPSession {
     fn id(&self) -> &str {
         self.id.as_ref()
     }
+    fn rfb_port(&self) -> u16 {
+        self.rfb_port
+    }
+    fn name(&self) -> &str {
+        self.name.as_ref()
+    }
 }
 impl UdpSession for XDMCPSession {
     fn new(socket: UdpSocket, profile: Profile) -> XDMCPSession {
         XDMCPSession { 
             id: Uuid::new_v4().to_string(), 
+            name: profile.name.clone(),
             socket: socket, 
-            profile: profile 
+            profile: profile,
+            rfb_port: 0
         }
     }
 }
@@ -136,7 +152,7 @@ pub async fn recv(socket: &UdpSocket) -> Result<(ProtocolOpCode, Vec<u8>), Strin
         }
     }
 }
-pub async fn open_session(socket: &UdpSocket, network_profiles: &Vec<NetworkManagerProfile>) -> Result<(), String> {
+pub async fn open_session(socket: &UdpSocket, network_profiles: &Vec<NetworkManagerProfile>) -> Result<u16, String> {
     let mut state: ProtocolState;
     let mut op: ProtocolOpCode = ProtocolOpCode::Query;
     let mut data: Vec<u8> = vec![0];
@@ -229,9 +245,9 @@ pub async fn open_session(socket: &UdpSocket, network_profiles: &Vec<NetworkMana
                     ErrorState::Xauth => (Err(String::from("Could not add Xauthority authorization"))),
                     ErrorState::OpenDisplay => (Err(String::from("Could not open display"))),
                 },
-                None => Ok(())
+                None => Ok(5900 + display_number)
             },
-        ProtocolState::RunSession => Ok(()),
+        ProtocolState::RunSession => Ok(5900 + display_number),
         _ => Err(String::from("Unknown negotiation error"))
     }
         

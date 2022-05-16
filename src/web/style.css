@@ -2,25 +2,55 @@ html {
     width: 100%;
     height: 100%;
 }
+
 body {
     width: 100%;
     height: 100%;
     margin: 0px;
+}
+
+#tabBar {
+    height: 5%;
+    width: 99%;
+    background-color: #ffffff;
+    position: absolute;
+    top: 0px;
+    display: block;
+}
+
+.tabButton {}
+
+.tab {
+    display: none;
+    height: 100%;
+    width: 100%;
+}
+
+.currentTab {
+    display: block;
+}
+
+#tabContainer {
+    height: 94%;
+    width: 99%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
-#mainCard{
-	width: 1280px;
-	height: 720px;
-	opacity: 75%;
-	background-color: #ffffff;
-	border-color: #000000;
-	border-width: 1px;
-	border-style: solid;
-	border-radius: 15px 15px 15px 15px;
+
+#mainCard {
+    width: 1280px;
+    height: 720px;
+    opacity: 85%;
+    background-color: #ffffff;
+    border-color: #000000;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 15px 15px 15px 15px;
     position: relative;
 }
+
 #topBar {
     width: auto;
     height: 50px;
@@ -36,186 +66,215 @@ body {
     align-items: center;
     flex-direction: row;
 }
-#topBar span{
+
+#topBar span {
     margin: auto;
 }
-#topBar span h2{
+
+#topBar span h2 {
     margin: 0px;
 }
-#contentContainer{
+
+#contentContainer {
     width: 100%;
     height: calc(100% - 50px - 16px);
 }
-#backgroundImg{
+
+#backgroundImg {
     width: 100%;
     height: 100%;
     position: absolute;
     top: 0;
     left: 0;
 }
-#bannerImg{
+
+#bannerImg {
     width: 100%;
     height: 150px;
     background-color: gray;
 }
-#inputProfileWrapper{
-  display: inl;
-  width: 250px;
-  height: 21px;
+
+#inputProfileWrapper {
+    display: inl;
+    width: 250px;
+    height: 21px;
 }
-#inputProfile{
-  display: block;
-  border: 1px solid gray;
-  border-radius: 5px;
-  width: auto;
-  height: auto;
-  padding-top: 2px;
+
+#inputProfile {
+    display: block;
+    border: 1px solid gray;
+    border-radius: 5px;
+    width: auto;
+    height: auto;
+    padding-top: 2px;
 }
-#inputIpFqdn{
-  width: 86%;
-  border: none;
-  height: 20px;
-  margin-left: 2px;
+
+#inputIpFqdn {
+    width: 86%;
+    border: none;
+    height: 20px;
+    margin-left: 2px;
 }
-#inputProfileSelect{
-  height: 20px;
-  width: 10%;
-  float: right;
-  padding: 0px;
-  background-color: white;
-  background-repeat: no-repeat;
-  border: none;
-  outline: 0;
-  background-size:
-    5px 5px,
-    5px 5px,
-    1px 1.5em;
-  background-position:
-    calc(50% - 2px) 50%,
-    calc(50% + 3px) 50%,
-    0% 50%;
+
+#inputProfileSelect {
+    height: 20px;
+    width: 10%;
+    float: right;
+    padding: 0px;
+    background-color: white;
+    background-repeat: no-repeat;
+    border: none;
+    outline: 0;
+    background-size: 5px 5px, 5px 5px, 1px 1.5em;
+    background-position: calc(50% - 2px) 50%, calc(50% + 3px) 50%, 0% 50%;
 }
-#inputProfileSelectOptions{
-  width: calc(100% - 1px);
-  max-height: 100px;
-  border: 1px solid gray;
-  border-radius: 5px;
-  overflow: auto;
-  margin-right: 5px;
+
+#inputProfileSelectOptions {
+    width: calc(100% - 1px);
+    max-height: 100px;
+    border: 1px solid gray;
+    border-radius: 5px;
+    overflow: auto;
+    margin-right: 5px;
 }
-.arrow-open{
-  background-image:
-    linear-gradient(135deg, transparent 50%, gray 50%),
-    linear-gradient(45deg, gray 50%, transparent 50%),
-    linear-gradient(to right, #ccc, #ccc);
+
+.arrow-open {
+    background-image: linear-gradient(135deg, transparent 50%, gray 50%), linear-gradient(45deg, gray 50%, transparent 50%), linear-gradient(to right, #ccc, #ccc);
 }
-.arrow-closed{
-  background-image:
-    linear-gradient(45deg, transparent 50%, gray 50%),
-    linear-gradient(135deg, gray 50%, transparent 50%),
-    linear-gradient(to right, #ccc, #ccc);
+
+.arrow-closed {
+    background-image: linear-gradient(45deg, transparent 50%, gray 50%), linear-gradient(135deg, gray 50%, transparent 50%), linear-gradient(to right, #ccc, #ccc);
 }
-.options-open{
-  height: auto;
-  opacity: 100;
+
+.options-open {
+    height: auto;
+    opacity: 100;
 }
-.options-closed{
-  height: 0px;
-  opacity: 0;
+
+.options-closed {
+    height: 0px;
+    opacity: 0;
 }
-.profile{
-  padding: 5px;
+
+.profile {
+    padding: 5px;
 }
-.content{
-  display: none;
+
+.content {
+    display: none;
 }
-.currentContent{
-  display: block;
-  height: 100%;
+
+.currentContent {
+    display: block;
+    height: 100%;
 }
-.currentSubContent{
-  display: block;
+
+.currentSubContent {
+    display: block;
 }
-#hostname{
-  margin-left: 8px !important;
+
+#hostname {
+    margin-left: 8px !important;
 }
-#settingsSubcontent{
+
+#settingsSubcontent {
     width: 85%;
     float: right;
     height: 100%;
 }
-#settingsButton{
-  margin-right: 8px !important;
-  font-size: 2em;
+
+#settingsButton {
+    margin-right: 8px !important;
+    font-size: 2em;
 }
-#settingsTabs{
-  height: 100%;
-  width: 15%;
-  float: left;
+
+#settingsTabs {
+    height: 100%;
+    width: 15%;
+    float: left;
 }
-#settings ul{
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 0px;
-  padding-inline-start: 20px;
-  padding-inline-end: 20px;
-  border-right: solid black 1px;
+
+#settings ul {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0px;
+    padding-inline-start: 20px;
+    padding-inline-end: 20px;
+    border-right: solid black 1px;
 }
-.subcontentTab{
-  display: none;
-  height: 100%;
-  width: 100%;
+
+.subcontentTab {
+    display: none;
+    height: 100%;
+    width: 100%;
 }
-.subcontentTab nav{
-  width: 20%;
-  height: calc(100% - 2px);
-  float: left;
+
+.subcontentTab nav {
+    width: 20%;
+    height: calc(100% - 2px);
+    float: left;
 }
-#networkProfilesSelect, #connectionProfilesSelect{
-  width: 100%;
-  height: calc(100% - 25px);
+
+#networkProfilesSelect,
+#connectionProfilesSelect {
+    width: 100%;
+    height: calc(100% - 25px);
 }
-#networkProfilesCreateButton, #connectionProfilesCreateButton{
-  width: 100%;
-  height: 25px;
+
+#networkProfilesCreateButton,
+#connectionProfilesCreateButton {
+    width: 100%;
+    height: 25px;
 }
-.subcontentTab select option{
-  font-size: 1em;
+
+.subcontentTab select option {
+    font-size: 1em;
 }
-.currentSubcontentTab{
-  display: block;
+
+.currentSubcontentTab {
+    display: block;
 }
-.subcontentTabButton{
-  list-style: none;
-  font-size: 3em;
-  margin: auto;
+
+.subcontentTabButton {
+    list-style: none;
+    font-size: 3em;
+    margin: auto;
 }
-.currentSubcontentTabButton{
-  color: #0000DD;
+
+.currentSubcontentTabButton {
+    color: #0000DD;
 }
-#networkProfilesSettingsForm, #connectionProfilesSettingsForm{
-  width: 80%;
-  height: 100%;
-  float: right;
+
+#networkProfilesSettingsForm,
+#connectionProfilesSettingsForm {
+    width: 80%;
+    height: 100%;
+    float: right;
 }
+
 .typeSpecific {
-  display: none;
+    display: none;
 }
+
 .currentType {
-  display: block;
+    display: block;
 }
+
 #profileDeviceSelect {
-  float: none;
+    float: none;
 }
-.fieldset-closed{
-  display: none;
+
+.fieldset-closed {
+    display: none;
 }
-.fieldset-open{
-  display: block;
+
+.fieldset-open {
+    display: block;
 }
+
 #connectionProfileNetworkProfilesSelect {
-  width: 150px;
+    width: 150px;
 }
