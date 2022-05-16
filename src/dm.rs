@@ -37,26 +37,26 @@ fn main() {
 
 /** Function
  * Name:	open_webview
- * Purpose:	Defines webview and opens it
+ * Purpose:	Builds webview and opens it
  * Args:	None
- * Returns:	None
+ * Returns:	(Result<WebView<'static, &'static str>, String>) Webview or error message
  */
 fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 	let html = combined_html_css_js();
 	let webview_result = web_view::builder()
 		.content(Content::Html(html))
-		//.size(1280, 720)
+		.size(1280, 720)
+		.user_data("")
 		.frameless(true)
 		.debug(true)
 		.invoke_handler(|webview, arg| {
 			use Cmd::*;
+			let mut remote_session_mgr: RemoteSessionManager = RemoteSessionManager::new();
 			let network_tool: NetworkManager = NetworkManager::new();
-			let remote_session_mgr: RemoteSessionManager = RemoteSessionManager::new();
 			match serde_json::from_str::<Cmd>(arg) {
 				Ok(cmd) => (
 					match cmd {
 						Init => ({
-							remote_session_mgr.attach_to_webview(Box::new(webview));
 							match network_mgr::get_hostname(&network_tool) {
 								Ok(hostname) => webview.eval(&format!("setHostname({:?})", hostname)).unwrap(),
 								Err(message) => (println!("{}", message))
@@ -64,7 +64,10 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 						}),
 						Debug { value } => (println!("{}", value)),
 						Connect { profile } => ({
-							remote_session_mgr::connect(profile);
+							match remote_session_mgr.create_session(profile){
+								Ok(session_id) => (println!("{}", session_id)),
+								Err(message) => (println!("{}", message))
+							}
 						}),
 						QueryConnectionProfiles { callback, query } => ({
 							match &config_mgr::get_profiles(query) {
@@ -213,7 +216,8 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
 	
 	match webview_result {
 		Ok(webview) => {
-			Ok(webview)},
+			Ok(webview)
+		},
 		Err(_) => Err(String::from("Could not build webview"))
 	}
 }

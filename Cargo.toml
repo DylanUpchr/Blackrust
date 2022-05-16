@@ -19,6 +19,8 @@ dirs = "*"
 tokio = { version = "*", features = ["time", "rt", "rt-multi-thread", "macros", "net"] }
 futures = "*"
 blackrust_lib = {path = "blackrust_lib"}
+uuid = { version = "0.8", features = ["serde", "v4"] }
+async-trait = "*"
 
 [dev-dependencies]
 rstest = "*"

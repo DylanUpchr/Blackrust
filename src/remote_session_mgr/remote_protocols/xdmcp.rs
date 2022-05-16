@@ -5,13 +5,14 @@
  */
 use crate::network_mgr;
 use crate::network_mgr::NetworkManager;
-use blackrust_lib::defaults;
-use blackrust_lib::profile::NetworkManagerProfile;
+use blackrust_lib::{ defaults, profile::{ Profile, NetworkManagerProfile }, session::{Session, UdpSession}};
 use std::env;
 use std::net::IpAddr;
 use std::process::Command;
-use tokio::{ time, net::{UdpSocket} };
+use tokio::{ time, net::{UdpSocket}, task::{self, JoinHandle} };
 use xrandr::XHandle;
+use uuid::Uuid;
+use async_trait::async_trait;
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub enum ProtocolOpCode {
@@ -29,6 +30,8 @@ pub enum ProtocolOpCode {
     Failed,
     KeepAlive,
     Alive,
+    Timeout,
+    Unknown
 }
 impl ProtocolOpCode {
     pub fn from_u16(value: u16) -> ProtocolOpCode {
@@ -47,7 +50,7 @@ impl ProtocolOpCode {
             12 => ProtocolOpCode::Failed,
             13 => ProtocolOpCode::KeepAlive,
             14 => ProtocolOpCode::Alive,
-            _ => ProtocolOpCode::Query,
+            _ => ProtocolOpCode::Unknown,
         }
     }
 }
@@ -61,13 +64,54 @@ enum ProtocolState {
     AwaitManageResponse,
     StopConnection,
     AwaitAlive,
-    RunSession,
+    RunSession
+}
+
+enum ErrorState {
+    Unwilling,
+    Decline,
+    Refuse,
+    Failed,
+    Timeout,
+    Unknown,
+    Xauth,
+    OpenDisplay
+}
+
+pub struct XDMCPSession{
+    pub id: String,
+    pub socket: UdpSocket,
+    pub profile: Profile
+}
+
+#[async_trait]
+impl Session for XDMCPSession {
+    async fn connect(&mut self) -> Result<(), String>{
+        open_session(&self.socket, &self.profile.network_profiles).await
+    }
+    fn keepalive(&self){
+        todo!();
+    }
+    fn disconnect(&self){
+        todo!();
+    }
+    fn id(&self) -> &str {
+        self.id.as_ref()
+    }
+}
+impl UdpSession for XDMCPSession {
+    fn new(socket: UdpSocket, profile: Profile) -> XDMCPSession {
+        XDMCPSession { 
+            id: Uuid::new_v4().to_string(), 
+            socket: socket, 
+            profile: profile 
+        }
+    }
 }
 
 pub async fn send(socket: &UdpSocket, op: ProtocolOpCode, data: &Vec<u8>) {
     let version: u16 = 1;
     let op_code: u16 = op as u16;
-    let data_len: u16 = data.len().try_into().unwrap();
 
     let mut buf: Vec<u8> = vec![];
     append_card_16(&mut buf, version);
@@ -92,11 +136,13 @@ pub async fn recv(socket: &UdpSocket) -> Result<(ProtocolOpCode, Vec<u8>), Strin
         }
     }
 }
-
-pub async fn open_session(socket: UdpSocket, network_profiles: Vec<NetworkManagerProfile>) {
-    let mut state: ProtocolState = ProtocolState::Query;
+pub async fn open_session(socket: &UdpSocket, network_profiles: &Vec<NetworkManagerProfile>) -> Result<(), String> {
+    let mut state: ProtocolState;
     let mut op: ProtocolOpCode = ProtocolOpCode::Query;
     let mut data: Vec<u8> = vec![0];
+    let mut error_op_code: Option<ErrorState> = None;
+    let monitors = XHandle::open().unwrap().monitors().unwrap();
+    let display_number = monitors.len() as u16;
     state = ProtocolState::CollectQuery;
     while state != ProtocolState::StopConnection && state != ProtocolState::RunSession {
         send(&socket, op, &data).await;
@@ -104,39 +150,55 @@ pub async fn open_session(socket: UdpSocket, network_profiles: Vec<NetworkManage
             Ok(received_result) => {
                 match received_result {
                     Ok((received_op_code, received_data)) => {
-                        println!("OpCode: {}", received_op_code as u16);
                         match state {
                             ProtocolState::CollectQuery => {
                                 if received_op_code == ProtocolOpCode::Willing {
                                     op = ProtocolOpCode::Request;
                                     data = vec![];
-                                    build_request_packet(&mut data, &network_profiles);
+                                    build_request_packet(&mut data, &network_profiles, display_number);
                                     state = ProtocolState::AwaitRequestResponse;
                                 } else if received_op_code == ProtocolOpCode::Unwilling {
                                     state = ProtocolState::StopConnection;
+                                    error_op_code = Some(ErrorState::Unwilling);
                                 }
                             },
                             ProtocolState::StartConnection => {
                                 op = ProtocolOpCode::Request;
                                 data = vec![];
-                                build_request_packet(&mut data, &network_profiles);
+                                build_request_packet(&mut data, &network_profiles, display_number);
                                 state = ProtocolState::AwaitRequestResponse;
                             },
                             ProtocolState::AwaitRequestResponse => {
                                 if received_op_code == ProtocolOpCode::Accept {
                                     op = ProtocolOpCode::Manage;
                                     data = vec![];
-                                    build_manage_packet(&mut data, received_data);
-                                    state = ProtocolState::AwaitManageResponse;
+                                    match build_manage_packet(&mut data, received_data, display_number) {
+                                        Ok(_) => ({
+                                            match open_display(display_number).err() {
+                                                Some(message) => {
+                                                    state = ProtocolState::StopConnection;
+                                                    error_op_code = Some(ErrorState::OpenDisplay);
+                                                },
+                                                None => state = ProtocolState::AwaitManageResponse,
+                                            }
+                                        }),
+                                        Err(_) => {
+                                            state = ProtocolState::StopConnection;
+                                            error_op_code = Some(ErrorState::Xauth);
+                                        },
+                                    }
                                 } else if received_op_code == ProtocolOpCode::Decline {
                                     state = ProtocolState::StopConnection;
+                                    error_op_code = Some(ErrorState::Decline);
                                 }
                             },
                             ProtocolState::AwaitManageResponse => {
                                 if received_op_code == ProtocolOpCode::Refuse {
-                                    state = ProtocolState::StartConnection;
+                                    state = ProtocolState::StopConnection;
+                                    error_op_code = Some(ErrorState::Refuse);
                                 } else if received_op_code == ProtocolOpCode::Failed {
                                     state = ProtocolState::StopConnection;
+                                    error_op_code = Some(ErrorState::Failed);
                                 }
                             },
                             _ => ()
@@ -145,18 +207,37 @@ pub async fn open_session(socket: UdpSocket, network_profiles: Vec<NetworkManage
                     Err(message) => (println!("recv failed: {:?}", message))
                 };
             },
-            Err(_) => {
-                println!("Timed out");
-                state = ProtocolState::RunSession;
-            }
+            Err(_) => ({
+                if state == ProtocolState::AwaitManageResponse {
+                    state = ProtocolState::RunSession;
+                } else {
+                    state = ProtocolState::StopConnection;
+                    error_op_code = Some(ErrorState::Timeout);
+                }
+            })
         }
     }
+    match state {
+        ProtocolState::StopConnection => match error_op_code {
+                Some(op_code) => match op_code {
+                    ErrorState::Unwilling => (Err(String::from("X Server unwilling for XDMCP session negotiation"))),
+                    ErrorState::Decline => (Err(String::from("X Server declined XDMCP session negotiation"))),
+                    ErrorState::Refuse => (Err(String::from("X Server refused XDMCP session negotiation"))),
+                    ErrorState::Failed => (Err(String::from("XDMCP session negotiation failed"))),
+                    ErrorState::Timeout => (Err(String::from("X Server timed out"))),
+                    ErrorState::Unknown => (Err(String::from("X Server sent unkown negotiation response"))),
+                    ErrorState::Xauth => (Err(String::from("Could not add Xauthority authorization"))),
+                    ErrorState::OpenDisplay => (Err(String::from("Could not open display"))),
+                },
+                None => Ok(())
+            },
+        ProtocolState::RunSession => Ok(()),
+        _ => Err(String::from("Unknown negotiation error"))
+    }
+        
 }
 
-fn build_request_packet(data: &mut Vec<u8>, network_profiles: &Vec<NetworkManagerProfile>) {
-    let monitors = XHandle::open().unwrap().monitors().unwrap();
-
-    let display_number = monitors.len() as u16;
+fn build_request_packet(data: &mut Vec<u8>, network_profiles: &Vec<NetworkManagerProfile>, display_number: u16) {
     let mut conn_types: Vec<u16> = vec![];
     let mut interface_addrs: Vec<IpAddr> = vec![];
     let mut conn_addrs: Vec<Vec<u8>> = vec![];
@@ -200,11 +281,8 @@ fn build_request_packet(data: &mut Vec<u8>, network_profiles: &Vec<NetworkManage
     append_array_8(data, mfr_display_id);
 }
 
-fn build_manage_packet(data: &mut Vec<u8>, received_accept_packet: Vec<u8>) {
-    let monitors = XHandle::open().unwrap().monitors().unwrap();
-
+fn build_manage_packet(data: &mut Vec<u8>, received_accept_packet: Vec<u8>, display_number: u16) -> Result<(), String>{
     let session_id: u32 = read_card_32(&received_accept_packet, 6);
-    let display_number = monitors.len() as u16;
     let display_class: Vec<u8> = "MIT-unspecified".as_bytes().to_vec();
     let mut offset: usize = 10;
     let manager_auth_name = read_array_8(&received_accept_packet, offset);
@@ -215,14 +293,18 @@ fn build_manage_packet(data: &mut Vec<u8>, received_accept_packet: Vec<u8>) {
     offset += display_auth_name.len() + 2;
     let display_auth_name = String::from_utf8(display_auth_name).unwrap();
     let display_auth_data = read_array_8(&received_accept_packet, offset);
-    add_xauth_cookie(&display_auth_name, display_auth_data, display_number);
-    open_display(display_number);
-    append_card_32(data, session_id);
-    append_card_16(data, display_number);
-    append_array_8(data, display_class);
+    match add_xauth_cookie(&display_auth_name, display_auth_data, display_number).err() {
+        Some(message) => (Err(message)),
+        None => {
+            append_card_32(data, session_id);
+            append_card_16(data, display_number);
+            append_array_8(data, display_class);
+            Ok(())
+        }
+    }
 }
 
-fn add_xauth_cookie(auth_name: &str, auth_data: Vec<u8>, display_number: u16) {
+fn add_xauth_cookie(auth_name: &str, auth_data: Vec<u8>, display_number: u16) -> Result<(), String> {
     let authfile_var = env::var("XAUTHORITY");
     let display_name: &str = &format!(":{}", display_number);
     let auth_data_str = &vec_u8_to_string(auth_data);
@@ -240,21 +322,21 @@ fn add_xauth_cookie(auth_name: &str, auth_data: Vec<u8>, display_number: u16) {
             match command {
                 Ok(output) => {
                     if output.stderr.is_empty() && !output.stdout.is_empty() {
-                        //Ok(str::from_utf8(&output.stdout).unwrap().to_string())
+                        Ok(())
                     } else if !output.stderr.is_empty() {
-                        //Err(str::from_utf8(&output.stderr).unwrap().to_string())
+                        Err(std::str::from_utf8(&output.stderr).unwrap().to_string())
                     } else {
-                        //Ok(format!("Unknown status: {}", output.status))
+                        Ok(())
                     }
                 }
-                Err(_) => (), //Err(format!("Could not execute nmcli command with args: {:?}", args).to_string()),
+                Err(_) => Err(format!("Could not execute xauth command with args: {:?}. Stopping negotiation.", args).to_string()),
             }
         }
-        Err(_) => (),
+        Err(_) => Err(format!("Could not find .Xauthority file. Stopping negotiation.").to_string()),
     }
 }
 
-fn open_display(display_number: u16) {
+fn open_display(display_number: u16) -> Result<(), String> {
     let authfile_var = env::var("XAUTHORITY");
     let home_var = env::var("HOME");
     let display_string: &str = &format!(":{}", display_number);
@@ -275,14 +357,14 @@ fn open_display(display_number: u16) {
                     ];
                     let xvnc_command = Command::new("Xvnc").args(xvnc_args).spawn();
                     match xvnc_command {
-                        Ok(output) => (println!("{:?}", output)),
-                        Err(err) => (println!("{}", err))
+                        Ok(_) => (Ok(())),
+                        Err(err) => (Err(err.to_string()))
                     }
                 },
-                Err(_) => ()
+                Err(_) => (Err(String::from("Could not find home directory. Stopping negotiation.")))
             }
-        }
-        Err(_) => ()
+        },
+        Err(_) => (Err(String::from("Could not find ~/.Xauthority file. Stopping negotiation.")))
     }
 }
 

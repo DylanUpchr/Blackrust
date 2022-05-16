@@ -27,6 +27,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "async-trait"
+version = "0.1.53"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ed6aa3524a2dfcf9fe180c51eae2b58738348d819517ceadf95789c51fff7600"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "atk-sys"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -69,6 +80,7 @@ checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 name = "blackrust"
 version = "0.1.60"
 dependencies = [
+ "async-trait",
  "blackrust_lib",
  "dirs",
  "futures",
@@ -82,6 +94,7 @@ dependencies = [
  "serde_json",
  "tokio",
  "toml",
+ "uuid",
  "web-view",
  "xrandr",
 ]
@@ -90,8 +103,10 @@ dependencies = [
 name = "blackrust_lib"
 version = "0.1.60"
 dependencies = [
+ "async-trait",
  "serde",
  "serde_derive",
+ "tokio",
  "uuid",
 ]
 

@@ -1,21 +1,20 @@
 /** File
- * Author:		Dylan Upchurch
- * Date:		2021-05-13
- * Desc:		BlackrustLib Session module
+ * Author:	   Dylan Upchurch
+ * Date:		   2021-05-13
+ * Desc:		   BlackrustLib Session module
  */
-#[macro_export]
-macro_rules! session_default_return_type {
-    () => {
-        Box<dyn Session<Socket = UdpSocket, Handle = JoinHandle<()>, Profile = Profile>>
-    };
-}
 
+use tokio::net::UdpSocket;
+use crate::profile::Profile;
+use async_trait::async_trait;
+
+#[async_trait]
  pub trait Session {
-    type Socket;
-    type Handle;
-    type Profile;
-
-    fn connect(&self);
+    async fn connect(&mut self) -> Result<(), String>;
     fn keepalive(&self);
     fn disconnect(&self);
+    fn id(&self) -> &str;
+ }
+ pub trait UdpSession : Session {
+   fn new(socket: UdpSocket, profile: Profile) -> Self where Self: Sized;
  }
