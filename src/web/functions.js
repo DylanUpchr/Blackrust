@@ -1,5 +1,5 @@
 function invoke(arg) {
-    //window.webkit.messageHandlers.external.postMessage(JSON.stringify(arg));
+    window.webkit.messageHandlers.external.postMessage(JSON.stringify(arg));
 }
 
 function init() {
@@ -56,7 +56,7 @@ function init() {
             }
         }
     );
-    document.getElementById("tabBar").appendChild(generateTabButtonHTML("0", "Home", false))
+    document.getElementById("tabBar").appendChild(generateTabButtonHTML(0, "Home", false))
 }
 
 function setTime() {
@@ -316,36 +316,65 @@ function toggleFieldset(sender, fieldsetID) {
 
 function generateTabButtonHTML(tabId, tabName, closable) {
     let tabButton = document.createElement("div");
-    tabButton.innerHTML = tabName;
-    tabButton.setAttribute("value", tabId);
+    let innerSpan = document.createElement("span");
+    tabButton.classList.add("tabButton");
+    tabButton.classList.add("currentTabButton");
+    innerSpan.innerHTML = tabName;
+    tabButton.setAttribute("sessionId", tabId);
+    tabButton.addEventListener(
+        "click",
+        function(e) {
+            showTab(tabId);
+        }
+    );
     if (closable) {
         let closeButton = document.createElement("button");
         closeButton.addEventListener(
             "click",
             function(e) {
+                let tabContainer = document.getElementById("tabContainer");
+                let tab = document.querySelector("div.tab[sessionId='" + tabId + "']");
+                if (tab.classList.contains("currentTab")) {
+                    if (tab.nextElementSibling != null) {
+                        showTab(tab.nextElementSibling.attributes.sessionid.value);
+                    } else {
+                        showTab(tab.previousElementSibling.attributes.sessionid.value);
+                    }
+                }
+
+                tabContainer.removeChild(tab);
                 tabBar.removeChild(tabButton);
                 invoke({ cmd: 'disconnect', id: tabId });
             }
         );
         closeButton.innerHTML = "x";
-        tabButton.appendChild(closeButton);
+        innerSpan.appendChild(closeButton);
     }
+    tabButton.appendChild(innerSpan);
     return tabButton
 }
 
 function openSessionTab(id, name, rfb_port) {
-    let tabs = document.getElementsByClassName("tab");
-    tabs.forEach(tab => {
-        tab.classList.remove("currentTab");
-    })
+    let tabContainer = document.getElementById("tabContainer");
     let tabBar = document.getElementById("tabBar");
     tabBar.appendChild(generateTabButtonHTML(id, name, true));
-
     let tab = document.createElement("div");
+    tab.setAttribute("sessionId", id);
     tab.classList.add("tab");
-    tab.classList.add("currentTab");
-    //Generate noVnc page
-    tabs.appendChild(tab);
+    //Generate noVnc page and connect to specified port
+    tabContainer.appendChild(tab);
+    showTab(id);
+}
+
+function showTab(tabId) {
+    let tab = document.querySelector("div.tab[sessionId='" + tabId + "']");
+    if (tab != null) {
+        let tabButton = document.querySelector("div.tabButton[sessionId='" + tabId + "']");
+        document.querySelector("div.currentTabButton").classList.remove("currentTabButton");
+        document.querySelector("div.currentTab").classList.remove("currentTab");
+        tab.classList.add("currentTab");
+        tabButton.classList.add("currentTabButton");
+    }
 }
 
 function showErrorPopup(message) {

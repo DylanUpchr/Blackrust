@@ -64,7 +64,7 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
                         Ok(session_id) => match remote_session_mgr.get_session_by_id(&session_id) {
                             Some(session) => {
                                 webview.eval(&format!(
-                                    "open_session_tab({}, {}, {})",
+                                    "openSessionTab('{}', '{}', {})",
                                     session.id(),
                                     session.name(),
                                     session.rfb_port()
