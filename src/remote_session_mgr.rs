@@ -50,7 +50,7 @@ impl RemoteSessionManager {
     pub fn disconnect_session(&mut self, session_id: String){
         match self.get_session_by_id(&session_id){
             Some(session) => {
-                session.disconnect();
+                &session.disconnect();
                 self.sessions.retain(|x| x.id() != session_id)
             },
             None => todo!(),
@@ -59,7 +59,7 @@ impl RemoteSessionManager {
     pub fn is_session_alive(&self, session_id: String){
         todo!();
     }
-    pub fn get_session_by_id(&self, session_id: &String) -> Option<&Box<dyn Session>>{
-        self.sessions.iter().find(|session: &&Box<dyn Session> | session.id() == *session_id)
+    pub fn get_session_by_id(&mut self, session_id: &String) -> Option<&mut Box<dyn Session>>{
+        self.sessions.iter_mut().find(|session: &&mut Box<dyn Session> | session.id() == *session_id)
     }
 }

@@ -12,7 +12,7 @@ use async_trait::async_trait;
  pub trait Session {
     async fn connect(&mut self) -> Result<(), String>;
     fn keepalive(&self);
-    fn disconnect(&self);
+    fn disconnect(&mut self);
     fn id(&self) -> &str;
     fn rfb_port(&self) -> u16;
     fn name(&self) -> &str;

@@ -344,7 +344,7 @@ function generateTabButtonHTML(tabId, tabName, closable) {
 
                 tabContainer.removeChild(tab);
                 tabBar.removeChild(tabButton);
-                invoke({ cmd: 'disconnect', id: tabId });
+                invoke({ cmd: 'disconnect', session_id: tabId });
             }
         );
         closeButton.innerHTML = "x";
@@ -352,6 +352,12 @@ function generateTabButtonHTML(tabId, tabName, closable) {
     }
     tabButton.appendChild(innerSpan);
     return tabButton
+}
+
+function generateTabPageHTML(rfb_port) {
+    let iframe = document.createElement("iframe");
+
+    return iframe;
 }
 
 function openSessionTab(id, name, rfb_port) {
@@ -362,6 +368,7 @@ function openSessionTab(id, name, rfb_port) {
     tab.setAttribute("sessionId", id);
     tab.classList.add("tab");
     //Generate noVnc page and connect to specified port
+    tab.innerHTML = generateTabPageHTML(rfb_port);
     tabContainer.appendChild(tab);
     showTab(id);
 }
