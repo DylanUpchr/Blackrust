@@ -16,11 +16,8 @@ use std::process::Command;
 use std::{env, process::Child};
 use tokio::{
     net::UdpSocket,
-    task::{self, JoinHandle},
-    time,
+    time
 };
-use uuid::Uuid;
-use xrandr::XHandle;
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub enum ProtocolOpCode {
@@ -87,18 +84,19 @@ enum ErrorState {
 }
 
 pub struct XDMCPSession {
-    pub id: String,
+    pub id: Option<u32>,
     pub name: String,
     pub socket: UdpSocket,
     pub profile: Profile,
     pub rfb_port: u16,
     xnvc_process: Option<Child>,
+    display_number: u16
 }
 
 #[async_trait]
 impl Session for XDMCPSession {
     async fn connect(&mut self) -> Result<(), String> {
-        match self.open_session(/*&self.socket, &self.profile.network_profiles*/).await {
+        match self.open_session().await {
             Ok(rfb_port) => {
                 self.rfb_port = rfb_port;
                 Ok(())
@@ -106,8 +104,29 @@ impl Session for XDMCPSession {
             Err(message) => Err(message),
         }
     }
-    fn keepalive(&self) {
-        todo!();
+    async fn keepalive(&self) -> Result<bool, String> {
+        let mut data: Vec<u8> = vec![];
+        match &self.id {
+            Some(session_id) => {
+                append_card_16(&mut data, self.display_number);
+                append_card_32(&mut data, *session_id);
+                send(&self.socket, ProtocolOpCode::KeepAlive, &data).await;
+                match time::timeout(defaults::NEGOTIATION_TIMEOUT, recv(&self.socket)).await {
+                    Ok(received_packet) => match received_packet {
+                        Ok((received_op_code, _received_data)) => match received_op_code {
+                            ProtocolOpCode::Alive => {
+                                Ok(true)
+                            },
+                            _ => Err(String::from("Received out of sequence response from XDMCP manager"))
+                        },
+                        Err(_) => Ok(false)
+                    },
+                    Err(_) => Ok(false),
+                }
+            },
+            None => Err(String::from("Session has no session id"))
+        }
+        
     }
     fn disconnect(&mut self) {
         match &mut self.xnvc_process {
@@ -115,8 +134,11 @@ impl Session for XDMCPSession {
             None => (),
         }
     }
-    fn id(&self) -> &str {
-        self.id.as_ref()
+    fn id(&self) -> u32 {
+        match &self.id {
+            Some(id) => *id,
+            None => 0_u32
+        }
     }
     fn rfb_port(&self) -> u16 {
         self.rfb_port
@@ -126,28 +148,25 @@ impl Session for XDMCPSession {
     }
 }
 impl UdpSession for XDMCPSession {
-    fn new(socket: UdpSocket, profile: Profile) -> XDMCPSession {
+    fn new(socket: UdpSocket, profile: Profile, display_number: u16) -> XDMCPSession {
         XDMCPSession {
-            id: Uuid::new_v4().to_string(),
+            id: None,
             name: profile.name.clone(),
             socket: socket,
             profile: profile,
             rfb_port: 0,
             xnvc_process: None,
+            display_number: display_number
         }
     }
 }
 
 impl XDMCPSession {
-    pub async fn open_session(
-        &mut self, /*socket: &UdpSocket, network_profiles: &Vec<NetworkManagerProfile>*/
-    ) -> Result<u16, String> {
+    pub async fn open_session(&mut self) -> Result<u16, String> {
         let mut state: ProtocolState;
         let mut op: ProtocolOpCode = ProtocolOpCode::Query;
         let mut data: Vec<u8> = vec![0];
         let mut error_op_code: Option<ErrorState> = None;
-        let monitors = XHandle::open().unwrap().monitors().unwrap();
-        let display_number = monitors.len() as u16;
         state = ProtocolState::CollectQuery;
         while state != ProtocolState::StopConnection && state != ProtocolState::RunSession {
             send(&self.socket, op, &data).await;
@@ -162,7 +181,7 @@ impl XDMCPSession {
                                     build_request_packet(
                                         &mut data,
                                         &self.profile.network_profiles,
-                                        display_number,
+                                        self.display_number,
                                     );
                                     state = ProtocolState::AwaitRequestResponse;
                                 } else if received_op_code == ProtocolOpCode::Unwilling {
@@ -176,7 +195,7 @@ impl XDMCPSession {
                                 build_request_packet(
                                     &mut data,
                                     &self.profile.network_profiles,
-                                    display_number,
+                                    self.display_number,
                                 );
                                 state = ProtocolState::AwaitRequestResponse;
                             }
@@ -184,14 +203,15 @@ impl XDMCPSession {
                                 if received_op_code == ProtocolOpCode::Accept {
                                     op = ProtocolOpCode::Manage;
                                     data = vec![];
+                                    self.id = Some(read_card_32(&received_data, 6));
                                     match build_manage_packet(
                                         &mut data,
                                         received_data,
-                                        display_number,
+                                        self.display_number,
                                     ) {
                                         Ok(_) => {
-                                            ({
-                                                match open_display(display_number) {
+                                            {
+                                                match open_display(self.display_number) {
                                                     Ok(child) => {
                                                         self.xnvc_process = Some(child);
                                                         state = ProtocolState::AwaitManageResponse
@@ -202,7 +222,7 @@ impl XDMCPSession {
                                                             Some(ErrorState::OpenDisplay);
                                                     }
                                                 }
-                                            })
+                                            }
                                         }
                                         Err(_) => {
                                             state = ProtocolState::StopConnection;
@@ -229,14 +249,14 @@ impl XDMCPSession {
                     };
                 }
                 Err(_) => {
-                    ({
+                    {
                         if state == ProtocolState::AwaitManageResponse {
                             state = ProtocolState::RunSession;
                         } else {
                             state = ProtocolState::StopConnection;
                             error_op_code = Some(ErrorState::Timeout);
                         }
-                    })
+                    }
                 }
             }
         }
@@ -244,29 +264,29 @@ impl XDMCPSession {
             ProtocolState::StopConnection => match error_op_code {
                 Some(op_code) => match op_code {
                     ErrorState::Unwilling => {
-                        (Err(String::from(
+                        Err(String::from(
                             "X Server unwilling for XDMCP session negotiation",
-                        )))
+                        ))
                     }
                     ErrorState::Decline => {
-                        (Err(String::from("X Server declined XDMCP session negotiation")))
+                        Err(String::from("X Server declined XDMCP session negotiation"))
                     }
                     ErrorState::Refuse => {
-                        (Err(String::from("X Server refused XDMCP session negotiation")))
+                        Err(String::from("X Server refused XDMCP session negotiation"))
                     }
                     ErrorState::Failed => (Err(String::from("XDMCP session negotiation failed"))),
                     ErrorState::Timeout => (Err(String::from("X Server timed out"))),
                     ErrorState::Unknown => {
-                        (Err(String::from("X Server sent unkown negotiation response")))
+                        Err(String::from("X Server sent unkown negotiation response"))
                     }
                     ErrorState::Xauth => {
-                        (Err(String::from("Could not add Xauthority authorization")))
+                        Err(String::from("Could not add Xauthority authorization"))
                     }
                     ErrorState::OpenDisplay => (Err(String::from("Could not open display"))),
                 },
-                None => Ok(5900 + display_number),
+                None => Ok(5900 + self.display_number),
             },
-            ProtocolState::RunSession => Ok(5900 + display_number),
+            ProtocolState::RunSession => Ok(5900 + self.display_number),
             _ => Err(String::from("Unknown negotiation error")),
         }
     }
@@ -417,11 +437,9 @@ fn add_xauth_cookie(
 
 fn open_display(display_number: u16) -> Result<Child, String> {
     let authfile_var = env::var("XAUTHORITY");
-    let home_var = env::var("HOME");
     let display_string: &str = &format!(":{}", display_number);
     match authfile_var {
-        Ok(authfile_path) => match home_var {
-            Ok(home_dir) => {
+        Ok(authfile_path) => {
                 let xvnc_args = vec![
                     display_string,
                     "-listen",
@@ -435,17 +453,11 @@ fn open_display(display_number: u16) -> Result<Child, String> {
                     Ok(child) => (Ok(child)),
                     Err(err) => (Err(err.to_string())),
                 }
-            }
-            Err(_) => {
-                (Err(String::from(
-                    "Could not find home directory. Stopping negotiation.",
-                )))
-            }
         },
         Err(_) => {
-            (Err(String::from(
+            Err(String::from(
                 "Could not find ~/.Xauthority file. Stopping negotiation.",
-            )))
+            ))
         }
     }
 }

@@ -11,12 +11,12 @@ use async_trait::async_trait;
 #[async_trait]
  pub trait Session {
     async fn connect(&mut self) -> Result<(), String>;
-    fn keepalive(&self);
+    async fn keepalive(&self) -> Result<bool, String>;
     fn disconnect(&mut self);
-    fn id(&self) -> &str;
+    fn id(&self) -> u32;
     fn rfb_port(&self) -> u16;
     fn name(&self) -> &str;
  }
  pub trait UdpSession : Session {
-   fn new(socket: UdpSocket, profile: Profile) -> Self where Self: Sized;
+   fn new(socket: UdpSocket, profile: Profile, display_number: u16) -> Self where Self: Sized;
  }

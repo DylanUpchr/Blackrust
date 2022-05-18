@@ -75,7 +75,7 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
                         Err(message) => (println!("{}", message)),
                     },
                     Disconnect { session_id } => {
-						remote_session_mgr.disconnect_session(session_id);
+						remote_session_mgr.disconnect_session(session_id.parse().unwrap());
 					}
                     QueryConnectionProfiles { callback, query } => {
                         match &config_mgr::get_profiles(query) {
