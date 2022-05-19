@@ -199,11 +199,18 @@ Le protocole distant VNC est un des moyens de connexion pour mon application. J'
 Le protocole distant SSH X11-Forwarding est un des moyens de connexion pour mon application. Elle permet de lancer des applications graphiques sur un sessions X11 distant, et avoir l'affichage en local par le bias d'une connexion SSH.
 
 ## Analyse fonctionnelle
+L'analyse fonctionnelle définit les fonctionnalitées et 
 ### Maquettes
 #### Page principale de connexion
 ![Home page](./img/home_component.svg)
 #### Template de page de réglages
 ![Settings page template](./img/settings_component_template.svg)
+### User stories
+#### Connexion rapide
+#### Création/Modification/Suppréssion de profile de connexion
+#### Création/Modification/Suppréssion de profile de configuration réseau
+#### Connexion à un profile de connexion
+#### Basculer vers un *n* ème session ouverte ou page de connexion
 ## Analyse organique
 ### Architecture
 #### Modules internes
@@ -213,7 +220,7 @@ Le programme est décomposé en 5 modules principaux :
 - Main (DM): Point d'entrée du programme et aperçu graphique
 - ConfigMgr: CRUD pour les options de connexion sauvegardées
 - NetworkMgr: Module qui configure le réseau (IPv4, IPv6, configuration VPN) à travers la commande `nmcli` de [NetworkManager](https://networkmanager.dev/)
-- RemoteSessionMgr: Lanceur de sessions distant
+- RemoteSessionMgr: Module qui lance et gère de sessions distant
     - RemoteProtocols 
         - XDMCP
         - VNC
