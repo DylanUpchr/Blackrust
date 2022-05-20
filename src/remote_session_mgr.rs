@@ -20,7 +20,7 @@ impl RemoteSessionManager {
         }
     }
 
-    pub fn get_next_display_number(&self) -> u16 {
+    fn get_next_display_number(&self) -> u16 {
         println!("nb sessions: {}", self.sessions.len());
         (self.sessions.len() as u16) + 1
     }
@@ -55,20 +55,14 @@ impl RemoteSessionManager {
         }
     }
 
-    pub fn disconnect_session(&mut self, session_id: u32){
+    pub fn disconnect_session(&mut self, session_id: u32) -> Result<(), String>{
         match self.get_session_by_id(&session_id){
             Some(session) => {
                 &session.disconnect();
-                self.sessions.retain(|x| x.id() != session_id)
+                self.sessions.retain(|x| x.id() != session_id);
+                Ok(())
             },
-            None => todo!(),
-        }
-    }
-
-    pub async fn is_session_alive(&mut self, session_id: u32) -> Result<bool, String>{
-        match self.get_session_by_id(&session_id) {
-            Some(session) => session.keepalive().await,
-            None => Err(String::from(format!("Could not find session with id: {}", session_id))),
+            None => Err(String::from("Could not find session")),
         }
     }
 

@@ -237,8 +237,9 @@ Le module main est le point d'entrée principale de l'application, lance l'aper�
 - ```base64_encode_images```: Encode des images en format de données base64, et remplacement des chemins vers les images dans l'HTML avec les données base64
 - ```inline_style```: Formate du code CSS en balise ```<style></style>``` HTML
 - ```inline_script```: Formate du code JS en balise ```<script></script>``` HTML
-###### Tests unitaires
 ###### Data flow
+![Data flow](./img/Main_data_flow.svg)
+###### Tests unitaires
 - ```test::open_webview_test```: Test que l'affichage puisse s'instancier et s'afficher, ainsi que la gestion d'erreur de ceci
 - ```test::base64_encode_images_test```: Test que l'encodage et remplacement des images dans une balise ```<img></img>``` fonctionne
 
@@ -254,8 +255,9 @@ Le module ConfigMgr gère les profils de connexion de session distante avec des 
 - ```save_profiles```: Sauvegarde tout les profiles dans un fichier .toml
 - ```create_profile```: Instancie et sauvegarde une nouvelle profile
 - ```delete_profile```: Supprime un profile de connexion 
-###### Tests unitaires
 ###### Data flow
+![Data flow](./img/ConfigMgr_data_flow.svg)
+###### Tests unitaires
 ##### NetworkMgr
 Le module NetworkMgr permet de faire des appels vers NetworkManager pour configurer les interfaces réseau afin de pouvoir se connecter au réseau local et éventuellement à un VPN.
 
@@ -273,6 +275,8 @@ Le module NetworkMgr permet de faire des appels vers NetworkManager pour configu
 - ```modify_profile```: Modifie un profile réseau avec l'outil réseau
 - ```delete_profile```: Supprime  un profile réseau avec l'outil réseau
 - ```exec_command```: Exécute une commande de l'outil réseau
+###### Data flow
+![Data flow](./img/NetworkMgr_data_flow.svg)
 ###### Tests unitaires
 - ```test::get_hostname_test```: Test que la commande pour récupérer le nom d'hôte est correcte
 - ```test::set_hostname_test```: Test que la commande pour affecter le nom d'hôte est correcte
@@ -286,7 +290,6 @@ Le module NetworkMgr permet de faire des appels vers NetworkManager pour configu
 - ```test::modify_profile_test```: Test que la commande pour modifier un profile est correcte
 - ```test::delete_profile_test```: Test que la commande pour supprimer un profile est correcte
 - ```test::exec_command_test```: Test que l'outil réseau puisse accepter des commandes correctement
-###### Data flow
 ##### RemoteSessionMgr
 Le module RemoteSessionMgr lance les sessions distantes en utilisant les options de connexion soit fournies par l'utilisateur soit par un profile chargé par l'utilisateur. Ce module fait appel aux commandes tel xfreerdp, vncviewer, Xnest ou ssh.
 
@@ -313,8 +316,9 @@ Le module RemoteSessionMgr lance les sessions distantes en utilisant les options
 - ```remote_protocols::xdmcp::append_array_of_array_8```: Ajoute un array de array de valeurs 2 bytes de taille variable à la fin du buffer
 - ```remote_protocols::xdmcp::vec_u16_to_be_vec_u8```: Convertit un vecteur de valeurs de 2 bytes en vecteur de valeurs de 1 byte big-endian
 - ```remote_protocols::xdmcp::vec_u8_to_string``` Convertit un vecteur de valeurs 1 byte en string hexadécimale
-###### Tests unitaires
 ###### Data flow
+![Data flow](./img/RemoteSessionMgr_data_flow.svg)
+###### Tests unitaires
 
 ## Tests
 ### Tests unitaires
