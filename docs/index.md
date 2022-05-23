@@ -10,6 +10,16 @@ Blackrust is a multi-architecture program for Linux that, at the startup of the 
 
 This project is a thin client, which aims to reduce the size and cost of the many machines given to employees in a company using VDI (virtual desktop infrastructure). These thin clients will connect to a centralized server where the user's workspace resides and offer greater processing power than the local machine.
 ## Introduction
+Blackrust permet de prendre la main sur des ordinateurs à distant en utilisant de divers protocoles d'accès distant afin de pouvoir proposer le plus de compatibilité que possible avec les systèmes distants.
+
+L'application propose une interface Web pour interagir avec le backend Rust qui permet de configurer le système local, et se connecter à des systèmes distants à travers des connexions sécurisés.
+
+Le backend Rust est compris d'un système de sauvegarde/modification de configuration de connexion, un système de configuration de configuration réseau et un système de gestion de connexion.
+
+
+
+
+![Network diagram](./img/network_diagram.svg)
 
 ## Planning
 ### Prévisionnel
@@ -18,7 +28,7 @@ Le planning prévisionnel a été établi avec la fonctionnalité Gantt de l'out
 ### Effectif
 
 ## Analyse de l'existant
-Il existe déjà plusieurs solutions pour l'accès distant multiprotocole mais la plupart se limitent en termes de disponibilité sur les différentes architectures système ou sont propriétaires / payant.
+Il existe déjà plusieurs solutions pour l'accès distant multiprotocole mais la plupart se limitent en termes de disponibilité sur les différentes architectures système ou qui sont propriétaires / payant.
 
 La valeur ajoutée proposée par ma solution est que ceci est léger, sécurisée, multiplateforme et rapide, permettant de tourner sur des machines avec peu de puissance de processeur, laissant de la puissance pour le décodage du flux vidéo de la session distante afin d'offrir une bonne expérience utilisateur. Ma solution est également open source, gratuit et multiplateforme. Ceci permet l'accès ouvert et de l'extensibilité pour les utilisateurs avec des capacités de développement Rust.
 
@@ -255,6 +265,10 @@ Le programme est décomposé en 5 modules principaux :
 Le module main est le point d'entrée principale de l'application, lance l'aperçu WebView qui permet d'interfacer avec l'application et appeler les autres modules
 
 ![Architecture crate Main](./img/main_crate.svg)
+###### Data flow
+Le diagramme suivant détaille le dataflow du crate Main et représente graphiquement l'interaction entre l'utilisateur et les différents modules.
+L'utilisateur final interagit avec l'interface Web mise à disposition par le moteur Webkit qui propose une sorte de navigateur appelé Webview. Cette interface Web communique ensuite bilatéralement avec le invoke handler de la partie "Backend" du Webview, qui est écrit en Rust. Le invoke handler éxpedie les différents appels vers les modules appropriés et rappel des fonctions JS avec le résultat si cela est nécessaire. Les modules Rust utilisent tous des modules de la librairie interne "BlackrustLib" représenté sur la droite du diagramme. Les modules de la librairie interne contiennent des définitions de types et des fonctions communes à tous les modules principales.
+![Data flow](./img/Main_data_flow.png)
 ###### Fonctions
 - ```open_webview```: Instancie et affiche l'interface WebView
 
@@ -306,10 +320,6 @@ Le module main est le point d'entrée principale de l'application, lance l'aper�
     - |Type|Description|
 |-|-|
 |String|String contenant le code HTML avec le code JS en balise ```<script></script>```|
-###### Data flow
-Le diagramme suivant détaille le dataflow du crate Main et représente graphiquement l'interaction entre l'utilisateur et les différents modules.
-L'utilisateur final interagit avec l'interface Web mise à disposition par le moteur Webkit qui propose une sorte de navigateur appelé Webview. Cette interface Web communique ensuite bilatéralement avec le invoke handler de la partie "Backend" du Webview, qui est écrit en Rust. Le invoke handler éxpedie les différents appels vers les modules appropriés et rappel des fonctions JS avec le résultat si cela est nécessaire. Les modules Rust utilisent tous des modules de la librairie interne "BlackrustLib" représenté sur la droite du diagramme. Les modules de la librairie interne contiennent des définitions de types et des fonctions communes à tous les modules principales.
-![Data flow](./img/Main_data_flow.png)
 ###### Tests unitaires
 - ```test::open_webview_test```: Test que l'affichage puisse s'instancier et s'afficher, ainsi que la gestion d'erreur de ceci
 - ```test::base64_encode_images_test```: Test que l'encodage et remplacement des images dans une balise ```<img></img>``` fonctionne
@@ -318,6 +328,8 @@ L'utilisateur final interagit avec l'interface Web mise à disposition par le mo
 Le module ConfigMgr gère les profils de connexion de session distante avec des fonctions CRUD (Création, Lecture, Mise à Jour, Suppression). Ses fonctionnalités sont appelées depuis le Invoke Handler du WebView et donc depuis le JS de l'interface utilisateur.
 
 ![Architecture module ConfigMgr](./img/config_mgr_module.svg)
+###### Data flow
+![Data flow](./img/ConfigMgr_data_flow.png)
 ###### Fonctions
 - ```get_profiles```: Récupère tout les profiles de connexion répondant à une requete de recherche
     - **Arguments**
@@ -370,13 +382,13 @@ Le module ConfigMgr gère les profils de connexion de session distante avec des 
     - | Nom | Type | Description |
 |-|-|-|
 |profile|Profile|Profile à supprimer|
-###### Data flow
-![Data flow](./img/ConfigMgr_data_flow.png)
 ###### Tests unitaires
 ##### NetworkMgr
 Le module NetworkMgr permet de faire des appels vers NetworkManager pour configurer les interfaces réseau afin de pouvoir se connecter au réseau local et éventuellement à un VPN.
 
 ![Architecture module NetworkMgr](./img/network_mgr_module.svg)
+###### Data flow
+![Data flow](./img/NetworkMgr_data_flow.png)
 ###### Fonctions
 - ```exec_command```: Exécute une commande de l'outil système de configuration réseau
     - **Arguments**
@@ -394,7 +406,7 @@ Le module NetworkMgr permet de faire des appels vers NetworkManager pour configu
 
     - | Nom | Type | Description |
 |-|-|-|
-|network_tool|&NetworkTool|Réference vers l'instance de l'outil réseau|
+|network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
 
     - **Type de retour**
     - |Type|Description|
@@ -405,7 +417,7 @@ Le module NetworkMgr permet de faire des appels vers NetworkManager pour configu
 
     - | Nom | Type | Description |
 |-|-|-|
-|network_tool|&NetworkTool|Réference vers l'instance de l'outil réseau|
+|network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
 
     - **Type de retour**
     - |Type|Description|
@@ -416,7 +428,7 @@ Le module NetworkMgr permet de faire des appels vers NetworkManager pour configu
 
     - | Nom | Type | Description |
 |-|-|-|
-|network_tool|&NetworkTool|Réference vers l'instance de l'outil réseau|
+|network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
 
     - **Type de retour**
     - |Type|Description|
@@ -427,7 +439,7 @@ Le module NetworkMgr permet de faire des appels vers NetworkManager pour configu
 
     - | Nom | Type | Description |
 |-|-|-|
-|network_tool|&NetworkTool|Réference vers l'instance de l'outil réseau|
+|network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
 |name|String|Nom de l'interface réseau recherché|
     - **Type de retour**
     - |Type|Description|
@@ -438,20 +450,76 @@ Le module NetworkMgr permet de faire des appels vers NetworkManager pour configu
 
     - | Nom | Type | Description |
 |-|-|-|
-|network_tool|&NetworkTool|Réference vers l'instance de l'outil réseau|
+|network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
 |interface|Interface|Interface depuis laquel récuperer les adresses IP|
     - **Type de retour**
     - |Type|Description|
 |-|-|
-|Result<Vec<IpAddr>, String>|Liste des adresses Ip ou message d'erreur|
+|Result<Vec<IpAddr>, String>|Liste des adresses IP ou message d'erreur|
 - ```load_all_profiles```: Charge tout les profiles réseau depuis l'outil de réseau
+    - **Arguments**
+
+    - | Nom | Type | Description |
+|-|-|-|
+|network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
+    - **Type de retour**
+    - |Type|Description|
+|-|-|
+|Result<Vec<NetworkManagerProfile\>, String>|Liste de profiles réseau ou message d'erreur|
 - ```get_simple_profile_by_id```: Récupère des informations basiques sur un profile réseau à partir de son identifiant
+    - **Arguments**
+
+    - | Nom | Type | Description |
+|-|-|-|
+|network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
+|id|String|Identifiant unique du profile recherché|
+    - **Type de retour**
+    - |Type|Description|
+|-|-|
+|Result<Vec<NetworkManagerProfile\>, String>|Liste de profiles réseau ou message d'erreur|
 - ```get_detailed_profile_by_id```: Récupère des informations détaillées sur un profile réseau à partir de son identifiant
+    - **Arguments**
+
+    - | Nom | Type | Description |
+|-|-|-|
+|network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
+    - **Type de retour**
+    - |Type|Description|
+|-|-|
+|Result<Vec<NetworkManagerProfile\>, String>|Liste de profiles réseau ou message d'erreur|
 - ```create_profile```: Crée un nouveau profile réseau avec l'outil réseau
+    - **Arguments**
+
+    - | Nom | Type | Description |
+|-|-|-|
+|network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
+|profile_type|NetworkManagerProfileType|Type de profil réseau à créer (Wifi, Ethernet, etc.)|
+    - **Type de retour**
+    - |Type|Description|
+|-|-|
+|Result<String, String\>|Identifiant unique du profile crée ou message d'erreur|
 - ```modify_profile```: Modifie un profile réseau avec l'outil réseau
-- ```delete_profile```: Supprime  un profile réseau avec l'outil réseau
-###### Data flow
-![Data flow](./img/NetworkMgr_data_flow.png)
+    - **Arguments**
+
+    - | Nom | Type | Description |
+|-|-|-|
+|network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
+|profile|NetworkManagerProfile|Profile avec valeurs modifiées|
+    - **Type de retour**
+    - |Type|Description|
+|-|-|
+|Result<(), String>|Retour vide ou message d'erreur|
+- ```delete_profile```: Supprime un profile réseau avec l'outil 
+    - **Arguments**
+
+    - | Nom | Type | Description |
+|-|-|-|
+|network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
+|profile|NetworkManagerProfile|Profile à supprimer|
+    - **Type de retour**
+    - |Type|Description|
+|-|-|
+|Result<(), String>|Retour vide ou message d'erreur|
 ###### Tests unitaires
 - ```test::get_hostname_test```: Test que la commande pour récupérer le nom d'hôte est correcte
 - ```test::set_hostname_test```: Test que la commande pour affecter le nom d'hôte est correcte
@@ -469,6 +537,8 @@ Le module NetworkMgr permet de faire des appels vers NetworkManager pour configu
 Le module RemoteSessionMgr lance les sessions distantes en utilisant les options de connexion soit fournies par l'utilisateur soit par un profile chargé par l'utilisateur. Ce module fait appel aux commandes tel xfreerdp, vncviewer, Xnest ou ssh.
 
 ![Architecture module RemoteSessionMgr](./img/remote_session_mgr_module.svg)
+###### Data flow
+![Data flow](./img/RemoteSessionMgr_data_flow.png)
 ###### Fonctions
 - ```connect```: Se connecte à un protocol distant du profile de connexion fourni
 - ```remote_protocols::open_udp_socket```: Ouvre un canal de communication UDP entre un serveur distant et la machine actuelle
@@ -491,8 +561,6 @@ Le module RemoteSessionMgr lance les sessions distantes en utilisant les options
 - ```remote_protocols::xdmcp::append_array_of_array_8```: Ajoute un array de array de valeurs 2 bytes de taille variable à la fin du buffer
 - ```remote_protocols::xdmcp::vec_u16_to_be_vec_u8```: Convertit un vecteur de valeurs de 2 bytes en vecteur de valeurs de 1 byte big-endian
 - ```remote_protocols::xdmcp::vec_u8_to_string``` Convertit un vecteur de valeurs 1 byte en string hexadécimale
-###### Data flow
-![Data flow](./img/RemoteSessionMgr_data_flow.png)
 ###### Tests unitaires
 
 ## Tests

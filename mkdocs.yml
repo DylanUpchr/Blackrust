@@ -13,6 +13,7 @@ theme:
     accent: red
 plugins:
     - with-pdf:
+        debug_html: true
         enabled_if_env: ENABLE_PDF_EXPORT
         custom_template_path: docs/template
         cover_subtitle: Client léger polyvalent
