@@ -32,15 +32,15 @@ pub fn get_profiles(query: String) -> Result<Profiles, String> {
  * Args:	(String) Id with which to filter profiles
  * Returns:	(Result<Profile, String>) Profile object or error string
  */
-pub fn get_profile_by_id(id: String) -> Result<Profile, String> {
-    let profiles: Profiles = load_all_profiles()?;
+pub fn get_profile_by_id(id: String) -> Option<Profile> {
+    let profiles: Profiles = load_all_profiles().unwrap();
     let profile_result: Option<&Profile>;
     profile_result = profiles.profile_vec.iter()
                         .find(|profile: &_| profile.id == id);
 
     match profile_result {
-        Some(profile) => (return Ok(profile.clone())),
-        None => (return Err(String::from("Could not find profile.")))
+        Some(profile) => Some(profile.clone()),
+        None => None
     }
 }
 

@@ -89,12 +89,12 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
                     }
                     LoadConnectionProfile { callback, id } => {
                         match &config_mgr::get_profile_by_id(id) {
-                            Ok(profile) => webview.eval(&format!(
+                            Some(profile) => webview.eval(&format!(
                                 "{}({})",
                                 callback,
                                 serde_json::to_string(profile).unwrap()
                             ))?,
-                            Err(message) => (println!("{}", message)),
+                            None => (println!("Requested profile does not exist"))
                         }
                     }
                     CreateConnectionProfile => {
@@ -107,11 +107,11 @@ fn open_webview() -> Result<WebView<'static, &'static str>, String> {
                             Err(message) => (println!("{}", message)),
                         }
                         match &config_mgr::get_profile_by_id(id) {
-                            Ok(profile) => webview.eval(&format!(
+                            Some(profile) => webview.eval(&format!(
                                 "loadSelectedConnectionProfileSettings({})",
                                 serde_json::to_string(profile).unwrap()
                             ))?,
-                            Err(message) => (println!("{}", message)),
+                            None => (println!("Requested profile does not exist"))
                         }
                     }
                     SaveConnectionProfile { profile } => (config_mgr::save_profile(profile)),
