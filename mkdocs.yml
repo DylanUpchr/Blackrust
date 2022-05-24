@@ -11,6 +11,9 @@ theme:
     scheme: slate
     primary: red
     accent: red
+markdown_extensions:
+  - attr_list
+  - md_in_html
 plugins:
     - with-pdf:
         debug_html: true

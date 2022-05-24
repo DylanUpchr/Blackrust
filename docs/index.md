@@ -14,12 +14,20 @@ Blackrust permet de prendre la main sur des ordinateurs à distant en utilisant 
 
 L'application propose une interface Web pour interagir avec le backend Rust qui permet de configurer le système local, et se connecter à des systèmes distants à travers des connexions sécurisés.
 
-Le backend Rust est compris d'un système de sauvegarde/modification de configuration de connexion, un système de configuration de configuration réseau et un système de gestion de connexion.
+<figure markdown>
+![Network diagram](./img/network_diagram.svg){ width="300"; margin="auto"}
+  <figcaption>Image caption</figcaption>
+</figure>
 
+Le backend Rust est compris d'un système de sauvegarde/modification de configuration de connexion, un système de configuration réseau et un système de gestion de connexion.
 
+Le système de configuration permet de gérer les profiles de connexion mémorisés qui sont utilisés pour créer des sessions distantes selon une configuration prédéfinie. Ces profiles sont sauvegardées dans un fichier de données sérialisées en utilisant la langue de markdown TOML.
 
+Le système de configuration réseau communique avec l'outil tiers NetworkManager afin de pouvoir proposer la possibilité d'affecter la configuration réseau du système local et sauvegarder plusieurs configurations réseau et configurations VPN.
 
-![Network diagram](./img/network_diagram.svg)
+Finalement le système de gestion de connexion s'occupe de lancer et gérer des sessions distantes en utilisant les soit profiles prédéfinis soit la saisie utilisateur. La session est lancée dans un affichage X11 "headless" qui est mis à disposition à l'interface Web grâce à un serveur VNC locale.
+
+L'architecture de la partie interface humain-machine, ou IHM, permet de proposer cet application en tant que client software sur une machine standalone, ainsi qu'en tant que serveur web, proposant les fonctionnalités à toute appareil équipée d'un navigateur. Ceci est dû au fait que l'interface Web sous traite tout traitement à un backend, qui peut etre disponible uniquement en locale ou derrière un serveur web qui hôte une application web conçu pour ce cas d'utilisation.
 
 ## Planning
 ### Prévisionnel
@@ -66,6 +74,10 @@ Le crate Dirs sert à récupérer des chemins utilisateur selon l'utilisateur, c
 Le crate RSTest est un framework de test qui propose des tests unitaires "Data-Driven"
 #### MockAll
 Le crate MockAll est un framework de test qui permet de moquer des classes qui impémentent des traits.
+#### Xvnc
+La commande Xvnc est utilisé pour instancier une affichage headless et un serveur VNC qui mets cet affichage à disposition sur la machine locale
+#### NetworkManager
+L'outil NetworkManager, utilisé avec la command nmcli, traite toute la configuration réseau locale/VPN
 
 ## Normes
 ### Nommage
@@ -125,6 +137,11 @@ Les messages de commits n'ont pas de norme spéciale, le seul forme respectée s
 
 ## Organisation
 La gestion du projet se fait avec l'outil YouTrack. Ce dernier propose des fonctionnalités Gantt, Kanban, relevée d'horaires et de génération de rapports sur ces derniers. 
+
+### Gantt
+### Kanban
+### Rapports
+
 ## Environnement de travail
 L'environnement de travail utilisé lors du développement de ce projet consistes-en :
 
@@ -209,7 +226,7 @@ Le protocole distant VNC est un des moyens de connexion pour mon application. J'
 Le protocole distant SSH X11-Forwarding est un des moyens de connexion pour mon application. Elle permet de lancer des applications graphiques sur un session X11 distant, et avoir l'affichage en local par le bias d'une connexion SSH.
 
 ## Analyse fonctionnelle
-L'analyse fonctionnelle définit les fonctionnalités et 
+L'analyse fonctionnelle définit les fonctionnalités de l'application ainsi que des explications sur les parties de l'interface utilisateur qui permet de les exploiter.
 ### Maquettes
 #### Page principale de connexion
 ![Home page](./img/home_component.svg)
