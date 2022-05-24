@@ -16,7 +16,7 @@ L'application propose une interface Web pour interagir avec le backend Rust qui 
 
 <figure markdown>
 ![Network diagram](./img/network_diagram.svg){ width="300"; margin="auto"}
-  <figcaption>Image caption</figcaption>
+  <figcaption>Diagramme réseau exemple</figcaption>
 </figure>
 
 Le backend Rust est compris d'un système de sauvegarde/modification de configuration de connexion, un système de configuration réseau et un système de gestion de connexion.
@@ -29,6 +29,7 @@ Finalement le système de gestion de connexion s'occupe de lancer et gérer des 
 
 L'architecture de la partie interface humain-machine, ou IHM, permet de proposer cet application en tant que client software sur une machine standalone, ainsi qu'en tant que serveur web, proposant les fonctionnalités à toute appareil équipée d'un navigateur. Ceci est dû au fait que l'interface Web sous traite tout traitement à un backend, qui peut etre disponible uniquement en locale ou derrière un serveur web qui hôte une application web conçu pour ce cas d'utilisation.
 
+
 ## Planning
 ### Prévisionnel
 Le planning prévisionnel a été établi avec la fonctionnalité Gantt de l'outil YouTrack que j'utilise pour la gestion du projet. J'ai choisi de faire avec cet outil car, je peux générer de divers types de rapports sur les tâches accomplies et le temps que ces derniers ont pris.
@@ -36,7 +37,8 @@ Le planning prévisionnel a été établi avec la fonctionnalité Gantt de l'out
 ### Effectif
 
 ## Analyse de l'existant
-Il existe déjà plusieurs solutions pour l'accès distant multiprotocole mais la plupart se limitent en termes de disponibilité sur les différentes architectures système ou qui sont propriétaires / payant.
+Il existe déjà plusieurs solutions pour l'accès distant multiprotocole.
+Celles-ci sont la plupart du temps limités en terme de compatibilité avec les différentes architectures système et sont soit propriétaire et/ou payant.
 
 La valeur ajoutée proposée par ma solution est que ceci est léger, sécurisée, multiplateforme et rapide, permettant de tourner sur des machines avec peu de puissance de processeur, laissant de la puissance pour le décodage du flux vidéo de la session distante afin d'offrir une bonne expérience utilisateur. Ma solution est également open source, gratuit et multiplateforme. Ceci permet l'accès ouvert et de l'extensibilité pour les utilisateurs avec des capacités de développement Rust.
 
@@ -417,17 +419,7 @@ Le module NetworkMgr permet de faire des appels vers NetworkManager pour configu
     - **Type de retour**
     - |Type|Description|
 |-|-|
-|Result<String, String\>|Sortie "stdout" contenant le retour de l'outil réseau ou sortie "stderr" contenant l'erreur signalé par l'outil réseau|
-- ```get_hostname```: Récupère le nom d'hôte de la machine locale
-    - **Arguments**
-
-    - | Nom | Type | Description |
-|-|-|-|
-|network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
-
-    - **Type de retour**
-    - |Type|Description|
-|-|-|
+|Result<String, String\>|Sortie "stdout" contenant le retour de l'outil réseau ouo true will list out of anchor points provided during the build as info message
 |Result<String, String\>|Nom d'hôte du système ou message d'erreur|
 - ```set_hostname```: Affecte le nom d'hôte de la machine locale
     - **Arguments**
@@ -923,3 +915,12 @@ Lors du test unitaire open_webview_test qui vérifie que le WebView peut être c
     - Code source ([Github](https://github.com/DylanUpchr/Blackrust))
 ## Conclusion
 ## Bilan Personnel
+## Glossaire
+##### IHM
+IHM, ou Interface Humain-Machine, est la partie d'une application qui permet à l'utilisateur finale d'interagir avec l'application
+##### Protocole distant
+Un protocole distant dans le contexte de mon projet est une "langue" défini que les differents types de serveurs d'accès distant utilisent pour communiquer avec les programmes qui servent de client
+##### Accès distant / Session distant / Desktop distant
+L'accés distant, aussi nommée session distant ou desktop distant, est la prise de contrôle du bureau d'un ordinateur dans un autre émplacement via le réseau
+##### VDI
+VDI, ou Virtual Desktop Infrastructure, est une type d'infrastructure compris de machines virtuelles qui servent d'espaces de travail à utiliser en accès distant

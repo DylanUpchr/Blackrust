@@ -16,6 +16,7 @@ markdown_extensions:
   - md_in_html
 plugins:
     - with-pdf:
+        toc_level: 4
         debug_html: true
         enabled_if_env: ENABLE_PDF_EXPORT
         custom_template_path: docs/template
