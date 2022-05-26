@@ -3,10 +3,12 @@
  * Date:		2021-01-28
  * Desc:		Blackrust main crate (main entry point and opens webview)
  */
-#[macro_use]
-extern crate serde_derive;
 extern crate image_base64;
 extern crate serde_json;
+use serde::Deserialize;
+use std::sync::Mutex;
+use actix_files::Files;
+use actix_web::{get, web, web::Data, App, HttpResponse, HttpServer, Responder};
 mod config_mgr;
 mod network_mgr;
 mod remote_session_mgr;
@@ -24,13 +26,29 @@ use web_view::*;
  * Returns:	None
  */
 fn main() {
-    match open_webview() {
+    /*match open_webview() {
         Ok(result) => match result.run() {
             Ok(_) => (),
             _ => (println!("Could not run WebView")),
         },
         Err(message) => (println!("{}", message)),
-    }
+    }*/
+    start_actix(String::from("0.0.0.0:8080")).unwrap();
+}
+
+#[actix_web::main]
+async fn start_actix(bind_addr: String) -> std::io::Result<()> {
+    HttpServer::new(move || {
+        App::new()
+            .data(Mutex::new(0))
+            .service(Files::new("/", "./src/web/app/dist/").index_file("index.html"))
+            .default_service(
+                web::route().to(|| HttpResponse::Found().header("Location", "/").finish()),
+            )
+    })
+    .bind(bind_addr).unwrap()
+    .run()
+    .await
 }
 
 /** Function

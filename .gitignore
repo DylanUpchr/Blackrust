@@ -2,3 +2,5 @@
 /site
 /blackrust_lib/target
 /src/web/node_modules
+/src/web/app/dist
+/src/web/app/target
