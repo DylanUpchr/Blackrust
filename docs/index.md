@@ -24,6 +24,8 @@ Cette interoperabilité avec les differentes environnements distants est dû à 
 - XDMCP spécifiquement pour les Linux avec un serveur d'affichage X11
 - SSH X11-Forwarding pour une connexion limité à une apllication graphique distante via le SSH
 
+Le frontend de l'applciation est une page Web, soit affiché en locale uniquement soit mis à disposition sur un réseau en tant que serveur Web. La page Web peut ensuite communiquer dans les deux sens à travers le code WebAssembly afin d'interagir avec le backend Rust et afficher les résultats à l'utilisateur finale.
+
 Le backend Rust est compris d'un système de sauvegarde/modification de configuration de connexion, un système de configuration réseau et un système de gestion de connexion. Voici un diagramme démontrant cela.
 ![Data flow](./img/Main_data_flow.png)
 
@@ -33,7 +35,7 @@ Le système de configuration réseau communique avec l'outil tiers NetworkManage
 
 Finalement le système de gestion de connexion s'occupe de lancer et gérer des sessions distantes en utilisant les soit profiles prédéfinis soit la saisie utilisateur. La session est lancée dans un affichage X11 "headless" qui est mis à disposition à l'interface Web grâce à un serveur VNC locale.
 
-L'architecture de la partie interface humain-machine, ou IHM, permet de proposer cet application en tant que client logiciel sur une machine indépendant, ainsi qu'en tant que serveur web, proposant les fonctionnalités à tous appareils équipée d'un navigateur. Ceci est dû au fait que l'interface Web délègue tout traitement à un backend, qui peut être disponible uniquement en locale ou derrière un serveur web qui hôte une application web conçue pour ce cas d'utilisation.
+L'architecture de la partie interface homme-machine, ou IHM, permet de proposer cette application en tant que client logiciel sur une machine indépendant, ainsi qu'en tant que serveur web, proposant les fonctionnalités à tous appareils équipée d'un navigateur. Ceci est dû au fait que l'interface Web délègue tout traitement à un backend, qui peut être disponible uniquement en locale ou derrière un serveur web qui hôte une application web conçue pour ce cas d'utilisation.
 
 
 ## Planning
@@ -63,7 +65,8 @@ Le cahier des charges contient une analyse concurencielle des autres solutions d
 Blackrust-Lib est la libraire commune aux modules et contient les définitions de structures de données et les fonctions utilisées par tous les modules.
 
 ### Librairies externes
-Le programme utilise également quelques libraires externes, principalement pour le rendu graphique Web.
+Le programme utilise également quelques libraires externes écrite en Rust, principalement pour le rendu graphique Web.
+Les crates proviennent de [crates.io](https://crates.io), le repository de crates faites par la communauté Rust.
 #### Web-view
 Web-view est un crate qui agit en tant que navigateur web qui affiche le rendu HTML/CSS/JS.
 #### Xrandr
@@ -88,6 +91,16 @@ Le crate MockAll est un framework de test qui permet de moquer des classes qui i
 La commande Xvnc est utilisé pour instancier une affichage headless et un serveur VNC qui mets cet affichage à disposition sur la machine locale
 #### NetworkManager
 L'outil NetworkManager, utilisé avec la command nmcli, traite toute la configuration réseau locale/VPN
+
+#### Actix Web
+Actix Web est une librairie de serveur web. Elle permet de créer et hôter un serveur HTTP/HTTPS avec un page web et/ou un API REST. Je l'utilise pour hôter l'application Web HTML/JS/CSS/WASM construite par Yew.
+
+#### Yew
+Yew est un framework Web qui permet de créer une application Web composé de fichiers HTML/JS/CSS/WASM. L'intelligence et logique métier dans l'application est executée en WebAssembly, qui est un nouveau type d'executable haute-performance conçu pour le navigateur.
+
+Yew ressemble à des framework JS tels que React ou Elm, avec leurs systèmes de components. La différence principale est que Yew transpile du code Rust vers le WebAssembly.
+
+<div style="page-break-after: always;"></div>
 
 ## Normes
 ### Nommage
@@ -233,7 +246,7 @@ J'exploite ce protocole avec l'outil xfreerdp qui est un client RDP Open-Source 
 ###### VNC
 Le protocole distant VNC est un des moyens de connexion pour mon application. J'exploite ce protocole avec l'outil vncviewer de RealVNC.
 ###### SSH X11-Forwarding
-Le protocole distant SSH X11-Forwarding est un des moyens de connexion pour mon application. Elle permet de lancer des applications graphiques sur un session X11 distant, et avoir l'affichage en local par le bias d'une connexion SSH.
+Le protocole distant SSH X11-Forwarding est un des moyens de connexion pour mon application. Elle permet de lancer des applications graphiques sur une session X11 distante, et avoir l'affichage en local par le bias d'une connexion SSH.
 
 <div style="page-break-after: always;"></div>
 
@@ -242,14 +255,46 @@ L'analyse fonctionnelle définit les fonctionnalités de l'application ainsi que
 ### Maquettes
 #### Page principale de connexion
 ![Home page](./img/home_component.svg)
+La page d'accueil est le menu utilisé pour se connecter à session distante. Les sessions ouvertes sont ensuite ouvert et affichées, accessibles depuis des onglets.
+Voici des explication pour les points associés sur l'image:
+
+- 1: Formulaire de connexion rapide/connexion à un profile
+    - 1A: Menu déroulant pour choisir le protocole de la connexion rapide (RDP, VNC, XDMCP, SSH ou session locale)
+    - 1B: Menu déroulant pour choisir le protocole de port (TCP ou UDP)
+    - 1C: Champs de saisie pour l'adresse IP ou FQDN du serveur distant
+    - 1D: Bouton pour ouvrir/fermer le menu déroulant pour choisir les profiles de connexion sauvegardés 
+    - 1E: Bouton qui lance la connexion
+    - 1F: Bouton qui ouvre un champ de saisie qui permet d'ajouter des connexions spécifiques à la connexion
+- 2: Nom d'hôte de la machine
+- 3: Heure actuelle
+- 4: Bouton pour atteindre les menus de réglage
+- 5: Bannièr personnalisable
+- 6: Fond d'écran personnalisable
+- 7: Barre d'onglets de session
+    - 7A: Onglet menu principal
+    - 7B: Onglet Session X avec un bouton pour fermer et se déconnecter de la session
+
 #### Template de page de réglages
 ![Settings page template](./img/settings_component_template.svg)
+Le menu de réglages contient plusieurs sous-menus de configuration.
+Voici des explication pour les points associés sur l'image:
+
+- 1: Sous-menus de configuration
+    - 1A: Sous-menu de réseau
+    - 1B: Sous-menu de profiles de connexion
+    - 1C: Sous-menu de thème
+    - 1D: Sous-menu d'internationalisation, donc langue et locale
+    - 1E: Sous-menu "About" qui contient des informations sur l'application
+- 2: Nom du sous-menu
+- 3: Formulaire du sous-menu
+- 4: Bouton pour fermer la page de réglage et retourner vers la page d'acceuil
+
 ### Fonctionnalités de l'application
 #### Connexion rapide
 Un utilisateur a la possibilité de se connecter sans sauvegarder de profile de connexion. La marche à suivre est le suivant:
 
 - Renseigner la configuration réseau avec la page de réglages prévu à cet effet
-- Renseigner le protocol utilisé, ainsi que l'IP et le port de la machine distante dans la page de connexion
+- Renseigner le protocole utilisé, ainsi que l'IP et le port de la machine distante dans la page de connexion
 - Appuyer sur le bouton de connexion
 Une fois ces manipulations faites, un onglet avec la session distante s'ouvre et est affiché.
 #### Création/Modification/Suppression de profile de connexion
@@ -927,10 +972,16 @@ Lors du test unitaire open_webview_test qui vérifie que le WebView peut être c
     - Paquet avec scripts d'installation (PKGBUILD)
     - Code source ([Github](https://github.com/DylanUpchr/Blackrust))
 ## Conclusion
+En conclusion, j'ai développé un program Rust pour Linux, qui permet de se connecter à plusieurs type de VDI ou serveur distants à travers des connexions sécurisées.
+
+L'application peut utiliser plusieurs protocoles d'accès distant tels que le RDP, VNC et XDMCP et est déployable sur différents architectures différents tels que ARMv8 ou x86_64 sur Linux.
 ## Bilan Personnel
+En fin de compte, j'ai pu faire un outil que j'utilise quotidennement afin de me connecter à mes différents machines virtuelle sur mon réseau locale depuis chez moi ainsi qu'a distance. 
+
+Faire une programme de cette ampleur en Rust m'as vraiment plu, car j'ai pris beaucoup de plaisir à approfondir mes connaisances dans cette langage et de découvrir davantage de technologies, tel que le WebAssembly. J'ai également pu approfondir mes connaisances des différents protocoles d'accès distant utilisés comme le RDP, l'XDMCP et le VNC.
 ## Glossaire
 ##### IHM
-IHM, ou Interface Humain-Machine, est la partie d'une application qui permet à l'utilisateur finale d'interagir avec l'application
+IHM, ou Interface Homme-Machine, est la partie d'une application qui permet à l'utilisateur finale d'interagir avec l'application
 ##### Protocole distant
 Un protocole distant dans le contexte de mon projet est une "langue" défini que les differents types de serveurs d'accès distant utilisent pour communiquer avec les programmes qui servent de client
 ##### Accès distant / Session distant / Desktop distant
