@@ -33,13 +33,13 @@
     kbd,
     tt {
         font-family: 'Noto Sans Mono CJK JP', 'Courier New', monospace, serif;
-        font-size: 2em;
+        font-size: .8rem !important;
     }
     pre code,
     pre var,
     pre samp,
     pre kbd,
     pre tt {
-        font-size: 1.8em;
+        font-size: .8rem !important;
     }
 }

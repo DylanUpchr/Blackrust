@@ -10,16 +10,22 @@ Blackrust is a multi-architecture program for Linux that, at the startup of the 
 
 This project is a thin client, which aims to reduce the size and cost of the many machines given to employees in a company using VDI (virtual desktop infrastructure). These thin clients will connect to a centralized server where the user's workspace resides and offer greater processing power than the local machine.
 ## Introduction
-Blackrust permet de prendre la main sur des ordinateurs à distant en utilisant de divers protocoles d'accès distant afin de pouvoir proposer le plus de compatibilité que possible avec les systèmes distants.
+Blackrust permet de prendre la main sur des ordinateurs à distant en utilisant de divers protocoles d'accès distant afin de pouvoir proposer le plus de compatibilité que possible avec les systèmes distants. Elle permet également d'ouvrir un bureau normale sur la machine locale si une session distante n'est pas souhaitée par l'utilisateur.
 
 L'application propose une interface Web pour interagir avec le backend Rust qui permet de configurer le système local, et se connecter à des systèmes distants à travers des connexions sécurisés.
 
-<figure markdown>
-![Network diagram](./img/network_diagram.svg){ width="300"; margin="auto"}
-  <figcaption>Diagramme réseau exemple</figcaption>
-</figure>
+Voici un diagramme démontrant une architecture de réseau généraliste, où le client Blackrust (représenté en bas du diagramme), se connecte à des clients soit Windows, Linux, MacOS ou autre (ces derniers représentés en haut de l'image) dépendant uniquement du protocole utilisé entre les deux. La connexion se fait de préférence par une connexion sécurisée (représentée au centre de l'image) dépendant de l'environnement à disposition de l'utilisateur.
 
-Le backend Rust est compris d'un système de sauvegarde/modification de configuration de connexion, un système de configuration réseau et un système de gestion de connexion.
+![Network diagram](./img/network_diagram.svg){ width="300"; margin="auto"}
+
+Cette interoperabilité avec les differentes environnements distants est dû à la diversité de protocolés pris en charge par l'application. Des exemples de ces diverses protocoles sont: 
+- RDP fait par Microsoft pour prendre en charge les bureaux distants Windows
+- VNC pour les hôtes MacOS / Windows / Linux, ou autres h'otes ou un serveur VNC est deployable.
+- XDMCP spécifiquement pour les Linux avec un serveur d'affichage X11
+- SSH X11-Forwarding pour une connexion limité à une apllication graphique distante via le SSH
+
+Le backend Rust est compris d'un système de sauvegarde/modification de configuration de connexion, un système de configuration réseau et un système de gestion de connexion. Voici un diagramme démontrant cela.
+![Data flow](./img/Main_data_flow.png)
 
 Le système de configuration permet de gérer les profiles de connexion mémorisés qui sont utilisés pour créer des sessions distantes selon une configuration prédéfinie. Ces profiles sont sauvegardées dans un fichier de données sérialisées en utilisant la langue de markdown TOML.
 
@@ -27,7 +33,7 @@ Le système de configuration réseau communique avec l'outil tiers NetworkManage
 
 Finalement le système de gestion de connexion s'occupe de lancer et gérer des sessions distantes en utilisant les soit profiles prédéfinis soit la saisie utilisateur. La session est lancée dans un affichage X11 "headless" qui est mis à disposition à l'interface Web grâce à un serveur VNC locale.
 
-L'architecture de la partie interface humain-machine, ou IHM, permet de proposer cet application en tant que client software sur une machine standalone, ainsi qu'en tant que serveur web, proposant les fonctionnalités à toute appareil équipée d'un navigateur. Ceci est dû au fait que l'interface Web sous traite tout traitement à un backend, qui peut etre disponible uniquement en locale ou derrière un serveur web qui hôte une application web conçu pour ce cas d'utilisation.
+L'architecture de la partie interface humain-machine, ou IHM, permet de proposer cet application en tant que client logiciel sur une machine indépendant, ainsi qu'en tant que serveur web, proposant les fonctionnalités à tous appareils équipée d'un navigateur. Ceci est dû au fait que l'interface Web délègue tout traitement à un backend, qui peut être disponible uniquement en locale ou derrière un serveur web qui hôte une application web conçue pour ce cas d'utilisation.
 
 
 ## Planning
@@ -35,6 +41,8 @@ L'architecture de la partie interface humain-machine, ou IHM, permet de proposer
 Le planning prévisionnel a été établi avec la fonctionnalité Gantt de l'outil YouTrack que j'utilise pour la gestion du projet. J'ai choisi de faire avec cet outil car, je peux générer de divers types de rapports sur les tâches accomplies et le temps que ces derniers ont pris.
 ![Planning prévisionnel](./img/planning_previsionnel.png)
 ### Effectif
+
+<div style="page-break-after: always;"></div>
 
 ## Analyse de l'existant
 Il existe déjà plusieurs solutions pour l'accès distant multiprotocole.
@@ -49,7 +57,7 @@ Le cahier des charges contient une analyse concurencielle des autres solutions d
 ## Cahier des charges
 [Lien vers le cahier des charges](index.md)
 
-## Libraries
+## Librairies
 ### Librairie interne
 #### Blackrust-Lib
 Blackrust-Lib est la libraire commune aux modules et contient les définitions de structures de données et les fonctions utilisées par tous les modules.
@@ -227,6 +235,8 @@ Le protocole distant VNC est un des moyens de connexion pour mon application. J'
 ###### SSH X11-Forwarding
 Le protocole distant SSH X11-Forwarding est un des moyens de connexion pour mon application. Elle permet de lancer des applications graphiques sur un session X11 distant, et avoir l'affichage en local par le bias d'une connexion SSH.
 
+<div style="page-break-after: always;"></div>
+
 ## Analyse fonctionnelle
 L'analyse fonctionnelle définit les fonctionnalités de l'application ainsi que des explications sur les parties de l'interface utilisateur qui permet de les exploiter.
 ### Maquettes
@@ -264,6 +274,9 @@ Une fois ces manipulations faites, un onglet avec la session distante s'ouvre et
 #### Basculer vers un *n* ème session ouverte ou page de connexion
 Un utilisateur a la possibilité d'ouvrir plusieurs sessions et lors de l'usage de l'application, afficher la session qu'il désire utiliser en utilisant le système d'onglets prévu à cet effet.
 Une barre d'onglets est affiché sur le haut de l'écran contenant les onglets qui représentent les sessions, ainsi que l'onglet qui représente la page de connexion permettant à l'utilisateur de naviguer l'application.
+
+<div style="page-break-after: always;"></div>
+
 ## Analyse organique
 ### Architecture
 #### Modules internes
@@ -350,7 +363,7 @@ Le module ConfigMgr gère les profils de connexion de session distante avec des 
 ###### Data flow
 ![Data flow](./img/ConfigMgr_data_flow.png)
 ###### Fonctions
-- ```get_profiles```: Récupère tout les profiles de connexion répondant à une requete de recherche
+- ```get_profiles```: Récupère tous les profiles de connexion répondant à une requête de recherche
     - **Arguments**
 
     - | Nom | Type | Description |
