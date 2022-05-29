@@ -9,5 +9,6 @@ edition = "2021"
 uuid = { version = "0.8", features = ["serde", "v4"] }
 serde = "*"
 serde_derive = "*"
+erased-serde = "*"
 tokio = { version = "*", features = ["net"] }
 async-trait = "*"

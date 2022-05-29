@@ -8,16 +8,57 @@ extern crate serde_json;
 use serde::Deserialize;
 use std::sync::Mutex;
 use actix_files::Files;
-use actix_web::{get, web, web::Data, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, put, patch, post, delete, web, web::Data, App, HttpResponse, HttpServer};
 mod config_mgr;
 mod network_mgr;
 mod remote_session_mgr;
-use blackrust_lib::profile::{NetworkManagerProfile, Profile};
+use blackrust_lib::profile::{NetworkManagerProfile, Profile, NetworkManagerProfileType};
 use network_mgr::NetworkManager;
-use regex::Captures;
-use regex::Regex;
 use remote_session_mgr::RemoteSessionManager;
 use web_view::*;
+
+macro_rules! result_http_response {
+    ($e: expr)=>{
+        match $e {
+            Ok(value) => HttpResponse::Ok().body(serde_json::to_string(&value).unwrap()),
+            Err(message) => HttpResponse::InternalServerError().body(message)
+        }
+    };
+}
+
+macro_rules! option_http_response {
+    ($e: expr) => {
+        match $e {
+            Some(value) => HttpResponse::Found().body(serde_json::to_string(&value).unwrap()),
+            None => HttpResponse::NotFound().body("Resource not found")
+        }
+    };
+}
+
+struct AppState {
+    remote_session_mgr: RemoteSessionManager,
+    network_tool: NetworkManager
+}
+
+#[derive(Deserialize)]
+struct ProfileFormData {
+    profile: Profile
+}
+
+#[derive(Deserialize)]
+struct HostnameFormData {
+    hostname: String
+}
+
+#[derive(Deserialize)]
+struct NetworkManagerProfileFormData {
+    profile: NetworkManagerProfile
+}
+
+#[derive(Deserialize)]
+struct NetworkManagerProfileTypeFormData {
+    profile_type: NetworkManagerProfileType
+}
 
 /** Function
  * Name:	main
@@ -26,21 +67,135 @@ use web_view::*;
  * Returns:	None
  */
 fn main() {
-    /*match open_webview() {
-        Ok(result) => match result.run() {
-            Ok(_) => (),
-            _ => (println!("Could not run WebView")),
-        },
-        Err(message) => (println!("{}", message)),
-    }*/
     start_actix(String::from("0.0.0.0:8080")).unwrap();
+}
+
+#[get("/hostname")]
+async fn get_hostname(state: Data<Mutex<AppState>>) -> HttpResponse {
+    let current_state = state.lock().unwrap();
+    result_http_response!(network_mgr::get_hostname(&current_state.network_tool))
+}
+
+#[put("/hostname")]
+async fn set_hostname(state: Data<Mutex<AppState>>, data: web::Form<HostnameFormData>) -> HttpResponse {
+    let current_state = state.lock().unwrap();
+    result_http_response!(network_mgr::set_hostname(&current_state.network_tool, &data.hostname))
+}
+
+#[get("/interfaces")]
+async fn get_net_interfaces(state: Data<Mutex<AppState>>) -> HttpResponse {
+    let current_state = state.lock().unwrap();
+    result_http_response!(network_mgr::get_all_interfaces(&current_state.network_tool))
+}
+
+#[get("/profiles")]
+async fn get_net_profiles(state: Data<Mutex<AppState>>) -> HttpResponse {
+    let current_state = state.lock().unwrap();
+    result_http_response!(network_mgr::load_all_profiles(&current_state.network_tool))
+}
+
+#[get("/profile/{id}")]
+async fn get_net_profile(state: Data<Mutex<AppState>>, id: web::Path<String>) -> HttpResponse {
+    let current_state = state.lock().unwrap();
+    result_http_response!(network_mgr::get_simple_profile_by_id(&current_state.network_tool, id.to_string()))
+}
+
+#[post("/profile")]
+async fn create_net_profile(state: Data<Mutex<AppState>>, data: web::Form<NetworkManagerProfileTypeFormData>) -> HttpResponse {
+    let current_state = state.lock().unwrap();
+    result_http_response!(network_mgr::create_profile(&current_state.network_tool, data.profile_type.clone()))
+}
+
+#[patch("/profile")]
+async fn update_net_profile(state: Data<Mutex<AppState>>, data: web::Form<NetworkManagerProfileFormData>) -> HttpResponse {
+    let current_state = state.lock().unwrap();
+    result_http_response!(network_mgr::modify_profile(&current_state.network_tool, data.profile.clone()))
+}
+
+#[delete("/profile")]
+async fn delete_net_profile(state: Data<Mutex<AppState>>, data: web::Form<NetworkManagerProfileFormData>) -> HttpResponse {
+    let current_state = state.lock().unwrap();
+    result_http_response!(network_mgr::delete_profile(&current_state.network_tool, data.profile.clone()))
+}
+
+#[get("/profile/{query}")]
+async fn query_conn_profiles(query: web::Path<String>) -> HttpResponse {
+    result_http_response!(config_mgr::get_profiles(query.to_string()))
+}
+
+#[get("/profile/{id}")]
+async fn get_conn_profile(id: web::Path<String>) -> HttpResponse {
+    option_http_response!(config_mgr::get_profile_by_id(id.to_string()))
+}
+
+#[post("/profile")]
+async fn create_conn_profile() -> HttpResponse {
+    result_http_response!(config_mgr::create_profile())
+}
+
+#[patch("/profile")]
+async fn update_conn_profile(data: web::Form<ProfileFormData>) -> HttpResponse {
+    result_http_response!(config_mgr::save_profile(data.profile.clone()))
+}
+
+#[delete("/profile/{id}")]
+async fn delete_conn_profile(id: web::Path<String>) -> HttpResponse {
+    result_http_response!(config_mgr::delete_profile(id.to_string()))
+}
+
+
+#[get("/session/{id}")]
+async fn get_session(state: Data<Mutex<AppState>>, id: web::Path<u32>) -> HttpResponse {
+    let mut current_state = state.lock().unwrap();
+    let result = &current_state.remote_session_mgr.get_session_by_id(id.into_inner());
+    option_http_response!(result)
+}
+#[post("/connect")]
+async fn connect(state: Data<Mutex<AppState>>, data: web::Form<ProfileFormData>) -> HttpResponse {
+    let mut current_state = state.lock().unwrap();
+    result_http_response!(&current_state.remote_session_mgr.create_session(data.profile.clone()))
+}
+
+#[post("/disconnect/{id}")]
+async fn disconnect(state: Data<Mutex<AppState>>, id: web::Path<u32>) -> HttpResponse {
+    let mut current_state = state.lock().unwrap();
+    result_http_response!(&current_state.remote_session_mgr.disconnect_session(id.into_inner()))
 }
 
 #[actix_web::main]
 async fn start_actix(bind_addr: String) -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
-            .data(Mutex::new(0))
+            .app_data(Data::new(Mutex::new(AppState {
+                remote_session_mgr: RemoteSessionManager::new(),
+                network_tool: NetworkManager::new()
+            })))
+            .service(
+                web::scope("/net_mgr")
+                    .service(get_hostname)
+                    .service(set_hostname)
+                    .service(create_net_profile)
+                    .service(update_net_profile)
+                    .service(delete_net_profile)
+                    .service(get_net_interfaces)
+            )
+            .service(
+                web::scope("/cfg_mgr")
+                    .service(query_conn_profiles)
+                    .service(get_conn_profile)
+                    .service(create_conn_profile)
+                    .service(update_conn_profile)
+                    .service(delete_conn_profile)
+            )
+            .service(
+                web::scope("/rs_mgr")
+                    .service(get_session)
+                    .service(connect)
+                    .service(disconnect)
+            )
+            .service(
+                web::scope("/i18n")
+            )
             .service(Files::new("/", "./src/web/app/dist/").index_file("index.html"))
             .default_service(
                 web::route().to(|| HttpResponse::Found().header("Location", "/").finish()),
@@ -51,274 +206,7 @@ async fn start_actix(bind_addr: String) -> std::io::Result<()> {
     .await
 }
 
-/** Function
- * Name:	open_webview
- * Purpose:	Builds webview and opens it
- * Args:	None
- * Returns:	(Result<WebView<'static, &'static str>, String>) Webview or error message
- */
-fn open_webview() -> Result<WebView<'static, &'static str>, String> {
-    let html = combined_html_css_js();
-    let webview_result = web_view::builder()
-        .content(Content::Html(html))
-        .size(1280, 720)
-        .user_data("")
-        .frameless(true)
-        .debug(true)
-        .invoke_handler(|webview, arg| {
-            use Cmd::*;
-            let mut remote_session_mgr: RemoteSessionManager = RemoteSessionManager::new();
-            let network_tool: NetworkManager = NetworkManager::new();
-            match serde_json::from_str::<Cmd>(arg) {
-                Ok(cmd) => match cmd {
-                    Init => match network_mgr::get_hostname(&network_tool) {
-                        Ok(hostname) => webview
-                            .eval(&format!("setHostname({:?})", hostname))
-                            .unwrap(),
-                        Err(message) => (println!("{}", message)),
-                    },
-                    Debug { value } => (println!("{}", value)),
-                    Connect { profile } => match remote_session_mgr.create_session(profile) {
-                        Ok(session_id) => match remote_session_mgr.get_session_by_id(&session_id) {
-                            Some(session) => {
-                                webview.eval(&format!(
-                                    "openSessionTab('{}', '{}', {})",
-                                    session.id(),
-                                    session.name(),
-                                    session.rfb_port()
-                                ))?;
-                            }
-                            None => todo!(),
-                        },
-                        Err(message) => (println!("{}", message)),
-                    },
-                    Disconnect { session_id } => {
-						remote_session_mgr.disconnect_session(session_id.parse().unwrap());
-					}
-                    QueryConnectionProfiles { callback, query } => {
-                        match &config_mgr::get_profiles(query) {
-                            Ok(profiles) => webview.eval(&format!(
-                                "{}({})",
-                                callback,
-                                serde_json::to_string(profiles).unwrap()
-                            ))?,
-                            Err(message) => (println!("{}", message)),
-                        };
-                    }
-                    LoadConnectionProfile { callback, id } => {
-                        match &config_mgr::get_profile_by_id(id) {
-                            Some(profile) => webview.eval(&format!(
-                                "{}({})",
-                                callback,
-                                serde_json::to_string(profile).unwrap()
-                            ))?,
-                            None => (println!("Requested profile does not exist"))
-                        }
-                    }
-                    CreateConnectionProfile => {
-                        let id = config_mgr::create_profile().unwrap();
-                        match &config_mgr::get_profiles("".to_string()) {
-                            Ok(profile) => webview.eval(&format!(
-                                "loadQueriedConnectionProfilesSettings({})",
-                                serde_json::to_string(profile).unwrap()
-                            ))?,
-                            Err(message) => (println!("{}", message)),
-                        }
-                        match &config_mgr::get_profile_by_id(id) {
-                            Some(profile) => webview.eval(&format!(
-                                "loadSelectedConnectionProfileSettings({})",
-                                serde_json::to_string(profile).unwrap()
-                            ))?,
-                            None => (println!("Requested profile does not exist"))
-                        }
-                    }
-                    SaveConnectionProfile { profile } => (config_mgr::save_profile(profile)),
-                    DeleteConnectionProfile { profile } => config_mgr::delete_profile(profile),
-                    GetNetworkProfiles => match &network_mgr::load_all_profiles(&network_tool) {
-                        Ok(profiles) => webview.eval(&format!(
-                            "loadNetworkProfiles({})",
-                            serde_json::to_string(profiles).unwrap()
-                        ))?,
-                        Err(message) => (println!("{}", message)),
-                    },
-                    LoadNetworkProfile { callback, id } => {
-                        match &network_mgr::get_simple_profile_by_id(&network_tool, id) {
-                            Ok(profile) => webview.eval(&format!(
-                                "{}({})",
-                                callback,
-                                serde_json::to_string(profile).unwrap()
-                            ))?,
-                            Err(message) => (println!("{}", message)),
-                        }
-                    }
-                    CreateNetworkProfile { profile_type } => {
-                        let id = network_mgr::create_profile(
-                            &network_tool,
-                            blackrust_lib::profile::NetworkManagerProfileType::from_str(
-                                &profile_type,
-                            )
-                            .unwrap(),
-                        )
-                        .unwrap();
-                        match &network_mgr::load_all_profiles(&network_tool) {
-                            Ok(profiles) => webview.eval(&format!(
-                                "loadNetworkProfiles({})",
-                                serde_json::to_string(profiles).unwrap()
-                            ))?,
-                            Err(message) => (println!("{}", message)),
-                        }
-                        match &network_mgr::get_detailed_profile_by_id(&network_tool, id) {
-                            Ok(profile) => webview.eval(&format!(
-                                "loadSelectedNetworkProfile({})",
-                                serde_json::to_string(profile).unwrap()
-                            ))?,
-                            Err(message) => (println!("{}", message)),
-                        }
-                    }
-                    SaveNetworkProfile { profile } => {
-                        match network_mgr::modify_profile(&network_tool, profile) {
-                            Err(message) => (println!("{}", message)),
-                            _ => (),
-                        }
-                    }
-                    DeleteNetworkProfile { profile } => {
-                        match network_mgr::delete_profile(&network_tool, profile) {
-                            Err(message) => (println!("{}", message)),
-                            _ => (),
-                        }
-                    }
-                    GetNetworkInterfaces => match &network_mgr::get_all_interfaces(&network_tool) {
-                        Ok(interfaces) => webview.eval(&format!(
-                            "loadNetworkInterfaces({})",
-                            serde_json::to_string(interfaces).unwrap()
-                        ))?,
-                        Err(message) => (println!("{}", message)),
-                    },
-                    GetHostname => match network_mgr::get_hostname(&network_tool) {
-                        Ok(hostname) => webview
-                            .eval(&format!("setHostname({:?})", hostname))
-                            .unwrap(),
-                        Err(message) => (println!("{}", message)),
-                    },
-                    SetHostname { hostname } => {
-                        match network_mgr::set_hostname(&network_tool, &hostname) {
-                            Ok(hostname) => webview
-                                .eval(&format!("setHostname({:?})", hostname))
-                                .unwrap(),
-                            Err(message) => (println!("{}", message)),
-                        }
-                    }
-                },
-                _ => (println!("Could not match command: {}", arg)),
-            }
-            Ok(())
-        })
-        .build();
-
-    match webview_result {
-        Ok(webview) => Ok(webview),
-        Err(_) => Err(String::from("Could not build webview")),
-    }
-}
-
-/** Function
- * Name:	combined_html_css_js
- * Purpose:	Combines formatted HTML, CSS and JS all in one string
- * Args:	None
- * Returns:	(String) HTML webpage including CSS and JS
- */
-fn combined_html_css_js() -> String {
-    format!(
-        "{}{}{}{}",
-        base64_encode_images(include_str!("web/index.html"), "./src/web/"),
-        inline_style(include_str!("web/style.css")),
-        inline_script(include_str!("web/functions.js")),
-        inline_script(include_str!(
-            "web/node_modules/@fortawesome/fontawesome-free/js/all.min.js"
-        ))
-    )
-}
-
-/** Function
- * Name:	base64_encode_images
- * Purpose:	Encode all references to images in an HTML webpage to base64 by path
- * Args:	(&str) HTML webpage with image paths in src attributes
- * Returns:	(String) HTML webpage with base64 image strings in src attributes
- */
-fn base64_encode_images(html: &str, web_dir_prefix: &str) -> String {
-    let re = Regex::new(r"(\./.*\.png)").unwrap();
-    let result = re.replace_all(html, |caps: &Captures| {
-        format!(
-            "{}",
-            image_base64::to_base64(&format!("{}{}", web_dir_prefix, &caps[0]))
-        )
-    });
-    return result.to_string();
-}
-
-/** Function
- * Name:	inline_style
- * Purpose:	Surround CSS styles in HTML tag for inclusion in webpage
- * Args:	(&str) CSS code
- * Returns: (String) CSS code surrounded in HTML tag
- */
-fn inline_style(css: &str) -> String {
-    format!(r#"<style type="text/css">{}</style>"#, css)
-}
-
-/** Function
- * Name:	inline_script
- * Purpose:	Surround JS styles in HTML tag for inclusion in webpage
- * Args:	(&str) JS code
- * Returns: (String) JS code surrounded in HTML tag
- */
-fn inline_script(js: &str) -> String {
-    format!(r#"<script type="text/javascript">{}</script>"#, js)
-}
-
-#[derive(Deserialize)]
-#[serde(tag = "cmd", rename_all = "camelCase")]
-//Enum defining commands that JS can invoke
-pub enum Cmd {
-    Init,
-    Debug { value: String },
-    Connect { profile: Profile },
-    Disconnect { session_id: String },
-    QueryConnectionProfiles { callback: String, query: String },
-    LoadConnectionProfile { callback: String, id: String },
-    CreateConnectionProfile,
-    SaveConnectionProfile { profile: Profile },
-    DeleteConnectionProfile { profile: Profile },
-    GetNetworkProfiles,
-    LoadNetworkProfile { callback: String, id: String },
-    CreateNetworkProfile { profile_type: String },
-    SaveNetworkProfile { profile: NetworkManagerProfile },
-    DeleteNetworkProfile { profile: NetworkManagerProfile },
-    GetNetworkInterfaces,
-    GetHostname,
-    SetHostname { hostname: String },
-}
-
 #[cfg(test)]
 mod test {
     use super::*;
-    #[test]
-    fn open_webview_test() {
-        match open_webview() {
-            Ok(_) => assert!(true),
-            Err(message) => assert!(false, "{}", message),
-        }
-    }
-    #[test]
-    fn base64_encode_images_test() {
-        let test_img_path = "./img/base64_8x8_image.png";
-        let test_img_path_prefix = "./test_resources/";
-        let test_img_base64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH5gQMCyARQP6g9gAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAB+SURBVAjXdY6xDoQgEAUf5BLK7eiFmGjEXzH6wXyFGKv1A+i2g2qvuPacbqoZo6oAeu8iAoCInHMAPgBqraUU5gdAjCGl5L1Hay3nvO3HME7DOG37kXNurVkRYX7O6wYA4Lxu5kdELF6wRBRjWJf55+syxxiIyKjq37h52/0CrmdF/bk0+fgAAAAASUVORK5CYII=";
-        let html_unencoded = String::from(format!(r#"<img src="{}"></img>"#, test_img_path));
-        let html_encoded = String::from(format!(r#"<img src="{}"></img>"#, test_img_base64));
-        assert_eq!(
-            html_encoded,
-            base64_encode_images(&html_unencoded, test_img_path_prefix)
-        );
-    }
 }

@@ -17,7 +17,7 @@ use std::{env, process::Child};
 use tokio::{
     net::UdpSocket,
     time
-};
+};use serde::ser::{Serialize, Serializer, SerializeStruct};
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub enum ProtocolOpCode {
@@ -89,8 +89,21 @@ pub struct XDMCPSession {
     pub socket: UdpSocket,
     pub profile: Profile,
     pub rfb_port: u16,
-    xnvc_process: Option<Child>,
+    xvnc_process: Option<Child>,
     display_number: u16
+}
+
+impl Serialize for XDMCPSession {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut s = serializer.serialize_struct("XDMCPSession", 3)?;
+        s.serialize_field("id", &self.id)?;
+        s.serialize_field("name", &self.name)?;
+        s.serialize_field("rfb_port", &self.rfb_port)?;
+        s.end()
+    }
 }
 
 #[async_trait]
@@ -129,7 +142,7 @@ impl Session for XDMCPSession {
         
     }
     fn disconnect(&mut self) {
-        match &mut self.xnvc_process {
+        match &mut self.xvnc_process {
             Some(child) => child.kill().unwrap(),
             None => (),
         }
@@ -155,7 +168,7 @@ impl UdpSession for XDMCPSession {
             socket: socket,
             profile: profile,
             rfb_port: 0,
-            xnvc_process: None,
+            xvnc_process: None,
             display_number: display_number
         }
     }
@@ -213,7 +226,7 @@ impl XDMCPSession {
                                             {
                                                 match open_display(self.display_number) {
                                                     Ok(child) => {
-                                                        self.xnvc_process = Some(child);
+                                                        self.xvnc_process = Some(child);
                                                         state = ProtocolState::AwaitManageResponse
                                                     }
                                                     Err(_) => {
@@ -300,7 +313,7 @@ pub async fn send(socket: &UdpSocket, op: ProtocolOpCode, data: &Vec<u8>) {
     append_card_16(&mut buf, version);
     append_card_16(&mut buf, op_code);
     append_array_8(&mut buf, data.to_vec());
-    socket.send(&buf).await;
+    socket.send(&buf).await.unwrap();
 }
 
 pub async fn recv(socket: &UdpSocket) -> Result<(ProtocolOpCode, Vec<u8>), String> {

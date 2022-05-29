@@ -442,6 +442,7 @@ name = "blackrust_lib"
 version = "0.1.60"
 dependencies = [
  "async-trait",
+ "erased-serde",
  "serde",
  "serde_derive",
  "tokio 1.18.2",
@@ -756,6 +757,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "be4551092f4d519593039259a9ed8daedf0da12e5109c5280338073eaeb81180"
 dependencies = [
  "num-traits 0.1.43",
+]
+
+[[package]]
+name = "erased-serde"
+version = "0.3.20"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ad132dd8d0d0b546348d7d86cb3191aad14b34e5f979781fc005c80d4ac67ffd"
+dependencies = [
+ "serde",
 ]
 
 [[package]]
