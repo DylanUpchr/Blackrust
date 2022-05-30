@@ -22,7 +22,10 @@ impl Component for App {
     fn view(&self, ctx: &Context<Self>) -> Html {
         let link = ctx.link();
         html! {
-            <TabBar />
+            <>
+                <TabBar />
+                
+            </>
         }
     }
 }

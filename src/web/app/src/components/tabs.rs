@@ -1,7 +1,7 @@
 use yew::prelude::*;
 
 pub enum Msg {
-    AddTab,
+    AddTab {id: u32, name: String, rfb_port:u16},
     RemoveTab
 }
 
@@ -11,12 +11,23 @@ pub struct TabBarProps {
     pub children: Children,
 }
 
+#[derive(Properties, PartialEq)]
+pub struct TabProps {
+    #[prop_or_default]
+    id: u32,
+    name: String,
+    rfb_port: u16
+}
+
 pub struct TabBar {
     tabs: Vec<Tab>
 }
 
 pub struct Tab {
-    id: u32
+    id: u32,
+    name: String,
+    rfb_port: u16,
+    active_tab: bool
 }
 
 impl Component for TabBar {
@@ -31,12 +42,14 @@ impl Component for TabBar {
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            Msg::AddTab => {
-                self.tabs.push(
-                    Tab {
-                        id: self.tabs.len().try_into().unwrap()
-                    }
-                );
+            Msg::AddTab {id, name, rfb_port} => {
+                let tab = Tab {
+                    id: id,
+                    name: String::from("name"),
+                    rfb_port: 0,
+                    active_tab: true
+                };
+                self.tabs.push(tab);
                 true
             },
             Msg::RemoveTab => {
@@ -48,29 +61,31 @@ impl Component for TabBar {
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         let link = ctx.link();
-        let onclick = link.callback(|_| Msg::AddTab);
+        let onclick = link.callback(|_| Msg::AddTab {id: 0, name: String::from("test"), rfb_port: 0});
         let tabs = &self.tabs;
         html! {
-            <div>
+            <nav id="tabBar">
                 <p>{"tabbar nbTabs: "}{ self.tabs.len()}</p>
                 { 
                     tabs.into_iter().map(|tab| {
-                        html!{<div>{"tab number "} {tab.id}</div>}
+                        html!{ <Tab id={tab.id} name={tab.name.clone()} rfb_port={tab.rfb_port}/>}
                     }).collect::<Html>()
                 }
                 <button {onclick}>{ "New tab" }</button>
-            </div>
+            </nav>
         }
     }
 }
 
 impl Component for Tab {
     type Message = ();
-    type Properties = ();
+    type Properties = TabProps;
     
     fn create(_ctx: &Context<Self>) -> Self {
         Self {
-            id: 0
+            id: 0,
+            name: String::from("Session tab"),
+            rfb_port: 0
         }
     }
 
@@ -81,8 +96,13 @@ impl Component for Tab {
     fn view(&self, ctx: &Context<Self>) -> Html {
         let link = ctx.link();
         html! {
-            <div>
-                <p>{"tab"}</p>
+            <div class="tabButton">
+                <p>
+                {"tab n° "}
+                {ctx.props().id}
+                {" named: "}
+                {ctx.props().name.clone()}
+                </p>
             </div>
         }
     }
