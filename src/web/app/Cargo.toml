@@ -7,3 +7,5 @@ edition = "2021"
 
 [dependencies]
 yew = "*"
+#tokio = { version = "*", features = ["time", "rt", "rt-multi-thread", "macros", "net"] }
+stylist = { version = "*", features = ["yew_integration"]}

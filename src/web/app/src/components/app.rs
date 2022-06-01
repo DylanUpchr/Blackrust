@@ -1,4 +1,6 @@
 use yew::prelude::*;
+use std::borrow::Cow;
+use stylist::{css, StyleSource, YieldStyle};
 
 use crate::components::tabs::TabBar;
 
@@ -22,10 +24,16 @@ impl Component for App {
     fn view(&self, ctx: &Context<Self>) -> Html {
         let link = ctx.link();
         html! {
-            <>
+            <div class={self.style()}>
                 <TabBar />
                 
-            </>
+            </div>
         }
+    }
+}
+
+impl YieldStyle for App {
+    fn style_from(&self) -> StyleSource<'static> {
+        css!("height: 100%; width: 100%; background-color: gray;")
     }
 }

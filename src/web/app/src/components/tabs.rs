@@ -1,4 +1,6 @@
 use yew::prelude::*;
+use std::borrow::Cow;
+use stylist::{css, StyleSource, YieldStyle};
 
 pub enum Msg {
     AddTab {id: u32, name: String, rfb_port:u16},
@@ -27,7 +29,7 @@ pub struct Tab {
     id: u32,
     name: String,
     rfb_port: u16,
-    active_tab: bool
+    //active_tab: bool
 }
 
 impl Component for TabBar {
@@ -47,7 +49,7 @@ impl Component for TabBar {
                     id: id,
                     name: String::from("name"),
                     rfb_port: 0,
-                    active_tab: true
+                    //active_tab: true
                 };
                 self.tabs.push(tab);
                 true
@@ -64,8 +66,8 @@ impl Component for TabBar {
         let onclick = link.callback(|_| Msg::AddTab {id: 0, name: String::from("test"), rfb_port: 0});
         let tabs = &self.tabs;
         html! {
-            <nav id="tabBar">
-                <p>{"tabbar nbTabs: "}{ self.tabs.len()}</p>
+            <nav id="tabBar" class={self.style()}>
+                <span>{"tabbar nbTabs: "}{ self.tabs.len()}</span>
                 { 
                     tabs.into_iter().map(|tab| {
                         html!{ <Tab id={tab.id} name={tab.name.clone()} rfb_port={tab.rfb_port}/>}
@@ -74,6 +76,12 @@ impl Component for TabBar {
                 <button {onclick}>{ "New tab" }</button>
             </nav>
         }
+    }
+}
+
+impl YieldStyle for TabBar {
+    fn style_from(&self) -> StyleSource<'static> {
+        css!("background-color: blue;")
     }
 }
 
@@ -96,14 +104,20 @@ impl Component for Tab {
     fn view(&self, ctx: &Context<Self>) -> Html {
         let link = ctx.link();
         html! {
-            <div class="tabButton">
-                <p>
+            <div class={self.style()}>
+                <span>
                 {"tab n° "}
                 {ctx.props().id}
                 {" named: "}
                 {ctx.props().name.clone()}
-                </p>
+                </span>
             </div>
         }
+    }
+}
+
+impl YieldStyle for Tab {
+    fn style_from(&self) -> StyleSource<'static> {
+        css!("background-color: purple;")
     }
 }
