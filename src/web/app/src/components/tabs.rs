@@ -5,7 +5,7 @@ use stylist::css;
 use crate::components::app::AppRoute;
 
 pub enum Msg {
-    AddTab {id: u32, name: String, rfb_port:u16},
+    AddTab {id: u32, name: String, rfb_port: u16, route: AppRoute},
     RemoveTab
 }
 
@@ -20,7 +20,9 @@ pub struct TabProps {
     #[prop_or_default]
     id: u32,
     name: String,
-    rfb_port: u16
+    rfb_port: u16,
+    route: AppRoute,
+    is_active_tab: bool
 }
 
 pub struct TabBar {
@@ -31,7 +33,8 @@ pub struct Tab {
     id: u32,
     name: String,
     rfb_port: u16,
-    active_tab: bool
+    route: AppRoute,
+    is_active_tab: bool
 }
 
 impl Component for TabBar {
@@ -40,18 +43,27 @@ impl Component for TabBar {
 
     fn create(_ctx: &Context<Self>) -> Self {
         Self {
-            tabs: vec![]
+            tabs: vec![
+                Tab {
+                    id: 0,
+                    name: "Home".to_string(),
+                    rfb_port: 0,
+                    route: AppRoute::Index,
+                    is_active_tab: true
+                }
+            ]
         }
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            Msg::AddTab {id, name, rfb_port} => {
+            Msg::AddTab {id, name, rfb_port, route} => {
                 let tab = Tab {
                     id: id,
-                    name: String::from("name"),
+                    name: String::from(name),
                     rfb_port: 0,
-                    active_tab: true
+                    route: AppRoute::Session {session_id: id},
+                    is_active_tab: true
                 };
                 self.tabs.push(tab);
                 true
@@ -69,22 +81,29 @@ impl Component for TabBar {
         css!("
             display: flex;
             flex-direction: row;
+            align-items: center;
+            justify-content: center;
             background-color: white;
             border-radius: 10px;
             margin: 15px;
-            padding: 10px;
+            padding: 5px;
         ");
-        let onclick = link.callback(|_| Msg::AddTab {id: 0, name: String::from("test"), rfb_port: 0});
         let tabs = &self.tabs;
         html! {
             <nav id="tabBar" {class}>
-                <span>{"tabbar nbTabs: "}{ self.tabs.len()}</span>
                 { 
                     tabs.into_iter().map(|tab| {
-                        html!{ <Tab id={tab.id} name={tab.name.clone()} rfb_port={tab.rfb_port}/>}
+                        html!{ 
+                            <Tab 
+                                id={ tab.id } 
+                                name={ tab.name.clone() } 
+                                rfb_port={ tab.rfb_port } 
+                                route={ tab.route.clone() }
+                                is_active_tab = { tab.is_active_tab }
+                            />
+                        }
                     }).collect::<Html>()
                 }
-                <button {onclick}>{ "New tab" }</button>
             </nav>
         }
     }
@@ -99,7 +118,8 @@ impl Component for Tab {
             id: 0,
             name: String::from("Session tab"),
             rfb_port: 0,
-            active_tab: false
+            route: AppRoute::Index,
+            is_active_tab: false
         }
     }
 
@@ -109,16 +129,19 @@ impl Component for Tab {
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         let link = ctx.link();
-        let class = css!("background-color: gray;");
+        let class = css!(
+            r#"
+            padding: 10px;
+            border: 1px solid black;
+            border-radius: 5px;
+            margin: 10px;
+            background-color: ${bg};
+            "#, 
+            bg = if ctx.props().is_active_tab { "gray" } else { "white" }
+        );
         html! {
             <div {class}>
-                <span>
-                {"tab n° "}
-                {ctx.props().id}
-                {" named: "}
-                {ctx.props().name.clone()}
-                <Link<AppRoute> to={AppRoute::Session {session_id: ctx.props().id}}>{ "click here to go session" }</Link<AppRoute>>
-                </span>
+                <Link<AppRoute> to={ctx.props().route.clone()}>{ ctx.props().name.clone() }</Link<AppRoute>>
             </div>
         }
     }

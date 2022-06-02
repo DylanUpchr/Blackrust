@@ -1,6 +1,7 @@
 use yew::prelude::*;
 use yew_router::prelude::Link;
-use crate::components::app::AppRoute;
+use stylist::css;
+use crate::components::{ app::AppRoute, top_bar::TopBar };
 
 pub struct MainCard;
 
@@ -12,16 +13,22 @@ impl Component for MainCard {
         Self
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+    fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
         true
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
+        let class = css!("
+            background-color: white;
+            border-radius: 10px;
+            margin: 15px;
+            padding: 10px;
+        ");
+
         html! {
-            <>
-                <p>{"test index"}</p>
-                <Link<AppRoute> to={AppRoute::Settings}>{ "click here to go settings" }</Link<AppRoute>>
-            </>
+            <div {class}>
+                <TopBar/>
+            </div>
         }
     }
 }

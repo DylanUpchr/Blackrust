@@ -2,12 +2,14 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 use stylist::css;
 
-use crate::components::{tabs::TabBar, main_card::MainCard, settings_card::SettingsCard, session_page::SessionPage};
+use crate::components::{tabs::{TabBar, Tab}, main_card::MainCard, settings_card::SettingsCard, session_page::SessionPage};
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum AppRoute {
     #[at("/")]
     Index,
+    #[at("/settings")]
+    SettingsRoot,
     #[at("/settings/*")]
     Settings,
     #[at("/session_page/:session_id")]
@@ -16,6 +18,8 @@ pub enum AppRoute {
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum SettingsRoute {
+    #[at("/settings")]
+    DefaultRoute,
     #[at("/settings/net")]
     NetworkProfiles,
     #[at("/settings/conn")]
@@ -33,7 +37,7 @@ fn switch(routes: &AppRoute) -> Html {
         AppRoute::Index => {
             html! { <MainCard /> }
         },
-        AppRoute::Settings => {
+        AppRoute::SettingsRoot | AppRoute::Settings => {
             html! { <SettingsCard /> }
         },
         AppRoute::Session { session_id } => {
@@ -67,7 +71,7 @@ impl Component for App {
         html! {
             <div {class}>
                 <BrowserRouter>
-                    <TabBar />
+                    <TabBar/>
                     <Switch<AppRoute> render={Switch::render(switch)} />
                 </BrowserRouter>
             </div>

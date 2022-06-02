@@ -1,5 +1,5 @@
 use yew::prelude::*;
-use yew_router::prelude::{ Link, Switch };
+use yew_router::prelude::{ Link, Switch, Redirect };
 use crate::components::app::SettingsRoute;
 
 pub struct SettingsCard;
@@ -12,7 +12,7 @@ impl Component for SettingsCard {
         Self
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+    fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
         true
     }
 
@@ -28,6 +28,9 @@ impl Component for SettingsCard {
 
 fn switch_settings(routes: &SettingsRoute) -> Html {
     match routes {
+        SettingsRoute::DefaultRoute => {
+            html! { <Redirect<SettingsRoute> to={SettingsRoute::NetworkProfiles}/> }
+        },
         SettingsRoute::NetworkProfiles => {
             html! { "test net" }
         },

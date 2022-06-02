@@ -9,3 +9,5 @@ edition = "2021"
 yew = "*"
 yew-router = "*"
 stylist = { version = "*", features = ["yew_integration"]}
+yew-feather = "*"
+instant = { version = "0.1", features = [ "stdweb" ] }
