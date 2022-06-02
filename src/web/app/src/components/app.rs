@@ -1,16 +1,51 @@
 use yew::prelude::*;
-use std::borrow::Cow;
-use stylist::{css, StyleSource, YieldStyle};
+use yew_router::prelude::*;
+use stylist::css;
 
-use crate::components::tabs::TabBar;
+use crate::components::{tabs::TabBar, main_card::MainCard, settings_card::SettingsCard, session_page::SessionPage};
 
-pub enum Msg {
+#[derive(Clone, Routable, PartialEq)]
+pub enum AppRoute {
+    #[at("/")]
+    Index,
+    #[at("/settings/*")]
+    Settings,
+    #[at("/session_page/:session_id")]
+    Session { session_id: u32 }
+}
+
+#[derive(Clone, Routable, PartialEq)]
+pub enum SettingsRoute {
+    #[at("/settings/net")]
+    NetworkProfiles,
+    #[at("/settings/conn")]
+    ConnectionProfiles,
+    #[at("/settings/theme")]
+    ThemeSettings,
+    #[at("/settings/i18n")]
+    I18nSettings,
+    #[at("/settings/about")]
+    About,
+}
+
+fn switch(routes: &AppRoute) -> Html {
+    match routes {
+        AppRoute::Index => {
+            html! { <MainCard /> }
+        },
+        AppRoute::Settings => {
+            html! { <SettingsCard /> }
+        },
+        AppRoute::Session { session_id } => {
+            html! { <SessionPage session_id={session_id.clone()} /> }
+        }
+    }
 }
 
 pub struct App;
 
 impl Component for App {
-    type Message = Msg;
+    type Message = ();
     type Properties = ();
 
     fn create(_ctx: &Context<Self>) -> Self {
@@ -22,18 +57,20 @@ impl Component for App {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        let link = ctx.link();
+        let class = 
+        css!("
+            height: 100%; 
+            width: 100%; 
+            background-color: gray;
+            position: absolute;
+        ");
         html! {
-            <div class={self.style()}>
-                <TabBar />
-                
+            <div {class}>
+                <BrowserRouter>
+                    <TabBar />
+                    <Switch<AppRoute> render={Switch::render(switch)} />
+                </BrowserRouter>
             </div>
         }
-    }
-}
-
-impl YieldStyle for App {
-    fn style_from(&self) -> StyleSource<'static> {
-        css!("height: 100%; width: 100%; background-color: gray;")
     }
 }

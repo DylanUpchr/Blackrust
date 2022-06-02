@@ -197,9 +197,9 @@ async fn start_actix(bind_addr: String) -> std::io::Result<()> {
                 web::scope("/i18n")
             )
             .service(Files::new("/", "./src/web/app/dist/").index_file("index.html"))
-            .default_service(
-                web::route().to(|| HttpResponse::Found().header("Location", "/").finish()),
-            )
+            /*.default_service(
+                web::route().to(|| HttpResponse::Found().header("Location", "/main").finish()),
+            )*/
     })
     .bind(bind_addr).unwrap()
     .run()

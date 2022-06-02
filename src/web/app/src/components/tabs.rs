@@ -1,6 +1,8 @@
 use yew::prelude::*;
-use std::borrow::Cow;
-use stylist::{css, StyleSource, YieldStyle};
+use yew_router::prelude::*;
+use stylist::css;
+
+use crate::components::app::AppRoute;
 
 pub enum Msg {
     AddTab {id: u32, name: String, rfb_port:u16},
@@ -29,7 +31,7 @@ pub struct Tab {
     id: u32,
     name: String,
     rfb_port: u16,
-    //active_tab: bool
+    active_tab: bool
 }
 
 impl Component for TabBar {
@@ -49,7 +51,7 @@ impl Component for TabBar {
                     id: id,
                     name: String::from("name"),
                     rfb_port: 0,
-                    //active_tab: true
+                    active_tab: true
                 };
                 self.tabs.push(tab);
                 true
@@ -63,10 +65,19 @@ impl Component for TabBar {
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         let link = ctx.link();
+        let class = 
+        css!("
+            display: flex;
+            flex-direction: row;
+            background-color: white;
+            border-radius: 10px;
+            margin: 15px;
+            padding: 10px;
+        ");
         let onclick = link.callback(|_| Msg::AddTab {id: 0, name: String::from("test"), rfb_port: 0});
         let tabs = &self.tabs;
         html! {
-            <nav id="tabBar" class={self.style()}>
+            <nav id="tabBar" {class}>
                 <span>{"tabbar nbTabs: "}{ self.tabs.len()}</span>
                 { 
                     tabs.into_iter().map(|tab| {
@@ -79,12 +90,6 @@ impl Component for TabBar {
     }
 }
 
-impl YieldStyle for TabBar {
-    fn style_from(&self) -> StyleSource<'static> {
-        css!("background-color: blue;")
-    }
-}
-
 impl Component for Tab {
     type Message = ();
     type Properties = TabProps;
@@ -93,7 +98,8 @@ impl Component for Tab {
         Self {
             id: 0,
             name: String::from("Session tab"),
-            rfb_port: 0
+            rfb_port: 0,
+            active_tab: false
         }
     }
 
@@ -103,21 +109,17 @@ impl Component for Tab {
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         let link = ctx.link();
+        let class = css!("background-color: gray;");
         html! {
-            <div class={self.style()}>
+            <div {class}>
                 <span>
                 {"tab n° "}
                 {ctx.props().id}
                 {" named: "}
                 {ctx.props().name.clone()}
+                <Link<AppRoute> to={AppRoute::Session {session_id: ctx.props().id}}>{ "click here to go session" }</Link<AppRoute>>
                 </span>
             </div>
         }
-    }
-}
-
-impl YieldStyle for Tab {
-    fn style_from(&self) -> StyleSource<'static> {
-        css!("background-color: purple;")
     }
 }
