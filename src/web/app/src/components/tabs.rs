@@ -70,13 +70,11 @@ impl Component for TabBar {
             },
             Msg::RemoveTab => {
                 true
-            },
-            _ => false
+            }
         }
     }
 
-    fn view(&self, ctx: &Context<Self>) -> Html {
-        let link = ctx.link();
+    fn view(&self, _ctx: &Context<Self>) -> Html {
         let class = 
         css!("
             display: flex;
@@ -123,12 +121,11 @@ impl Component for Tab {
         }
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+    fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
         true
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        let link = ctx.link();
         let class = css!(
             r#"
             padding: 10px;

@@ -2,7 +2,7 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 use stylist::css;
 
-use crate::components::{tabs::{TabBar, Tab}, main_card::MainCard, settings_card::SettingsCard, session_page::SessionPage};
+use crate::components::{tabs::TabBar, main_card::MainCard, settings_card::SettingsCard, session_page::SessionPage};
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum AppRoute {
@@ -56,11 +56,11 @@ impl Component for App {
         Self
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+    fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
         true
     }
 
-    fn view(&self, ctx: &Context<Self>) -> Html {
+    fn view(&self, _ctx: &Context<Self>) -> Html {
         let class = 
         css!("
             height: 100%; 

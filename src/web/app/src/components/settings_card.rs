@@ -1,5 +1,5 @@
 use yew::prelude::*;
-use yew_router::prelude::{ Link, Switch, Redirect };
+use yew_router::prelude::{ Switch, Redirect };
 use crate::components::app::SettingsRoute;
 
 pub struct SettingsCard;
@@ -16,7 +16,7 @@ impl Component for SettingsCard {
         true
     }
 
-    fn view(&self, ctx: &Context<Self>) -> Html {
+    fn view(&self, _ctx: &Context<Self>) -> Html {
         html! {
             <>
                 <p>{"Settings card"}</p>

@@ -24,7 +24,7 @@ impl Component for TopBar {
         true
     }
 
-    fn view(&self, ctx: &Context<Self>) -> Html {
+    fn view(&self, _ctx: &Context<Self>) -> Html {
         let class = css!("
             width: 100%;
             height: 3%;

@@ -1,10 +1,10 @@
 use yew::prelude::*;
 use yew_feather::clock::Clock;
-use stylist::css;
-use instant::Instant;
+use chrono::{DateTime, Utc};
+use gloo_timers::callback::Interval;
 
 pub struct Time {
-    now: Instant
+    interval: Interval
 }
 
 pub enum TimeMsg {
@@ -15,24 +15,31 @@ impl Component for Time {
     type Message = TimeMsg;
     type Properties = ();
 
-    fn create(_ctx: &Context<Self>) -> Self {
+    fn create(ctx: &Context<Self>) -> Self {
+        let interval = {
+            let link = ctx.link().clone();
+            Interval::new(250, move || link.send_message(TimeMsg::UpdateClock))
+        };
         Self {
-            now: Instant::now()
+            interval: interval
         }
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
-        match msg {
-            UpdateClock => {
-                self.now = Instant::now();
-            }
-        }
+    fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
         true
     }
 
-    fn view(&self, ctx: &Context<Self>) -> Html {
+    fn view(&self, _ctx: &Context<Self>) -> Html {
         html! {
-            <div><Clock />{ self.now.format("%X") }</div>
+            <div>
+                <Clock />
+                { now().format("%X") }
+            </div>
         }
     }
+}
+
+pub fn now() -> DateTime<Utc> {
+    let now = js_sys::Date::new_0();
+    DateTime::<Utc>::from(now)
 }

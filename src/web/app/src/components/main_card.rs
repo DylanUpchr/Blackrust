@@ -1,7 +1,6 @@
 use yew::prelude::*;
-use yew_router::prelude::Link;
 use stylist::css;
-use crate::components::{ app::AppRoute, top_bar::TopBar };
+use crate::components::top_bar::TopBar;
 
 pub struct MainCard;
 
@@ -17,7 +16,7 @@ impl Component for MainCard {
         true
     }
 
-    fn view(&self, ctx: &Context<Self>) -> Html {
+    fn view(&self, _ctx: &Context<Self>) -> Html {
         let class = css!("
             background-color: white;
             border-radius: 10px;
