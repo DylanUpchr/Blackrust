@@ -2,7 +2,12 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 use stylist::css;
 
-use crate::components::{tabs::TabBar, main_card::MainCard, settings_card::SettingsCard, session_page::SessionPage};
+use crate::components::{
+    tabs::TabBar, 
+    main_card::MainCard, 
+    settings_card::SettingsCard, 
+    session_page::SessionPage
+};
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum AppRoute {

@@ -129,12 +129,17 @@ impl Component for Tab {
         let class = css!(
             r#"
             padding: 10px;
-            border: 1px solid black;
+            border: 1px solid ${accent};
             border-radius: 5px;
             margin: 10px;
-            background-color: ${bg};
+
+            a {
+                text-decoration: none;
+                color: black;
+                
+            }
             "#, 
-            bg = if ctx.props().is_active_tab { "gray" } else { "white" }
+            accent = if ctx.props().is_active_tab { "blue" } else { "black" }
         );
         html! {
             <div {class}>

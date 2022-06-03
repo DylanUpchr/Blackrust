@@ -1,13 +1,9 @@
 use yew::prelude::*;
 use stylist::css;
-use crate::components::{ top_bar::TopBar };
 
-mod banner;
-use banner::Banner;
+pub struct Banner;
 
-pub struct MainCard;
-
-impl Component for MainCard {
+impl Component for Banner {
     type Message = ();
     type Properties = ();
 
@@ -21,16 +17,13 @@ impl Component for MainCard {
 
     fn view(&self, _ctx: &Context<Self>) -> Html {
         let class = css!("
-            background-color: white;
-            border-radius: 10px;
-            margin: 15px;
-            padding: 10px;
+            background-color: gray;
+            width: 100%;
+            height: 150px;
+            margin-top: 15px;
         ");
-
         html! {
             <div {class}>
-                <TopBar settings_open=false/>
-                <Banner />
             </div>
         }
     }
