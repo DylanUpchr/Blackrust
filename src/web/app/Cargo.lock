@@ -10,6 +10,7 @@ dependencies = [
  "gloo-timers",
  "js-sys",
  "reqwasm",
+ "serde_json",
  "stylist",
  "wasm-bindgen-futures",
  "web-sys",
