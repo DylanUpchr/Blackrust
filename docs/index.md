@@ -250,6 +250,8 @@ Le protocole distant SSH X11-Forwarding est un des moyens de connexion pour mon 
 
 <div style="page-break-after: always;"></div>
 
+<div style="page-break-after: always;"></div>
+
 ## Analyse fonctionnelle
 L'analyse fonctionnelle définit les fonctionnalités de l'application ainsi que des explications sur les parties de l'interface utilisateur qui permet de les exploiter.
 ### Maquettes

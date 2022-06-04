@@ -68,36 +68,36 @@ pub fn load_all_profiles() -> Result<Profiles, String>{
  * Name:    save_profile
  * Purpose:	Saves Profile object
  * Args:	(&Profile) Profile object
- * Returns:	None
+ * Returns:	(Result<(), String>) Empty result or error message
  */
-pub fn save_profile(profile: Profile){
+pub fn save_profile(profile: Profile) -> Result<(), String> {
     let mut profiles: Profiles = load_all_profiles().unwrap();
-    let profile_index = profiles.profile_vec.iter()
-                        .position(|profile_query: &_| profile_query.id == profile.id);
-    match profile_index {
-        Some(index) => profiles.profile_vec[index] = profile,
-        None => ()
+    match &get_profile_by_id(profile.id.clone()) {
+        Some(profile) => {
+            profiles.profile_vec[profile.id.parse::<usize>().unwrap()] = profile.clone();
+            save_profiles(&profiles);
+            Ok(())
+        },
+        None => Err(String::from(format!("No profile found with id {}", &profile.id)))
     }
-
-    save_profiles(&profiles);
 }
 
 /** Function
  * Name:    delete_profile
  * Purpose:	Deletes Profile object
- * Args:	(&Profile) Profile object to delete
- * Returns:	None
+ * Args:	(String) Profile id to delete
+ * Returns:	(Result<(), String>) Empty result or error message
  */
-pub fn delete_profile(profile: Profile){
+pub fn delete_profile(id: String) -> Result<(), String> {
     let mut profiles: Profiles = load_all_profiles().unwrap();
-    let profile_index = profiles.profile_vec.iter()
-                        .position(|profile_query: &_| profile_query.id == profile.id);
-    match profile_index {
-        Some(index) => drop(profiles.profile_vec.swap_remove(index)),
-        None => ()
+    match &get_profile_by_id(id.clone()) {
+        Some(profile) => {
+            drop(profiles.profile_vec.swap_remove(profile.id.parse().unwrap()));
+            save_profiles(&profiles);
+            Ok(())
+        },
+        None => Err(String::from(format!("No profile found with id {}", id)))
     }
-
-    save_profiles(&profiles);
 }
 
 /** Function
