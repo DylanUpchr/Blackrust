@@ -12,30 +12,30 @@ This project is a thin client, which aims to reduce the size and cost of the man
 ## Introduction
 Blackrust permet de prendre la main sur des ordinateurs à distant en utilisant de divers protocoles d'accès distant afin de pouvoir proposer le plus de compatibilité que possible avec les systèmes distants. Elle permet également d'ouvrir un bureau normale sur la machine locale si une session distante n'est pas souhaitée par l'utilisateur.
 
-L'application propose une interface Web pour interagir avec le backend Rust qui permet de configurer le système local, et se connecter à des systèmes distants à travers des connexions sécurisés.
+L'application propose une interface Web pour interagir avec le backend Rust qui permet de configurer le système local, et se connecter à des systèmes distants. Les connexions aux machines cibles peuvent être sécurisées avec un VPN dont le client peut faciliter la configuration côté client.
 
-Voici un diagramme démontrant une architecture de réseau généraliste, où le client Blackrust (représenté en bas du diagramme), se connecte à des clients soit Windows, Linux, MacOS ou autre (ces derniers représentés en haut de l'image) dépendant uniquement du protocole utilisé entre les deux. La connexion se fait de préférence par une connexion sécurisée (représentée au centre de l'image) dépendant de l'environnement à disposition de l'utilisateur.
+Voici un diagramme démontrant l'architecture de réseau généraliste, où le client Blackrust (représenté en bas du diagramme), se connecte à des clients soit Windows, Linux, MacOS ou autre (ces derniers représentés en haut de l'image) dépendant uniquement du protocole utilisé entre les deux. La connexion se fait de préférence par une connexion sécurisée (représentée au centre de l'image) dépendant de l'environnement à disposition de l'utilisateur.
 
 ![Network diagram](./img/network_diagram.svg){ width="300"; margin="auto"}
 
-Cette interoperabilité avec les differentes environnements distants est dû à la diversité de protocolés pris en charge par l'application. Des exemples de ces diverses protocoles sont: 
+Cette interoperabilité avec les differentes environnements distants est dû à la diversité de protocoles pris en charge par l'application. Des exemples de ces divers protocoles sont: 
 - RDP fait par Microsoft pour prendre en charge les bureaux distants Windows
-- VNC pour les hôtes MacOS / Windows / Linux, ou autres h'otes ou un serveur VNC est deployable.
+- VNC pour les hôtes MacOS / Windows / Linux, ou autres machines où un serveur VNC est disponible.
 - XDMCP spécifiquement pour les Linux avec un serveur d'affichage X11
-- SSH X11-Forwarding pour une connexion limité à une apllication graphique distante via le SSH
+- SSH X11-Forwarding pour une connexion limitée à une application graphique distante via le SSH
 
-Le frontend de l'applciation est une page Web, soit affiché en locale uniquement soit mis à disposition sur un réseau en tant que serveur Web. La page Web peut ensuite communiquer dans les deux sens à travers le code WebAssembly afin d'interagir avec le backend Rust et afficher les résultats à l'utilisateur finale.
+Le frontend de l'applciation est une page Web, soit affiché en local uniquement soit mis à disposition sur un réseau en tant que serveur Web. La page Web peut ensuite communiquer dans les deux sens à travers le code WebAssembly afin d'interagir avec le backend Rust et afficher les résultats à l'utilisateur final.
 
-Le backend Rust est compris d'un système de sauvegarde/modification de configuration de connexion, un système de configuration réseau et un système de gestion de connexion. Voici un diagramme démontrant cela.
+Le backend Rust est composé d'un système de sauvegarde/modification de configuration de connexion, un système de configuration réseau et un système de gestion de connexion. Voici un diagramme démontrant cela.
 ![Data flow](./img/Main_data_flow.png)
 
-Le système de configuration permet de gérer les profiles de connexion mémorisés qui sont utilisés pour créer des sessions distantes selon une configuration prédéfinie. Ces profiles sont sauvegardées dans un fichier de données sérialisées en utilisant la langue de markdown TOML.
+Le système de configuration permet de gérer les profils de connexion mémorisés qui sont utilisés pour créer des sessions distantes selon une configuration prédéfinie. Ces profils sont sauvegardées dans un fichier de données sérialisées en utilisant le langage de markdown TOML.
 
 Le système de configuration réseau communique avec l'outil tiers NetworkManager afin de pouvoir proposer la possibilité d'affecter la configuration réseau du système local et sauvegarder plusieurs configurations réseau et configurations VPN.
 
-Finalement le système de gestion de connexion s'occupe de lancer et gérer des sessions distantes en utilisant les soit profiles prédéfinis soit la saisie utilisateur. La session est lancée dans un affichage X11 "headless" qui est mis à disposition à l'interface Web grâce à un serveur VNC locale.
+Finalement le système de gestion de connexion s'occupe de lancer et gérer des sessions distantes en utilisant soit les profils prédéfinis soit la saisie utilisateur. La session est lancée dans un affichage X11 "headless" qui est mis à disposition dans l'interface Web grâce à un serveur VNC local.
 
-L'architecture de la partie interface homme-machine, ou IHM, permet de proposer cette application en tant que client logiciel sur une machine indépendant, ainsi qu'en tant que serveur web, proposant les fonctionnalités à tous appareils équipée d'un navigateur. Ceci est dû au fait que l'interface Web délègue tout traitement à un backend, qui peut être disponible uniquement en locale ou derrière un serveur web qui hôte une application web conçue pour ce cas d'utilisation.
+L'architecture de la partie interface homme-machine, ou IHM, permet de proposer cette application en tant que client logiciel sur une machine indépendant, ainsi qu'en tant que serveur web, proposant les fonctionnalités à tous appareils équipé d'un navigateur. Ceci est dû au fait que l'interface Web délègue tout traitement à un backend, qui peut être disponible uniquement en locale ou derrière un serveur web qui hôte une application web conçue pour ce cas d'utilisation.
 
 
 ## Planning
@@ -65,8 +65,8 @@ Le cahier des charges contient une analyse concurencielle des autres solutions d
 Blackrust-Lib est la libraire commune aux modules et contient les définitions de structures de données et les fonctions utilisées par tous les modules.
 
 ### Librairies externes
-Le programme utilise également quelques libraires externes écrite en Rust, principalement pour le rendu graphique Web.
-Les crates proviennent de [crates.io](https://crates.io), le repository de crates faites par la communauté Rust.
+Le programme utilise également quelques libraires externes écrites en Rust, principalement pour le rendu graphique Web.
+Ces libriaires externes (ou crates) proviennent de [crates.io](https://crates.io), le repository de crates faites par la communauté Rust.
 #### Web-view
 Web-view est un crate qui agit en tant que navigateur web qui affiche le rendu HTML/CSS/JS.
 #### Xrandr
@@ -78,27 +78,27 @@ Image-base64 est un crate qui encode ou "traduit" des fichiers image en texte ba
 #### Regex
 Le crate Regex implémente des expressions régulières utilisées pour la vérification des données saisies par l'utilisateur pour la configuration réseau
 #### TOML
-Le crate TOML est un sérialiseur/déserialiseur de TOML, Tom's Obvious, Minimal Language, qui est la langue de markdon utilisé par Rust pour réprésenter des données
+Le crate TOML est un sérialiseur/déserialiseur de TOML, Tom's Obvious, Minimal Language, qui est le langage de markdown utilisé par Rust pour représenter des données
 #### Itertools
 Le crate Itertools propose davantage de fonctions d'opérations sur les itérables
 #### Dirs
-Le crate Dirs sert à récupérer des chemins utilisateur selon l'utilisateur, comme la répértoire de fichiers de configuration ou la répértoire home.
+Le crate Dirs sert à récupérer des chemins utilisateur selon l'utilisateur, comme le répertoire de fichiers de configuration ou la répertoire home.
 #### RSTest
 Le crate RSTest est un framework de test qui propose des tests unitaires "Data-Driven"
 #### MockAll
-Le crate MockAll est un framework de test qui permet de moquer des classes qui impémentent des traits.
+Le crate MockAll est un framework de test qui permet de simuler des classes qui implémentent des traits.
 #### Xvnc
-La commande Xvnc est utilisé pour instancier une affichage headless et un serveur VNC qui mets cet affichage à disposition sur la machine locale
+La commande Xvnc est utilisée pour instancier un affichage headless et un serveur VNC qui met cet affichage à disposition sur la machine locale
 #### NetworkManager
-L'outil NetworkManager, utilisé avec la command nmcli, traite toute la configuration réseau locale/VPN
+L'outil NetworkManager, utilisé avec la commande nmcli, traite toute la configuration réseau locale/VPN
 
 #### Actix Web
-Actix Web est une librairie de serveur web. Elle permet de créer et hôter un serveur HTTP/HTTPS avec un page web et/ou un API REST. Je l'utilise pour hôter l'application Web HTML/JS/CSS/WASM construite par Yew.
+Actix Web est une librairie de serveur web. Elle permet de créer et héberger un serveur HTTP/HTTPS avec un page web et/ou un API REST. Je l'utilise pour hôter l'application Web HTML/JS/CSS/WASM construite par Yew.
 
 #### Yew
-Yew est un framework Web qui permet de créer une application Web composé de fichiers HTML/JS/CSS/WASM. L'intelligence et logique métier dans l'application est executée en WebAssembly, qui est un nouveau type d'executable haute-performance conçu pour le navigateur.
+Yew est un framework Web qui permet de créer une application Web composé de fichiers HTML/JS/CSS/WASM. L'intelligence et logique métier dans l'application est executé en WebAssembly, qui est un nouveau type d'executable haute-performance conçu pour le navigateur.
 
-Yew ressemble à des framework JS tels que React ou Elm, avec leurs systèmes de components. La différence principale est que Yew transpile du code Rust vers le WebAssembly.
+Yew ressemble à des framework JS tels que React ou Elm, avec leurs systèmes de composants. La principale différence est que Yew compile entre deux langages (ou transpile) du code Rust vers le WebAssembly.
 
 <div style="page-break-after: always;"></div>
 
@@ -156,7 +156,7 @@ Les fonctions sont précédées par un entête comme le suivant :
 ```
 
 ### Commits
-Les messages de commits n'ont pas de norme spéciale, le seul forme respectée s'agit d'un commentaire descriptif bref en anglais qui explique ce que contient le commit. Les différentes actions sont séparées par des virgules. Exemple de message de commit : ("Added functionnality X, removed unused code")
+Les messages de commits n'ont pas de norme spéciale, la seule forme respectée s'agit d'un commentaire descriptif bref en anglais qui explique ce que contient le commit. Les différentes actions sont séparées par des virgules. Exemple de message de commit : ("Added functionnality X, removed unused code")
 
 ## Organisation
 La gestion du projet se fait avec l'outil YouTrack. Ce dernier propose des fonctionnalités Gantt, Kanban, relevée d'horaires et de génération de rapports sur ces derniers. 
@@ -189,7 +189,7 @@ J'ai choisi Rust comme langage pour le travail de semestre, car c'est un langage
 ### Rapidité
 Rust est connu pour sa rapidité grâce à certains caractéristiques :
 - Rust est statiquement typé, donc après la vérification de cargo check, pleins de vérifications au runtime peuvent être sautées
-- Rust n'as pas de Garbage Collector, la mémoire est alloué et libéré selon "l'espérance de vie" d'une variable et donc ces derniers n'existent aussi longtemps que nécessaire. Ceci réduit les ressources consommées par un Garbage Collector et enlève les tâches répétitives de gérance de mémoire manuelle
+- Rust n'as pas de Garbage Collector, la mémoire est allouée et libérée selon "l'espérance de vie" d'une variable et donc cette dernière n'existent aussi longtemps que nécessaire. Ceci réduit les ressources consommées par un Garbage Collector et enlève les tâches répétitives de gérance de mémoire manuelle
 - Rust utilise le LLVM pour générer du code assembly optimisé, qui est comparable au GCC en termes de performances du programme final
 ### Compilateur
 L'outil de compilation de Rust, nommée cargo, a plusieurs rôles :
@@ -198,7 +198,7 @@ L'outil de compilation de Rust, nommée cargo, a plusieurs rôles :
     - Que la gérance du mémoire est bien fait et ne viole pas les règles d'appartenance ou d'emprunt de références
     - Que les variables sont nommées en snake case, sinon il affiche des warnings
     - Qu'il n'y a pas du code "mort", donc pas utilisé, sinon il affiche des warnings
-- Compilateur, bien entendu si le code ne contient pas d'erreur de syntaxe, ni de gérance de mémoire le programme est compilée et rends un exécutable dans le dossier target
+- Compilateur, bien entendu si le code ne contient pas d'erreur de syntaxe, ni de gérance de mémoire le programme est compilé et rend un exécutable dans le dossier target
 
 Les messages d'erreurs de cargo sont assez riches comparés aux autres langages. Cargo peut décrire l'erreur détectée en détail et même selon le type d'erreur, il peut suggérer des solutions. Si cela ne suffit pas, le traçage de la pile d'appels est accessible et peut aider avec le débogage traditionnel.
 ### Sécurité / Fiabilité
@@ -216,7 +216,7 @@ Rust est un langage avec un compilateur portable comme le langage C, donc qui pe
 
 - Tier 1: Garantie d'exécution, un programme en Rust pure est capable de compiler et de s'exécuter sans problèmes
     - Exemples : x86_64 Windows, x86_64 MacOS, x86_64 Linux, AArch64 Linux (ARM64)
-- Tier 2: Garantie de compiler, un programme en Rust pure est capable d'être compilé, mais n'as pas une garantie 100% de fonctionner parfaitement lors de l'éxécution
+- Tier 2: Garantie de compilation, un programme en Rust pure est capable d'être compilé, mais n'as pas une garantie 100% de fonctionner parfaitement lors de l'éxécution
     - Exemples: iOS, Android, RISC-V, MIPS/MIPS64, PowerPC/PowerPC64 
 - Tier 3: Pas de garanties de compilation ni d'exécution, mais ont une possibilité de fonctionner et pour certains des programmes ont déjà été faites
     - Exemples : Apple tvOS, Nintendo 3DS, CUDA, EFI
@@ -229,19 +229,19 @@ Je l'utilise pour l'interface utilisateur qui est une interface Web qui peut com
 ##### TOML
 TOML, ou Tom's Obvious Markdown Language, est le langage de markdown pour la sérialisation de données choisi par les développeurs de Rust.
 
-Les fichiers TOML sont utilisées pour stocker les profiles connexions dans le répertoire de configuration par défaut de l'utilisateur
+Les fichiers TOML sont utilisés pour stocker les profils de connexions dans le répertoire de configuration par défaut de l'utilisateur
 ##### Github Actions
 Github Actions permet d'exécuter dans un environnement sain les tests unitaires lors de chaque push chez Github. Cela me propose une historique de tous les résultats de tests et permet d'avoir un pipeline d'intégration continu.
 ##### X11
-X11 est le serveur d'affichage utilisé pour déja afficher le programme en locale, mais encore peut être utilisée comme serveur d'affichage distant, soit par négociation XDMCP ou par SSH avec le X11-Forwarding
+X11 est le serveur d'affichage utilisé pour déja afficher le programme en local, mais encore peut être utilisé comme serveur d'affichage distant, soit par négociation XDMCP ou par SSH avec le X11-Forwarding
 ##### NetworkManager
-NetworkManager est l'outil de configuration réseau utilisée par mon programme. Cet outil peut configurer, stocker et activer des profiles réseau afin de pouvoir dynamiquement se connecter au différents réseaux locaux ou VPNs selon le profile de connexion choisi.
+NetworkManager est l'outil de configuration réseau utilisé par mon programme. Cet outil peut configurer, stocker et activer des profils réseau afin de pouvoir dynamiquement se connecter au différents réseaux locaux ou VPNs selon le profil de connexion réseau choisi.
 ##### Polkit
-Polkit, ou PolicyKit est un gestionnaire de droits au sein de Linux. Je l'utilise pour donner certains accèss à l'utilisateur à la configuration réseau car certaines commandes NetworkManager nécessitent l'authentification.
+Polkit, ou PolicyKit est un gestionnaire de droits au sein de Linux. Je l'utilise pour donner certains accès à l'utilisateur à la configuration réseau car certaines commandes NetworkManager nécessitent l'authentification.
 ###### XDMCP
-Le protocole distant XDMCP est un des moyens de connexion pour mon application. Elle permet de négotier une connexion entre un serveur X11 locale et un autre distant.
+Le protocole distant XDMCP est un des moyens de connexion pour mon application. Elle permet de négocier une connexion entre un serveur X11 locale et un autre distant.
 ###### RDP
-Le protocole distant RDP est un des moyens de connexion pour mon application. Elle est une protocole développé par Microsoft pour l'accès distant sur Windows.
+Le protocole distant RDP est un des moyens de connexion pour mon application. C'est un  protocole développé par Microsoft pour l'accès distant sur Windows.
 J'exploite ce protocole avec l'outil xfreerdp qui est un client RDP Open-Source fait par la communauté grâce au reverse engineering.
 ###### VNC
 Le protocole distant VNC est un des moyens de connexion pour mon application. J'exploite ce protocole avec l'outil vncviewer de RealVNC.
@@ -260,11 +260,11 @@ L'analyse fonctionnelle définit les fonctionnalités de l'application ainsi que
 La page d'accueil est le menu utilisé pour se connecter à session distante. Les sessions ouvertes sont ensuite ouvert et affichées, accessibles depuis des onglets.
 Voici des explication pour les points associés sur l'image:
 
-- 1: Formulaire de connexion rapide/connexion à un profile
+- 1: Formulaire de connexion rapide/connexion à un profil
     - 1A: Menu déroulant pour choisir le protocole de la connexion rapide (RDP, VNC, XDMCP, SSH ou session locale)
     - 1B: Menu déroulant pour choisir le protocole de port (TCP ou UDP)
     - 1C: Champs de saisie pour l'adresse IP ou FQDN du serveur distant
-    - 1D: Bouton pour ouvrir/fermer le menu déroulant pour choisir les profiles de connexion sauvegardés 
+    - 1D: Bouton pour ouvrir/fermer le menu déroulant pour choisir les profils de connexion sauvegardés 
     - 1E: Bouton qui lance la connexion
     - 1F: Bouton qui ouvre un champ de saisie qui permet d'ajouter des connexions spécifiques à la connexion
 - 2: Nom d'hôte de la machine
@@ -283,7 +283,7 @@ Voici des explication pour les points associés sur l'image:
 
 - 1: Sous-menus de configuration
     - 1A: Sous-menu de réseau
-    - 1B: Sous-menu de profiles de connexion
+    - 1B: Sous-menu de profils de connexion
     - 1C: Sous-menu de thème
     - 1D: Sous-menu d'internationalisation, donc langue et locale
     - 1E: Sous-menu "About" qui contient des informations sur l'application
@@ -293,29 +293,29 @@ Voici des explication pour les points associés sur l'image:
 
 ### Fonctionnalités de l'application
 #### Connexion rapide
-Un utilisateur a la possibilité de se connecter sans sauvegarder de profile de connexion. La marche à suivre est le suivant:
+Un utilisateur a la possibilité de se connecter sans sauvegarder de profil de connexion. La marche à suivre est le suivant:
 
 - Renseigner la configuration réseau avec la page de réglages prévu à cet effet
 - Renseigner le protocole utilisé, ainsi que l'IP et le port de la machine distante dans la page de connexion
 - Appuyer sur le bouton de connexion
 Une fois ces manipulations faites, un onglet avec la session distante s'ouvre et est affiché.
-#### Création/Modification/Suppression de profile de connexion
+#### Création/Modification/Suppression de profil de connexion
 Un utilisateur a la possibilité de gérer ses connexions sauvegardées en utilisant la page de réglage prévu à cet effet. Ce dernier permet les fonctionnalités suivantes:
 
-- Création de profile de connexion
-- Modification des paramètres du profile de connexion précédemment crée
-- Suppression d'un profile de connexion qui n'est plus souhaitée par l'utilisateur
-#### Création/Modification/Suppression de profile de configuration réseau
+- Création de profil de connexion
+- Modification des paramètres du profil de connexion précédemment crée
+- Suppression d'un profil de connexion qui n'est plus souhaitée par l'utilisateur
+#### Création/Modification/Suppression de profil de configuration réseau
 Un utilisateur a la possibilité de gérer ses configurations réseau sauvegardées en utilisant la page de réglage prévu à cet effet. Ce dernier permet les fonctionnalités suivantes:
 
-- Création de profile de connexion réseau
-- Modification des paramètres du profile de connexion réseau précédemment crée
-- Suppression d'un profile de connexion réseau qui n'est plus souhaitée par l'utilisateur
+- Création de profil de connexion réseau
+- Modification des paramètres du profil de connexion réseau précédemment crée
+- Suppression d'un profil de connexion réseau qui n'est plus souhaitée par l'utilisateur
 Ces actions entrainent des appels à l'outil réseau utilisé par le système afin de déléguer l'affectation des réglages système.
-#### Connexion à un profile de connexion
-Un utilisateur a la possibilité de se connecter à un serveur distant en utilisant un profile de connexion précédemment renseignée. La marche à suivre est le suivant:
+#### Connexion à un profil de connexion
+Un utilisateur a la possibilité de se connecter à un serveur distant en utilisant un profil de connexion précédemment renseignée. La marche à suivre est le suivant:
 
-- Choisir le profile de connexion souhaitée dans le composant barre de recherche/menu déroulant prévu à cet effet
+- Choisir le profil de connexion souhaitée dans le composant barre de recherche/menu déroulant prévu à cet effet
 - Appuyer sur le bouton de connexion
 Une fois ces manipulations faites, un onglet avec la session distante s'ouvre et est affiché.
 #### Basculer vers un *n* ème session ouverte ou page de connexion
@@ -410,57 +410,57 @@ Le module ConfigMgr gère les profils de connexion de session distante avec des 
 ###### Data flow
 ![Data flow](./img/ConfigMgr_data_flow.png)
 ###### Fonctions
-- ```get_profiles```: Récupère tous les profiles de connexion répondant à une requête de recherche
+- ```get_profils```: Récupère tous les profils de connexion répondant à une requête de recherche
     - **Arguments**
 
     - | Nom | Type | Description |
 |-|-|-|
-|query|String|Nom/Addresse à utiliser pour filtrer les profiles|
+|query|String|Nom/Addresse à utiliser pour filtrer les profils|
 
     - **Type de retour**
     - |Type|Description|
 |-|-|
-|Result<<Profiles\>, String>|Objet contentant une liste des profiles ou message d'erreur|
-- ```get_profile_by_id```: Récupère un profile de connexion à partir de son identifiant
+|Result<<Profils\>, String>|Objet contentant une liste des profils ou message d'erreur|
+- ```get_profil_by_id```: Récupère un profil de connexion à partir de son identifiant
     - **Arguments**
 
     - | Nom | Type | Description |
 |-|-|-|
-|id|String|Identifiant unique du profile demandé|
+|id|String|Identifiant unique du profil demandé|
 
     - **Type de retour**
     - |Type|Description|
 |-|-|
-|Option<Profile\>|Profile avec l'identifiant unique demandé s'il existe|
-- ```load_all_profiles```: Instancie tout les profiles depuis des enregistrements dans un fichier .toml
+|Option<Profil\>|Profil avec l'identifiant unique demandé s'il existe|
+- ```load_all_profils```: Instancie tout les profils depuis des enregistrements dans un fichier .toml
 
     - **Type de retour**
     - |Type|Description|
 |-|-|
-|Result<Profiles, String\>|Objet contentant une liste des profiles ou message d'erreur|
-- ```save_profile```: Sauvegarde un profile modifié
+|Result<Profils, String\>|Objet contentant une liste des profils ou message d'erreur|
+- ```save_profil```: Sauvegarde un profil modifié
     - **Arguments**
 
     - | Nom | Type | Description |
 |-|-|-|
-|profile|Profile|Profile à sauvegarder|
-- ```save_profiles```: Sauvegarde tout les profiles dans un fichier .toml
+|profil|Profil|Profil à sauvegarder|
+- ```save_profils```: Sauvegarde tout les profils dans un fichier .toml
     - **Arguments**
 
     - | Nom | Type | Description |
 |-|-|-|
-|profiles|&Profiles|Référence d'objet contenant une liste de profiles|
-- ```create_profile```: Instancie et sauvegarde une nouvelle profile
+|profils|&Profils|Référence d'objet contenant une liste de profils|
+- ```create_profil```: Instancie et sauvegarde une nouvelle profil
     - **Type de retour**
     - |Type|Description|
 |-|-|
-|Result<String, String\>|Identifiant unique du profile crée ou message d'erreur|
-- ```delete_profile```: Supprime un profile de connexion 
+|Result<String, String\>|Identifiant unique du profil crée ou message d'erreur|
+- ```delete_profil```: Supprime un profil de connexion 
     - **Arguments**
 
     - | Nom | Type | Description |
 |-|-|-|
-|profile|Profile|Profile à supprimer|
+|profil|Profil|Profil à supprimer|
 ###### Tests unitaires
 ##### NetworkMgr
 Le module NetworkMgr permet de faire des appels vers NetworkManager pour configurer les interfaces réseau afin de pouvoir se connecter au réseau local et éventuellement à un VPN.
@@ -525,7 +525,7 @@ Le module NetworkMgr permet de faire des appels vers NetworkManager pour configu
     - |Type|Description|
 |-|-|
 |Result<Vec<IpAddr>, String>|Liste des adresses IP ou message d'erreur|
-- ```load_all_profiles```: Charge tout les profiles réseau depuis l'outil de réseau
+- ```load_all_profils```: Charge tout les profils réseau depuis l'outil de réseau
     - **Arguments**
 
     - | Nom | Type | Description |
@@ -534,19 +534,19 @@ Le module NetworkMgr permet de faire des appels vers NetworkManager pour configu
     - **Type de retour**
     - |Type|Description|
 |-|-|
-|Result<Vec<NetworkManagerProfile\>, String>|Liste de profiles réseau ou message d'erreur|
-- ```get_simple_profile_by_id```: Récupère des informations basiques sur un profile réseau à partir de son identifiant
+|Result<Vec<NetworkManagerProfil\>, String>|Liste de profils réseau ou message d'erreur|
+- ```get_simple_profil_by_id```: Récupère des informations basiques sur un profil réseau à partir de son identifiant
     - **Arguments**
 
     - | Nom | Type | Description |
 |-|-|-|
 |network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
-|id|String|Identifiant unique du profile recherché|
+|id|String|Identifiant unique du profil recherché|
     - **Type de retour**
     - |Type|Description|
 |-|-|
-|Result<Vec<NetworkManagerProfile\>, String>|Liste de profiles réseau ou message d'erreur|
-- ```get_detailed_profile_by_id```: Récupère des informations détaillées sur un profile réseau à partir de son identifiant
+|Result<Vec<NetworkManagerProfil\>, String>|Liste de profils réseau ou message d'erreur|
+- ```get_detailed_profil_by_id```: Récupère des informations détaillées sur un profil réseau à partir de son identifiant
     - **Arguments**
 
     - | Nom | Type | Description |
@@ -555,36 +555,36 @@ Le module NetworkMgr permet de faire des appels vers NetworkManager pour configu
     - **Type de retour**
     - |Type|Description|
 |-|-|
-|Result<Vec<NetworkManagerProfile\>, String>|Liste de profiles réseau ou message d'erreur|
-- ```create_profile```: Crée un nouveau profile réseau avec l'outil réseau
+|Result<Vec<NetworkManagerProfil\>, String>|Liste de profils réseau ou message d'erreur|
+- ```create_profil```: Crée un nouveau profil réseau avec l'outil réseau
     - **Arguments**
 
     - | Nom | Type | Description |
 |-|-|-|
 |network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
-|profile_type|NetworkManagerProfileType|Type de profil réseau à créer (Wifi, Ethernet, etc.)|
+|profil_type|NetworkManagerProfilType|Type de profil réseau à créer (Wifi, Ethernet, etc.)|
     - **Type de retour**
     - |Type|Description|
 |-|-|
-|Result<String, String\>|Identifiant unique du profile crée ou message d'erreur|
-- ```modify_profile```: Modifie un profile réseau avec l'outil réseau
+|Result<String, String\>|Identifiant unique du profil crée ou message d'erreur|
+- ```modify_profil```: Modifie un profil réseau avec l'outil réseau
     - **Arguments**
 
     - | Nom | Type | Description |
 |-|-|-|
 |network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
-|profile|NetworkManagerProfile|Profile avec valeurs modifiées|
+|profil|NetworkManagerProfil|Profil avec valeurs modifiées|
     - **Type de retour**
     - |Type|Description|
 |-|-|
 |Result<(), String>|Retour vide ou message d'erreur|
-- ```delete_profile```: Supprime un profile réseau avec l'outil 
+- ```delete_profil```: Supprime un profil réseau avec l'outil 
     - **Arguments**
 
     - | Nom | Type | Description |
 |-|-|-|
 |network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
-|profile|NetworkManagerProfile|Profile à supprimer|
+|profil|NetworkManagerProfil|Profil à supprimer|
     - **Type de retour**
     - |Type|Description|
 |-|-|
@@ -595,21 +595,21 @@ Le module NetworkMgr permet de faire des appels vers NetworkManager pour configu
 - ```test::get_all_interfaces_test```: Test que la commande pour récuperer les interfaces est correcte
 - ```test::get_interface_by_name_test```: Test que la récupération d'interface réussi
 - ```test::get_interface_address_test```: Test que la récupération d'adresse réussi
-- ```test::load_all_profiles_test```: Test que la récupération de profiles réussi
-- ```test::get_simple_profile_by_id_test```: Test que la récupération de profile simple réussi
-- ```test::get_detailed_profile_by_id_test```: Test que la récupération de profile détaillée réussi
-- ```test::create_profile_test```: Test que la commande pour créer un profile est correcte
-- ```test::modify_profile_test```: Test que la commande pour modifier un profile est correcte
-- ```test::delete_profile_test```: Test que la commande pour supprimer un profile est correcte
+- ```test::load_all_profils_test```: Test que la récupération de profils réussi
+- ```test::get_simple_profil_by_id_test```: Test que la récupération de profil simple réussi
+- ```test::get_detailed_profil_by_id_test```: Test que la récupération de profil détaillée réussi
+- ```test::create_profil_test```: Test que la commande pour créer un profil est correcte
+- ```test::modify_profil_test```: Test que la commande pour modifier un profil est correcte
+- ```test::delete_profil_test```: Test que la commande pour supprimer un profil est correcte
 - ```test::exec_command_test```: Test que l'outil réseau puisse accepter des commandes correctement
 ##### RemoteSessionMgr
-Le module RemoteSessionMgr lance les sessions distantes en utilisant les options de connexion soit fournies par l'utilisateur soit par un profile chargé par l'utilisateur. Ce module fait appel aux commandes tel xfreerdp, vncviewer, Xnest ou ssh.
+Le module RemoteSessionMgr lance les sessions distantes en utilisant les options de connexion soit fournies par l'utilisateur soit par un profil chargé par l'utilisateur. Ce module fait appel aux commandes tel xfreerdp, vncviewer, Xnest ou ssh.
 
 ![Architecture module RemoteSessionMgr](./img/remote_session_mgr_module.svg)
 ###### Data flow
 ![Data flow](./img/RemoteSessionMgr_data_flow.png)
 ###### Fonctions
-- ```connect```: Se connecte à un protocol distant du profile de connexion fourni
+- ```connect```: Se connecte à un protocol distant du profil de connexion fourni
 - ```remote_protocols::open_udp_socket```: Ouvre un canal de communication UDP entre un serveur distant et la machine actuelle
 - ```remote_protocols::xdmcp::send```: Envoi un packet du protocole XDMCP
 - ```remote_protocols::xdmcp::recv```: Attends la récéption d'un packet du protocole XDMCP
@@ -643,7 +643,7 @@ Les scénarios suivants sont testés :
 - Les paniques
 - Lancement du WebView
 - La génération de la page web réussit
-- Que la génération de profile se crée, lit, modifie, et supprime
+- Que la génération de profil se crée, lit, modifie, et supprime
 - Que la génération de configuration réseau se crée, lit, modifie et supprime
 - Que l'envoi et la réception de packet TCP/UDP s'effectue
 
@@ -799,7 +799,7 @@ La fonction ```get_interface_by_name``` utilise le NetworkTool fourni pour récu
 | *Critère(s) d'acceptation* | Valeur de type Some(Interface) contenant une interface avec les propriétés renseignées est émis |
 | *Critère(s) d'échec* | Valeur de type None est émis |
 | **Cas 2** ||
-| *Description* | Cas qui assure avec un MockNetworkTool que dans la possibilité ou il n'y a pas d'interface assignée à un profile, la valeur None est émis |
+| *Description* | Cas qui assure avec un MockNetworkTool que dans la possibilité ou il n'y a pas d'interface assignée à un profil, la valeur None est émis |
 | *Type de résultat attendu* | Échec |
 | *Critère(s) d'acceptation* | Valeur de type None est émis |
 | *Critère(s) d'échec* | Valeur de type Some est émis |
@@ -809,18 +809,18 @@ La fonction ```get_interface_by_name``` utilise le NetworkTool fourni pour récu
 | *Critère(s) d'acceptation* | Valeur de type None est émis |
 | *Critère(s) d'échec* | Valeur de type Some est émis |
 
-###### load_all_profiles_test
-La fonction ```load_all_profiles``` charge et instancie tout les profiles de connexion stockées par le NetworkTool fourni.
+###### load_all_profils_test
+La fonction ```load_all_profils``` charge et instancie tout les profils de connexion stockées par le NetworkTool fourni.
 
 | Propriété | Valeur |
 |-|-|
-| **Nom** | ```load_all_profiles_test``` |
-| **Nom de la fonction testée** | ```load_all_profiles``` |
+| **Nom** | ```load_all_profils_test``` |
+| **Nom de la fonction testée** | ```load_all_profils``` |
 | **Fichier** | ```network_mgr.rs``` |
 | **Cas 1** ||
-| *Description* | Cas qui assure avec un MockNetworkTool que la récupération de profile fonctionne |
+| *Description* | Cas qui assure avec un MockNetworkTool que la récupération de profil fonctionne |
 | *Type de résultat attendu* | Réussite |
-| *Critère(s) d'acceptation* | Valeur de type Ok(Vec<Interface\>) contenant un profile avec les propriétés renseignées est émis|
+| *Critère(s) d'acceptation* | Valeur de type Ok(Vec<Interface\>) contenant un profil avec les propriétés renseignées est émis|
 | *Critère(s) d'échec* | Valeur de type Err(String) contenant un message d'erreur est émis |
 | **Cas 2** ||
 | *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exécutée émet une erreur. |
@@ -828,18 +828,18 @@ La fonction ```load_all_profiles``` charge et instancie tout les profiles de con
 | *Critère(s) d'acceptation* | Valeur de type Err(String) contenant un message d'erreur est émis |
 | *Critère(s) d'échec* |Valeur de type Ok(Vec<Interface\>) est émis |
 
-###### create_profile_test
-La fonction ```create_profile``` crée un profile de connexion réseau avec le NetworkTool fourni.
+###### create_profil_test
+La fonction ```create_profil``` crée un profil de connexion réseau avec le NetworkTool fourni.
 
 | Propriété | Valeur |
 |-|-|
-| **Nom** | ```create_profile_test``` |
-| **Nom de la fonction testée** | ```create_profile``` |
+| **Nom** | ```create_profil_test``` |
+| **Nom de la fonction testée** | ```create_profil``` |
 | **Fichier** | ```network_mgr.rs``` |
 | **Cas 1** ||
-| *Description* | Cas qui assure avec un MockNetworkTool que la création de profile de connexion réseau fonctionne. |
+| *Description* | Cas qui assure avec un MockNetworkTool que la création de profil de connexion réseau fonctionne. |
 | *Type de résultat attendu* | Réussite |
-| *Critère(s) d'acceptation* | Valeur de type Ok(String) contenant l'identifiant du nouveau profile est émis |
+| *Critère(s) d'acceptation* | Valeur de type Ok(String) contenant l'identifiant du nouveau profil est émis |
 | *Critère(s) d'échec* | Valeur de type Err(String) contenant un message d'erreur est émis |
 | **Cas 2** ||
 | *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exécutée émet une erreur. |
@@ -847,51 +847,51 @@ La fonction ```create_profile``` crée un profile de connexion réseau avec le N
 | *Critère(s) d'acceptation* | Valeur de type Err(String) contenant un message d'erreur est émis |
 | *Critère(s) d'échec* | Valeur de type Ok(String) est émis|
 
-###### get_simple_profile_by_id_test
-La fonction ```get_simple_profile_by_id``` récupère un profile avec des informations basiques par son identifiant unique.
+###### get_simple_profil_by_id_test
+La fonction ```get_simple_profil_by_id``` récupère un profil avec des informations basiques par son identifiant unique.
 
 | Propriété | Valeur |
 |-|-|
-| **Nom** | ```get_simple_profile_by_id_test``` |
-| **Nom de la fonction testée** | ```get_simple_profile_by_id``` |
+| **Nom** | ```get_simple_profil_by_id_test``` |
+| **Nom de la fonction testée** | ```get_simple_profil_by_id``` |
 | **Fichier** | ```network_mgr.rs``` |
 | **Cas 1** ||
 | *Description* | Cas qui assure avec un MockNetworkTool que la récupération des informations basique depuis un identifiant fonctionne. |
 | *Type de résultat attendu* | Réussite |
-| *Critère(s) d'acceptation* | Valeur de type Ok(NetworkManagerProfile) contenant le profile demandée est émis |
+| *Critère(s) d'acceptation* | Valeur de type Ok(NetworkManagerProfil) contenant le profil demandée est émis |
 | *Critère(s) d'échec* | Valeur de type Err(String) contenant un message d'erreur est émis  |
 | **Cas 2** ||
-| *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exécutée émet une erreur ou que le profile demandée n'a pas été trouvée.  |
+| *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exécutée émet une erreur ou que le profil demandée n'a pas été trouvée.  |
 | *Type de résultat attendu* | Échec |
 | *Critère(s) d'acceptation* | Valeur de type Err(String) contenant un message d'erreur est émis |
-| *Critère(s) d'échec* | Valeur de type Ok(NetworkManagerProfile) est émis |
+| *Critère(s) d'échec* | Valeur de type Ok(NetworkManagerProfil) est émis |
 
-###### get_detailed_profile_by_id_test
-La fonction ```get_detailed_profile_by_id``` récupère un profile avec des informations détaillées par son identifiant unique.
+###### get_detailed_profil_by_id_test
+La fonction ```get_detailed_profil_by_id``` récupère un profil avec des informations détaillées par son identifiant unique.
 
 | Propriété | Valeur |
 |-|-|
-| **Nom** | ```get_detailed_profile_by_id_test``` |
-| **Nom de la fonction testée** | ```get_detailed_profile_by_id``` |
+| **Nom** | ```get_detailed_profil_by_id_test``` |
+| **Nom de la fonction testée** | ```get_detailed_profil_by_id``` |
 | **Fichier** | ```network_mgr.rs``` |
 | **Cas 1** ||
 | *Description* | Cas qui assure avec un MockNetworkTool que la récupération des informations détaillées depuis un identifiant fonctionne. |
 | *Type de résultat attendu* | Réussite |
-| *Critère(s) d'acceptation* | Valeur de type Ok(NetworkManagerProfile) contenant le profile demandée est émis |
+| *Critère(s) d'acceptation* | Valeur de type Ok(NetworkManagerProfil) contenant le profil demandée est émis |
 | *Critère(s) d'échec* | Valeur de type Err(String) contenant un message d'erreur est émis |
 | **Cas 2** ||
-| *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exécutée émet une erreur ou que le profile demandée n'a pas été trouvée. |
+| *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exécutée émet une erreur ou que le profil demandée n'a pas été trouvée. |
 | *Type de résultat attendu* | Échec |
 | *Critère(s) d'acceptation* | Valeur de type Err(String) contenant un message d'erreur est émis |
-| *Critère(s) d'échec* | Valeur de type Ok(NetworkManagerProfile) est émis |
+| *Critère(s) d'échec* | Valeur de type Ok(NetworkManagerProfil) est émis |
 
-###### modify_profile_test
-La fonction ```modify_profile``` modifie un profile avec le NetworkTool fourni.
+###### modify_profil_test
+La fonction ```modify_profil``` modifie un profil avec le NetworkTool fourni.
 
 | Propriété | Valeur |
 |-|-|
-| **Nom** | ```modify_profile_test``` |
-| **Nom de la fonction testée** | ```modify_profile``` |
+| **Nom** | ```modify_profil_test``` |
+| **Nom de la fonction testée** | ```modify_profil``` |
 | **Fichier** | ```network_mgr.rs``` |
 | **Cas *n*** ||
 | *Description* | Description du cas testée |
@@ -899,16 +899,16 @@ La fonction ```modify_profile``` modifie un profile avec le NetworkTool fourni.
 | *Critère(s) d'acceptation* ||
 | *Critère(s) d'échec* ||
 
-###### delete_profile_test
-La fonction ```delete_profile``` supprime un profile avec le NetworkTool fourni.
+###### delete_profil_test
+La fonction ```delete_profil``` supprime un profil avec le NetworkTool fourni.
 
 | Propriété | Valeur |
 |-|-|
-| **Nom** | ```delete_profile_test``` |
-| **Nom de la fonction testée** | ```delete_profile``` |
+| **Nom** | ```delete_profil_test``` |
+| **Nom de la fonction testée** | ```delete_profil``` |
 | **Fichier** | ```network_mgr.rs``` |
 | **Cas 1** ||
-| *Description* | Cas qui assure avec un MockNetworkTool que la suppresion d'un profile fonctionne.  |
+| *Description* | Cas qui assure avec un MockNetworkTool que la suppresion d'un profil fonctionne.  |
 | *Type de résultat attendu* | Réussite |
 | *Critère(s) d'acceptation* | Valeur de type Ok(()) est émis |
 | *Critère(s) d'échec* | Valeur de type Err(String) contenant un message d'erreur est émis |
