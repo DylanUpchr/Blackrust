@@ -1,5 +1,6 @@
 use yew::prelude::*;
 use yew_feather::clock::Clock;
+use stylist::css;
 use chrono::{DateTime, Utc};
 use gloo_timers::callback::Interval;
 
@@ -30,10 +31,20 @@ impl Component for Time {
     }
 
     fn view(&self, _ctx: &Context<Self>) -> Html {
+        let class = css!("
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            p {
+                display: inline;
+                margin-left: 10px;
+            }
+        ");
         html! {
-            <div>
-                <Clock />
-                { now().format("%X") }
+            <div {class}>
+                <Clock color="black" size="30" />
+                <p>{ now().format("%X") }</p>
             </div>
         }
     }

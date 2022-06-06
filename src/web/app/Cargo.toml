@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 yew = "*"
 yew-router = "*"
+yew-agent = "*"
 stylist = { version = "*", features = ["yew_integration"]}
 yew-feather = "*"
 chrono = { version = "*", features = ["wasmbind"] }
@@ -17,3 +18,5 @@ reqwasm = "0.5.0"
 wasm-bindgen-futures = "*"
 gloo-timers = "*"
 serde_json = "1.0"
+wasm-logger = "*"
+log = "*"

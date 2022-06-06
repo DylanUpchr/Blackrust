@@ -3,7 +3,10 @@ use stylist::css;
 use crate::components::{ top_bar::TopBar };
 
 mod banner;
+mod connection_form;
+
 use banner::Banner;
+use connection_form::ConnectionForm;
 
 pub struct MainCard;
 
@@ -31,6 +34,7 @@ impl Component for MainCard {
             <div {class}>
                 <TopBar settings_open=false/>
                 <Banner />
+                <ConnectionForm />
             </div>
         }
     }

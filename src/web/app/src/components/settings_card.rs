@@ -46,6 +46,7 @@ impl Component for SettingsCard {
         ");
 
         let sidebar_class = css!("
+            display: inline-block;
             height: 100%;
             width: 15%;
             border-right: 1px solid lightgray;
@@ -82,7 +83,7 @@ impl Component for SettingsCard {
                     <ul>
                         <li>
                             <Link<SettingsRoute> to={SettingsRoute::NetworkProfiles}>
-                                <BarChart color="blue" size="64" /><br/>
+                                <BarChart color="black" size="64" /><br/>
                                 {"Network profile"}
                             </Link<SettingsRoute>>
                         </li>

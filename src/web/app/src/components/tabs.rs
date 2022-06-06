@@ -1,12 +1,24 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
 use stylist::css;
+use yew_agent::{Bridge, Bridged};
 
+use crate::event_bus::{ EventBus, EventBusIOMsg };
 use crate::components::app::AppRoute;
 
-pub enum Msg {
-    AddTab {id: u32, name: String, rfb_port: u16, route: AppRoute},
+pub enum TabBarMsg {
+    AddTab(u32, String, u16, AppRoute),
     RemoveTab
+}
+
+impl From<EventBusIOMsg> for TabBarMsg {
+    fn from(msg: EventBusIOMsg) -> Self {
+        match msg {
+            EventBusIOMsg::AddTab(id, name, rfb_port, route) => {
+                TabBarMsg::AddTab(id, name, rfb_port, route)
+            }
+        }
+    }
 }
 
 #[derive(Properties, PartialEq)]
@@ -26,7 +38,8 @@ pub struct TabProps {
 }
 
 pub struct TabBar {
-    tabs: Vec<Tab>
+    tabs: Vec<Tab>,
+    _producer: Box<dyn Bridge<EventBus>>
 }
 
 pub struct Tab {
@@ -38,10 +51,10 @@ pub struct Tab {
 }
 
 impl Component for TabBar {
-    type Message = Msg;
+    type Message = TabBarMsg;
     type Properties = TabBarProps;
 
-    fn create(_ctx: &Context<Self>) -> Self {
+    fn create(ctx: &Context<Self>) -> Self {
         Self {
             tabs: vec![
                 Tab {
@@ -51,13 +64,14 @@ impl Component for TabBar {
                     route: AppRoute::Index,
                     is_active_tab: true
                 }
-            ]
+            ],
+            _producer: EventBus::bridge(ctx.link().callback(|val: EventBusIOMsg| val)),
         }
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            Msg::AddTab {id, name, rfb_port, route} => {
+            TabBarMsg::AddTab(id, name, rfb_port, route) => {
                 let tab = Tab {
                     id: id,
                     name: String::from(name),
@@ -68,7 +82,7 @@ impl Component for TabBar {
                 self.tabs.push(tab);
                 true
             },
-            Msg::RemoveTab => {
+            TabBarMsg::RemoveTab => {
                 true
             }
         }

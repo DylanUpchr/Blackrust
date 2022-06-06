@@ -33,8 +33,8 @@ impl Component for TopBar {
         let class = css!("
             width: 100%;
             height: 3%;
-            padding-top: 15px;
-            padding-bottom: 15px;
+            padding-top: 5px;
+            padding-bottom: 5px;
             display: flex;
             align-items: center;
             justify-content: space-between;

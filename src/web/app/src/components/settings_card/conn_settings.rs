@@ -22,6 +22,7 @@ impl Component for ConnSettings {
         ");
         html! {
             <div {class}>
+                {"conn"}
             </div>
         }
     }

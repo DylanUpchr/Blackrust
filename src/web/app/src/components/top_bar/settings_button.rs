@@ -27,10 +27,10 @@ impl Component for SettingsButton {
         let icon: Html;
         if ctx.props().open {
             app_route = AppRoute::Index;
-            icon = html! { <XCircle /> }
+            icon = html! { <XCircle color="black" size="30" /> }
         } else {
             app_route = AppRoute::SettingsRoot;
-            icon = html! { <Sliders /> }
+            icon = html! { <Sliders color="black" size="30" /> }
         }
         html! {
             <div>

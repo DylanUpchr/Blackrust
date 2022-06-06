@@ -1,5 +1,6 @@
 use yew::prelude::*;
 use yew_feather::monitor::Monitor;
+use stylist::css;
 use reqwasm::http::Request;
 use wasm_bindgen_futures::spawn_local;
 
@@ -43,10 +44,20 @@ impl Component for Hostname {
     }
 
     fn view(&self, _ctx: &Context<Self>) -> Html {
+        let class = css!("
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            p {
+                display: inline;
+                margin-left: 10px;
+            }
+        ");
         html! {
-            <div>
-                <Monitor />
-                {self.hostname.clone()}
+            <div {class}>
+                <Monitor color="black" size="30" />
+                <p>{self.hostname.clone()}</p>
             </div>
         }
     }
