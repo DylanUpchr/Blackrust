@@ -8,7 +8,8 @@ use crate::components::app::AppRoute;
 
 pub enum TabBarMsg {
     AddTab(u32, String, u16, AppRoute),
-    RemoveTab
+    RemoveTab(u32),
+    ChangeTab(u32)
 }
 
 impl From<EventBusIOMsg> for TabBarMsg {
@@ -79,16 +80,23 @@ impl Component for TabBar {
                     route: AppRoute::Session {session_id: id},
                     is_active_tab: true
                 };
+                self.tabs.iter_mut().for_each(|tab| tab.is_active_tab = false);
                 self.tabs.push(tab);
                 true
             },
-            TabBarMsg::RemoveTab => {
+            TabBarMsg::RemoveTab(id) => {
+                true
+            },
+            TabBarMsg::ChangeTab(id) => {                
+                self.tabs.iter_mut().for_each(|tab| tab.is_active_tab = false);
+                let tab = self.tabs.iter_mut().find(|tab| tab.id == id).unwrap();
+                tab.is_active_tab = true;
                 true
             }
         }
     }
 
-    fn view(&self, _ctx: &Context<Self>) -> Html {
+    fn view(&self, ctx: &Context<Self>) -> Html {
         let class = 
         css!("
             display: flex;
@@ -100,7 +108,9 @@ impl Component for TabBar {
             margin: 15px;
             padding: 5px;
         ");
+
         let tabs = &self.tabs;
+        
         html! {
             <nav id="tabBar" {class}>
                 { 

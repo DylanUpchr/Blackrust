@@ -118,7 +118,12 @@ async fn delete_net_profile(state: Data<Mutex<AppState>>, data: web::Form<Networ
     result_http_response!(network_mgr::delete_profile(&current_state.network_tool, data.profile.clone()))
 }
 
-#[get("/profile/{query}")]
+#[get("/profiles")]
+async fn get_conn_profiles() -> HttpResponse {
+    result_http_response!(config_mgr::load_all_profiles())
+}
+
+#[get("/profiles/{query}")]
 async fn query_conn_profiles(query: web::Path<String>) -> HttpResponse {
     result_http_response!(config_mgr::get_profiles(query.to_string()))
 }
@@ -181,6 +186,7 @@ async fn start_actix(bind_addr: String) -> std::io::Result<()> {
             )
             .service(
                 web::scope("/cfg_mgr")
+                    .service(get_conn_profiles)
                     .service(query_conn_profiles)
                     .service(get_conn_profile)
                     .service(create_conn_profile)

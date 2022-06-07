@@ -17,6 +17,7 @@ dependencies = [
  "js-sys",
  "log",
  "reqwasm",
+ "serde",
  "serde_json",
  "stylist",
  "wasm-bindgen-futures",

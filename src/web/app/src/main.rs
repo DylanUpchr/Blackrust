@@ -4,6 +4,7 @@ use wasm_logger;
 
 mod components;
 mod event_bus;
+mod lib;
 use components::app::App;
 
 #[styled_component(Root)]

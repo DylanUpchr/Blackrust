@@ -28,6 +28,7 @@ impl Component for MainCard {
             border-radius: 10px;
             margin: 15px;
             padding: 10px;
+            height: 780px;
         ");
 
         html! {
