@@ -1,6 +1,6 @@
 # Rapport du Travail de diplôme
 ## Résumé / Abstract
-Blackrust est un logiciel multiarchitecture pour Linux qui, au lancement de la machine, propose des sessions d'accès distant sécurisé utilisant de divers protocoles ainsi qu'une session locale hors-ligne.
+Blackrust est un logiciel multiarchitecture pour Linux qui, au lancement de la machine, propose des sessions d'accès distant sécurisées utilisant de divers protocoles ainsi qu'une session locale hors-ligne.
 
 Ce projet est un client léger qui a pour but de réduire la taille et le coût de moult machines données aux employés dans une entreprise avec de l'infrastructure VDI (virtualisation du poste de travail). Ces clients légers se connecteront à un serveur central où résideront les espaces de travail des utilisateurs avec davantage de puissance de calcul que sur la machine locale.
 
@@ -12,38 +12,38 @@ This project is a thin client, which aims to reduce the size and cost of the man
 ## Introduction
 Blackrust permet de prendre la main sur des ordinateurs à distant en utilisant de divers protocoles d'accès distant afin de pouvoir proposer le plus de compatibilité que possible avec les systèmes distants. Elle permet également d'ouvrir un bureau normal sur la machine locale si une session distante n'est pas souhaitée par l'utilisateur.
 
-L'application propose une interface Web pour interagir avec le backend Rust qui permet de configurer le système local, et se connecter à des systèmes distants. Les connexions aux machines cibles peuvent être sécurisées avec un VPN dont le client peut faciliter la configuration côté client.
+L'application propose une interface Web pour interagir avec le backend Rust qui permet de configurer le système local, et se connecter à des systèmes distants. Les connexions aux machines cibles peuvent être sécurisées avec un VPN. L'application propose la fonctionnalité de se connecter à un VPN qui a déjà été mis en place au préalable.
 
 Voici un diagramme démontrant l'architecture de réseau généraliste, où le client Blackrust (représenté en bas du diagramme) se connecte à des clients soit Windows, Linux, macOS ou autre (ces derniers représentés en haut de l'image) dépendant uniquement du protocole utilisé entre les deux. La connexion se fait de préférence par une connexion sécurisée (représentée au centre de l'image) dépendant de l'environnement à disposition de l'utilisateur.
 
 ![Network Diagram](./img/network_diagram.svg){ width="300"; margin="auto"}
 
-Cette interopérabilité avec les différents environnements distants est grâce à la diversité de protocoles pris en charge par l'application. Des exemples de ces divers protocoles sont: 
+Cette interopérabilité avec les différents environnements distants est due à la diversité de protocoles pris en charge par l'application. Des exemples de ces divers protocoles sont: 
 - RDP fait par Microsoft pour prendre en charge les bureaux distants Windows
 - VNC pour les hôtes macOS / Windows / Linux, ou autres machines où un serveur VNC est disponible.
 - XDMCP spécifiquement pour les hôtes Linux avec un serveur d'affichage X11. 
 - SSH X11-Forwarding pour une connexion limitée à une application graphique distante via le SSH
 
-Ces protocoles sont tous multi-utilisateur, donc adapté à l'utilisation dans un environnement de VDI
+Ces protocoles sont tous multi-utilisateur, donc adaptés à l'utilisation dans un environnement de VDI
 
-Le frontend de l'application est une page Web, soit affiché en local uniquement soit mis à disposition sur un réseau en tant que serveur Web. La page Web peut ensuite communiquer avec le backend Rust par le biais des routes API mises à disposition par le serveur Web. Ceci permet d'avoir un seul backend pour un ou plusieurs clients et de séparer "l'intelligence" entre le backend et le front-end. Ainsi une application web dans n'importe quel langage pourrait interfacer avec le backend de l'application qui augmente l'extensibilité de l'application.
+Le frontend de l'application est une page Web, soit afficheé en local uniquement soit mise à disposition sur un réseau en tant que serveur Web. La page Web peut ensuite communiquer avec le backend Rust par le biais des routes API mises à disposition par le serveur Web. Ceci permet d'avoir un seul backend pour un ou plusieurs clients et de séparer "l'intelligence" entre le backend et le front-end. Ainsi une application web dans n'importe quel langage pourrait interfacer avec le backend de l'application qui augmente l'extensibilité de l'application.
 
-L'application Web du frontend est une application Yew, qui est un framework Web qui utilise un système de composants comme React ou Elm en Javascript. La principale différence est que Yew compile entre deux langages (ou transpile) du code Rust vers le WebAssembly. Ceci permet des grosses gains de performances par rapport au JS, ainsi que des gains de sécurité grâce à la sûreté de la mémoire en Rust. Le code WebAssembly transpilé depuis le Rust est fourni au serveur Actix Web qui gère aussi les routes API. L'API et l'application peuvent être hébergé uniquement sur la machine en local ainsi que sur un réseau pour que plusieurs machines puissent utiliser une instance de l'application.
+L'application Web du frontend est une application Yew, qui est un framework Web qui utilise un système de composants comme React ou Elm en Javascript. La principale différence est que Yew compile entre deux langages (ou transpile) du code Rust vers le WebAssembly. Ceci permet de gros gains de performances par rapport au JS, ainsi que des gains de sécurité grâce à la sûreté de la mémoire en Rust. Le code WebAssembly transpilé depuis le Rust est fourni au serveur Actix Web qui gère aussi les routes API. L'API et l'application peuvent être hébergés uniquement sur la machine en local ainsi que sur un réseau pour que plusieurs machines puissent utiliser une instance de l'application.
 
-Le backend Rust est composé d'un système de sauvegarde/modification de configuration de connexion, un système de configuration réseau et un système de gestion de connexion. Voici un diagramme démontrant cela. Le backend utilise une librairie interne nommée BlackrustLib, qui mets à disposition à tous le modules des fonctions ou structures de données.
+Le backend Rust est composé d'un système de sauvegarde/modification de configuration de connexion, un système de configuration réseau et un système de gestion de connexion. Voici un diagramme démontrant cela. Le backend utilise une librairie interne nommée BlackrustLib, qui met à disposition à tous le modules des fonctions ou structures de données.
 ![Data Flow](./img/Main_data_flow.png)
 
 Le système de configuration permet de gérer les profils de connexion mémorisés qui sont utilisés pour créer des sessions distantes selon une configuration prédéfinie. Ces profils sont sauvegardés dans un fichier de données sérialisées en utilisant le langage de markdown TOML. 
-Ce module se repose sur deux fonctions de base: la sérialisation et déserialisation TOML d'objets de profil de connexion. La reste des fonctionnalités (création, recherche, modification, suppression) découlent de ces derniers et sont mis à disposition par l'API Actix.
+Ce module se repose sur deux fonctions de base: la sérialisation et déserialisation TOML d'objets de profil de connexion. Le reste des fonctionnalités (création, recherche, modification, suppression) découlent de ces derniers et sont mises à disposition par l'API Actix.
 
 Le système de configuration réseau communique avec l'outil tiers NetworkManager afin de pouvoir proposer la possibilité d'affecter la configuration réseau du système local et sauvegarder plusieurs configurations réseau et configurations VPN.
 Ce module utilise la commande en ligne de commande ```nmcli``` pour interfacer avec l'outil de configuration réseau NetworkManager. Toutes les fonctionnalités implémentées font usage des différents arguments de cet outil afin de proposer les fonctionnalités nécessaires pour la configuration réseau à travers l'interface utilisateur.
 
-Le système de gestion de connexion s'occupe de lancer et gérer des sessions distantes en utilisant soit les profils prédéfinis, soit la saisie utilisateur. La session est lancée dans un affichage X11 "headless" qui est mis à disposition dans l'interface Web grâce à un serveur VNC local. Le système de gestion de connexion ouvre des sessions distantes avec l'aide d'outils déjà existantes en ligne de commande, ou dans le cas de XDMCP, la négociation est faite manuellement afin d'augmenter la complexité du projet ainsi qu'approfondir mes connaissances personnelles de X11 ainsi que le protocole XDMCP.
+Le système de gestion de connexion s'occupe de lancer et gérer des sessions distantes en utilisant soit les profils prédéfinis, soit la saisie utilisateur. La session est lancée dans un affichage X11 "headless" qui est mis à disposition dans l'interface Web grâce à un serveur VNC local. Le système de gestion de connexion ouvre des sessions distantes avec l'aide d'outils déjà existants en ligne de commande, ou dans le cas de XDMCP, la négociation est faite manuellement afin d'augmenter la complexité du projet ainsi qu'approfondir mes connaissances personnelles de X11 ainsi que le protocole XDMCP.
 
-Finalement la librairie interne mets à disposition les fonctions d'écriture de fichier utilisé par le module ConfigMgr ainsi que les structures de données pour les profils de connexion et les profils de connexion réseau utilisées par les modules ConfigMgr, NetworkMgr et RemoteSessionMgr.
+Finalement la librairie interne met à disposition les fonctions d'écriture de fichiers utilisés par le module ConfigMgr ainsi que les structures de données pour les profils de connexion et les profils de connexion réseau utilisés par les modules ConfigMgr, NetworkMgr et RemoteSessionMgr.
 
-L'architecture de la partie interface homme-machine, ou IHM, permet de proposer cette application en tant que client logiciel sur une machine indépendante, ainsi qu'en tant que serveur web, proposant les fonctionnalités à tous appareils équipés d'un navigateur. Ceci est dû au fait que l'interface Web délègue tout traitement à un backend, qui peut être disponible uniquement en locale ou derrière un serveur web qui hôte une application web conçue pour ce cas d'utilisation.
+L'architecture de la partie interface homme-machine, ou IHM, permet de proposer cette application en tant que client logiciel sur une machine indépendante, ainsi qu'en tant que serveur web, proposant les fonctionnalités à tous appareils équipés d'un navigateur. Ceci est dû au fait que l'interface Web délègue tout traitement à un backend, qui peut être disponible uniquement en local ou derrière un serveur web qui héberge une application web conçue pour ce cas d'utilisation.
 
 Tous ces modules fonctionnent en tandem afin de proposer un client d'accès distant multiprotocole.
 ## Planning
@@ -160,7 +160,7 @@ Les membres des enums sont précédés par un commentaire comme le suivant :
 ```
 
 ### Commits
-Les messages de commits n'ont pas de norme spéciale, la seule forme respectée s'agit d'un commentaire descriptif bref en anglais qui explique ce que contient le commit. Les différentes actions sont séparées par des virgules. Exemple de message de commit : ("Added functionnality X, removed unused code")
+Les messages de commits s'agissent d'un commentaire descriptif bref en anglais qui explique ce que contient le commit. Les différentes actions sont séparées par des virgules. Exemple de message de commit : ("Added functionnality X, removed unused code")
 
 ## Organisation
 ### Parties prenantes
@@ -200,7 +200,7 @@ J'ai choisi Rust comme langage pour le travail de semestre, car c'est un langage
 ### Rapidité
 Rust est connu pour sa rapidité grâce à certains caractéristiques :
 - Rust est statiquement typé, donc après la vérification de cargo check, pleins de vérifications au runtime peuvent être sautées
-- Rust n'a pas de Garbage Collector, la mémoire est allouée et libérée selon "l'espérance de vie" d'une variable et donc cette dernière existe aussi longtemps que nécessaire. Ceci réduit les ressources consommées par un Garbage Collector et enlève les tâches répétitives de gérance de mémoire manuelle
+- Rust n'a pas de Garbage Collector, la mémoire est allouée et libérée selon "l'espérance de vie" d'une variable et donc cette dernière existe aussi longtemps que nécessaire. Ceci réduit les ressources consommées par un Garbage Collector et enlève les tâches répétitives de gérance de mémoire manuelle.
 - Rust utilise le LLVM pour générer du code assembly optimisé, qui est comparable au GCC en termes de performances du programme final
 ### Compilateur
 L'outil de compilation de Rust, nommée cargo, a plusieurs rôles :
@@ -215,7 +215,7 @@ Les messages d'erreurs de cargo sont assez riches comparés aux autres langages.
 ### Sécurité / Fiabilité
 De base, le langage Rust est assez sécure et fiable grâce aux faites suivantes :
 - Rust est "memory-safe", qui signifie qu'il ne permet pas d'avoir des pointeurs null ou invalide
-- Les courses de données sont également impossibles, grâce au système de "appartenance", qui impose qu'une instance ou référence variable ne puisse être utilisée par une fonction à la fois.
+- Les courses de données sont également impossibles, grâce au système d'appartenance, qui impose qu'une instance ou référence variable ne puisse être modifiée dans dans un endroit à la fois, afin d'éviter des "courses de données".
 - La gestion d'erreur est très avancée et devrait être au cœur de la conception d'une fonction. Cette approche permet d'être toujours certain que le déroulement se passe comme prévu et les cas de bords qui pourraient compromettre la sécurité de l'application sont évités.
 - Fonctionnalités de tests unitaires intégrées
 
@@ -227,7 +227,7 @@ Rust est un langage avec un compilateur portable comme le langage C, donc qui pe
 
 - Tier 1: Garantie d'exécution, un programme en Rust pure est capable de compiler et de s'exécuter sans problèmes
     - Exemples : x86_64 Windows, x86_64 MacOS, x86_64 Linux, AArch64 Linux (ARM64)
-- Tier 2: Garantie de compilation, un programme en Rust pure est capable d'être compilé, mais n'as pas une garantie 100% de fonctionner parfaitement lors de l'exécution
+- Tier 2: Garantie de compilation, un programme en Rust pure est capable d'être compilé, mais n'a pas une garantie 100% de fonctionner parfaitement lors de l'exécution
     - Exemples: iOS, Android, RISC-V, MIPS/MIPS64, PowerPC/PowerPC64 
 - Tier 3: Pas de garanties de compilation ni d'exécution, mais ont une possibilité de fonctionner et pour certains des programmes ont déjà été faites
     - Exemples : Apple tvOS, Nintendo 3DS, CUDA, EFI
@@ -244,7 +244,7 @@ Les fichiers TOML sont utilisés pour stocker les profils de connexions dans le 
 ##### Github Actions
 Github Actions permet d'exécuter dans un environnement sain les tests unitaires lors de chacun des push vers Github. Cela me propose un historique de tous les résultats de tests et permet d'avoir un pipeline d'intégration continu.
 ##### X11
-X11 est le serveur d'affichage utilisé pour déjà afficher le programme en local, mais encore peut être utilisé comme serveur d'affichage distant, soit par négociation XDMCP ou par SSH avec le X11-Forwarding
+X11 est le serveur d'affichage utilisé pour afficher le programme sur l'écran de l'utilisateur, mais encore peut être utilisé comme serveur d'affichage distant, soit par négociation XDMCP ou par SSH avec le X11-Forwarding
 ##### NetworkManager
 NetworkManager est l'outil de configuration réseau utilisé par mon programme. Cet outil peut configurer, stocker et activer des profils réseau afin de pouvoir dynamiquement se connecter aux différents réseaux locaux ou VPNs selon le profil de connexion réseau choisi.
 ##### Polkit
@@ -281,7 +281,7 @@ Voici des explications pour les points associés sur l'image:
 - 2: Nom d'hôte de la machine
 - 3: Heure actuelle
 - 4: Bouton pour atteindre les menus de réglage
-- 5: Bannièr personnalisable
+- 5: Bannière personnalisable
 - 6: Fond d'écran personnalisable
 - 7: Barre d'onglets de session
     - 7A: Onglet menu principal
@@ -296,7 +296,7 @@ Voici des explications pour les points associés sur l'image:
     - 1A: Sous-menu de réseau
     - 1B: Sous-menu de profils de connexion
     - 1C: Sous-menu de thème
-    - 1D: Sous-menu d'internationalisation, donc langue et locale
+    - 1D: Sous-menu d'internationalisation, donc de langue et de région pour les formats d'affichage de date/heure
     - 1E: Sous-menu "About" qui contient des informations sur l'application
 - 2: Nom du sous-menu
 - 3: Formulaire du sous-menu
@@ -479,7 +479,7 @@ Le module ConfigMgr gère les profils de connexion de session distante avec des 
 
     - | Nom | Type | Description |
 |-|-|-|
-|profil|Profil|Profil à sauvegarder|
+|profile|Profile|Profil à sauvegarder|
 - ```save_profiles```: Sauvegarde tous les profils dans un fichier .toml
     - **Arguments**
 
@@ -647,8 +647,8 @@ Le module RemoteSessionMgr lance les sessions distantes en utilisant les options
 ###### Fonctions
 - ```connect```: Se connecte à un protocole distant du profil de connexion fourni
 - ```remote_protocols::open_udp_socket```: Ouvre un canal de communication UDP entre un serveur distant et la machine actuelle
-- ```remote_protocols::xdmcp::send```: Envoi un packet du protocole XDMCP
-- ```remote_protocols::xdmcp::recv```: Attends la réception d'un packet du protocole XDMCP
+- ```remote_protocols::xdmcp::send```: Envoie un packet du protocole XDMCP
+- ```remote_protocols::xdmcp::recv```: Attend la réception d'un packet du protocole XDMCP
 - ```remote_protocols::xdmcp::open_display```: Ouvre un écran virtuel X11
 - ```remote_protocols::xdmcp::open_session```: Négocie une session XDMCP avec un serveur XDMCP distant
 - ```remote_protocols::xdmcp::build_request_packet```: Construit un packet de l'opération Request du protocole XDMCP
@@ -666,14 +666,14 @@ Le module RemoteSessionMgr lance les sessions distantes en utilisant les options
 - ```remote_protocols::xdmcp::append_array_16```: Ajoute un array de valeurs 2 bytes de taille variable à la fin du buffer
 - ```remote_protocols::xdmcp::append_array_of_array_8```: Ajoute un array de array de valeurs 2 bytes de taille variable à la fin du buffer
 - ```remote_protocols::xdmcp::vec_u16_to_be_vec_u8```: Convertit un vecteur de valeurs de 2 bytes en vecteur de valeurs de 1 byte big-endian
-- ```remote_protocols::xdmcp::vec_u8_to_string``` Convertis un vecteur de valeurs 1 byte en string hexadécimale
+- ```remote_protocols::xdmcp::vec_u8_to_string``` Convertit un vecteur de valeurs 1 byte en string hexadécimale
 ###### Tests unitaires
 
 ## Tests
 ### Tests unitaires
 Rust propose des tests unitaires parallélisés intégrés dans les outils de base. L'outil en ligne de commande est ```cargo test```. De plus, les tests peuvent être étendus avec des crates prévues à cet effet comme rstest ou mockall, qui sont des crates qui proposent des tests data-driven et du mocking automatique pour des traits/structs. 
 
-Les tests sont exécutés lors du développement sur la machine locale, ainsi que sur Github grâce à Github Actions à chacun des push vers le repo. Les tests de Github Actions sont exécutés dans un containeur sain ou les étapes de setup nécessaire sont refait à chaque push pour s'assurer que le build peut être déployé et utilisé sur un système vierge et qu'il n'y a pas de problèmes d'état entre deux builds liée à la machine de test.
+Les tests sont exécutés lors du développement sur la machine locale, ainsi que sur Github grâce à Github Actions à chacun des push vers le repo. Les tests de Github Actions sont exécutés dans un containeur sain où les étapes de setup nécessaire sont refait à chaque push pour s'assurer que le build peut être déployé et utilisé sur un système vierge et qu'il n'y a pas de problèmes d'état entre deux builds liée à la machine de test.
 #### Périmètre des tests
 Les scénarios suivants sont testés :
 
@@ -998,7 +998,7 @@ Section "Screen"
   EndSubSection
 EndSection
 ```
-### Échec du test unitaire open_webview_test causée par la récupération de nom d'hôte
+### Échec du test unitaire open_webview_test causé par la récupération de nom d'hôte
 Lors du test unitaire open_webview_test qui vérifie que le WebView peut être construit et affiché dans le serveur d'affichage, la récupération du nom d'hôte provoque un SIGABRT (process abort signal) alors que le test s'est bien effectué. Ceci est le cas, car, le test ferme l'application juste après que l'appel est fait et en conséquence fait une erreur quand il ne peut pas exécuter le code JS permettant d'afficher le résultat. La solution à ce problème et de déplacer l'appel vers network_mgr pour récupérer le nom d'hôte dans le invoke "init" du WebView afin de retarder l'appel et ne pas provoquer d'appels qui ne pourront pas être aboutis.
 
 ## Livrables
@@ -1016,7 +1016,7 @@ Plus de tests unitaires, surtout sur la construction de l'API Actix ou l'applica
 
 
 ## Conclusion
-En conclusion, j'ai développé un programme Rust pour Linux, qui permet de se connecter à plusieurs type de VDI ou serveur distant à travers des connexions sécurisées.
+En conclusion, j'ai développé un programme Rust pour Linux, qui permet de se connecter à plusieurs types de VDI ou serveur distant à travers des connexions sécurisées.
 
 L'application peut utiliser plusieurs protocoles d'accès distant tels que le RDP, VNC et XDMCP et est déployable sur de différentes architectures telles que ARMv8 ou x86_64 sur Linux.
 ## Bilan personnel
