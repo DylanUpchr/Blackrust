@@ -1,6 +1,6 @@
 /** File
  * Author:		Dylan Upchurch
- * Date:		2021-01-28
+ * Date:		2021-06-08
  * Desc:		Blackrust main crate (main entry point and opens webview)
  */
 extern crate image_base64;
@@ -183,6 +183,8 @@ async fn start_actix(bind_addr: String) -> std::io::Result<()> {
                     .service(update_net_profile)
                     .service(delete_net_profile)
                     .service(get_net_interfaces)
+                    .service(get_net_profiles)
+                    .service(get_net_profile)
             )
             .service(
                 web::scope("/cfg_mgr")
