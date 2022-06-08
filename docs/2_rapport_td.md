@@ -1,6 +1,6 @@
 # Rapport du Travail de diplôme
 ## Résumé / Abstract
-Blackrust est un logiciel multiarchitecture pour Linux qui, au lancement de la machine, propose des sessions d'accès distant sécurisées utilisant de divers protocoles ainsi qu'une session locale hors-ligne.
+Blackrust est un logiciel multiarchitecture pour Linux qui, au lancement de la machine, propose des sessions d'{{ lex("accès distant", "L'accès distant, aussi nommé session distante ou desktop distant, est la prise de contrôle du bureau d'un ordinateur dans un autre emplacement via le réseau.") }} sécurisées utilisant de divers {{ lex("protocoles", "Un protocole distant dans le contexte de mon projet est un langage définie que les différents types de serveurs d'accès distant utilisent pour communiquer avec les programmes qui servent de client.") }} ainsi qu'une session locale hors-ligne.
 
 Ce projet est un client léger qui a pour but de réduire la taille et le coût de moult machines données aux employés dans une entreprise avec de l'infrastructure VDI (virtualisation du poste de travail). Ces clients légers se connecteront à un serveur central où résideront les espaces de travail des utilisateurs avec davantage de puissance de calcul que sur la machine locale.
 
@@ -8,15 +8,16 @@ Ce projet est un client léger qui a pour but de réduire la taille et le coût 
 
 Blackrust is a multi-architecture program for Linux that, at the startup of the computer, offers a secure remote desktop session via many protocols as well as an offline local desktop.
 
-This project is a thin client, which aims to reduce the size and cost of the many machines given to employees in a company using VDI (virtual desktop infrastructure). These thin clients will connect to a centralized server where the user's workspace resides and offer greater processing power than the local machine.
+This project is a thin client, which aims to reduce the size and cost of the many machines given to employees in a company using {{ lex("VDI", "VDI, ou Virtual Desktop Infrastructure est un type d'infrastructure compris de machines virtuelles qui servent d'espaces de travail à utiliser en accès distant.") }} (virtual desktop infrastructure). These thin clients will connect to a centralized server where the user's workspace resides and offer greater processing power than the local machine.
 ## Introduction
 Blackrust permet de prendre la main sur des ordinateurs à distant en utilisant de divers protocoles d'accès distant afin de pouvoir proposer le plus de compatibilité que possible avec les systèmes distants. Elle permet également d'ouvrir un bureau normal sur la machine locale si une session distante n'est pas souhaitée par l'utilisateur.
 
 L'application propose une interface Web pour interagir avec le backend Rust qui permet de configurer le système local, et se connecter à des systèmes distants. Les connexions aux machines cibles peuvent être sécurisées avec un VPN. L'application propose la fonctionnalité de se connecter à un VPN qui a déjà été mis en place au préalable.
 
+<div style="page-break-after: always;"></div>
 Voici un diagramme démontrant l'architecture de réseau généraliste, où le client Blackrust (représenté en bas du diagramme) se connecte à des clients soit Windows, Linux, macOS ou autre (ces derniers représentés en haut de l'image) dépendant uniquement du protocole utilisé entre les deux. La connexion se fait de préférence par une connexion sécurisée (représentée au centre de l'image) dépendant de l'environnement à disposition de l'utilisateur.
 
-![Network Diagram](./img/network_diagram.svg){ width="300"; margin="auto"}
+{{ fig("/img/network_diagram.svg", " Architecture de réseau généraliste") }}
 
 Cette interopérabilité avec les différents environnements distants est due à la diversité de protocoles pris en charge par l'application. Des exemples de ces divers protocoles sont: 
 - RDP fait par Microsoft pour prendre en charge les bureaux distants Windows
@@ -31,7 +32,8 @@ Le frontend de l'application est une page Web, soit afficheé en local uniquemen
 L'application Web du frontend est une application Yew, qui est un framework Web qui utilise un système de composants comme React ou Elm en Javascript. La principale différence est que Yew compile entre deux langages (ou transpile) du code Rust vers le WebAssembly. Ceci permet de gros gains de performances par rapport au JS, ainsi que des gains de sécurité grâce à la sûreté de la mémoire en Rust. Le code WebAssembly transpilé depuis le Rust est fourni au serveur Actix Web qui gère aussi les routes API. L'API et l'application peuvent être hébergés uniquement sur la machine en local ainsi que sur un réseau pour que plusieurs machines puissent utiliser une instance de l'application.
 
 Le backend Rust est composé d'un système de sauvegarde/modification de configuration de connexion, un système de configuration réseau et un système de gestion de connexion. Voici un diagramme démontrant cela. Le backend utilise une librairie interne nommée BlackrustLib, qui met à disposition à tous le modules des fonctions ou structures de données.
-![Data Flow](./img/Main_data_flow.png)
+
+{{ fig("/img/Main_data_flow.png", " Main data flow", 85) }}
 
 Le système de configuration permet de gérer les profils de connexion mémorisés qui sont utilisés pour créer des sessions distantes selon une configuration prédéfinie. Ces profils sont sauvegardés dans un fichier de données sérialisées en utilisant le langage de markdown TOML. 
 Ce module se repose sur deux fonctions de base: la sérialisation et déserialisation TOML d'objets de profil de connexion. Le reste des fonctionnalités (création, recherche, modification, suppression) découlent de ces derniers et sont mises à disposition par l'API Actix.
@@ -43,13 +45,14 @@ Le système de gestion de connexion s'occupe de lancer et gérer des sessions di
 
 Finalement la librairie interne met à disposition les fonctions d'écriture de fichiers utilisés par le module ConfigMgr ainsi que les structures de données pour les profils de connexion et les profils de connexion réseau utilisés par les modules ConfigMgr, NetworkMgr et RemoteSessionMgr.
 
-L'architecture de la partie interface homme-machine, ou IHM, permet de proposer cette application en tant que client logiciel sur une machine indépendante, ainsi qu'en tant que serveur web, proposant les fonctionnalités à tous appareils équipés d'un navigateur. Ceci est dû au fait que l'interface Web délègue tout traitement à un backend, qui peut être disponible uniquement en local ou derrière un serveur web qui héberge une application web conçue pour ce cas d'utilisation.
+L'architecture de la partie interface homme-machine, ou {{ lex("IHM", "Interface Homme-Machine, est la partie d'une application qui permet à l'utilisateur final d'interagir avec l'application.") }}, permet de proposer cette application en tant que client logiciel sur une machine indépendante, ainsi qu'en tant que serveur web, proposant les fonctionnalités à tous appareils équipés d'un navigateur. Ceci est dû au fait que l'interface Web délègue tout traitement à un backend, qui peut être disponible uniquement en local ou derrière un serveur web qui héberge une application web conçue pour ce cas d'utilisation.
 
 Tous ces modules fonctionnent en tandem afin de proposer un client d'accès distant multiprotocole.
 ## Planning
 ### Prévisionnel
 Le planning prévisionnel a été établi avec la fonctionnalité Gantt de l'outil YouTrack que j'utilise pour la gestion du projet. J'ai choisi de faire avec cet outil, car, je peux générer de divers types de rapports sur les tâches accomplies et le temps que ces derniers ont pris.
-![Planning prévisionnel](./img/planning_previsionnel.png)
+
+{{ fig("/img/planning_previsionnel.png", " Planning prévisionnel", 85) }}
 ### Effectif
 
 <div style="page-break-after: always;"></div>
@@ -65,7 +68,7 @@ Ce qui distingue Blackrust encore plus des autres prestations est son concept. L
 Le cahier des charges contient une analyse concurrentielle des autres solutions d'accès distant similaires afin de pouvoir se positionner par rapport à eux.
 
 ## Cahier des charges
-[Lien vers le cahier des charges](index.md)
+[Lien vers le cahier des charges](1_cdc.md)
 
 ## Librairies / outils
 ### Librairie interne
@@ -74,7 +77,7 @@ Blackrust-Lib est la libraire commune aux modules et contient les définitions d
 
 ### Librairies externes
 Le programme utilise également quelques libraires externes écrites en Rust, principalement pour le rendu graphique Web.
-Ces librairies externes (ou crates) proviennent de [crates.io](https://crates.io), le repository de crates faites par la communauté Rust.
+Ces librairies externes (ou {{ lex("crates", "Librairie ou paquet Rust externe au projet. Un crate peut provenir depuis crates.io ou depuis un repository git.") }}) proviennent de [crates.io](https://crates.io), le repository de crates faites par la communauté Rust.
 #### Web-view
 Web-view est un crate qui agit en tant que navigateur web qui affiche le rendu HTML/CSS/JS.
 #### Xrandr
@@ -108,11 +111,9 @@ Le protocole X Display Manager Control Protocol (XDMCP) est un protocole d'accè
 #### RDP
 Le protocole Remote Desktop Protocol (RDP) est un protocole d'accès distant pour Windows fait par Microsoft. Ce dernier est très riche en fonctionnalités, mais propriétaire et closed source, qui signifie que nous n'avons pas le code source derrière et hors des outils officiels ou reverse-engineered, il n'existe pas de documentation pour l'implémenter manuellement dans l'application et la négociation de ceci doit être délégué à un outil existant. 
 #### VNC
-Le protocole Virtual Network Computing (VNC) est un protocole d'accès distant multiplateforme et open source. C'est un protocole très polyvalent et bien documenté qui fait qu'il existe plusieurs dérivés en plus de la version officielle de RealVNC. Il existe plein d'outils déja faites ainsi que la documentation et code source nécessaire pour le réimplémenter manuellement.
+Le protocole Virtual Network Computing (VNC) est un protocole d'accès distant multiplateforme et open source. C'est un protocole très polyvalent et bien documenté qui fait qu'il existe plusieurs dérivés en plus de la version officielle de RealVNC. Il existe plein d'outils déjà faits ainsi que la documentation et code source nécessaire pour le réimplémenter manuellement.
 #### SSH X11-Forwarding
 Le protocole SSH X11-Forwarding permet de faire tourner une application graphique sur une session X11 distante et récupérer l'affichage / interagir avec l'application via une connexion SSH. Ceci est utile quand on souhaite uniquement avoir accès à une application distante en ayant accès sur le bureau actuel.
-
-<div style="page-break-after: always;"></div>
 
 ## Normes
 ### Nommage
@@ -259,15 +260,12 @@ Le protocole distant VNC est un des moyens de connexion pour mon application. J'
 ###### SSH X11-Forwarding
 Le protocole distant SSH X11-Forwarding est un des moyens de connexion pour mon application. Elle permet de lancer des applications graphiques sur une session X11 distante, et avoir l'affichage en local par le biais d'une connexion SSH.
 
-<div style="page-break-after: always;"></div>
-
-<div style="page-break-after: always;"></div>
-
 ## Analyse fonctionnelle
 L'analyse fonctionnelle définit les fonctionnalités de l'application ainsi que des explications sur les parties de l'interface utilisateur qui permet de les exploiter.
 ### Maquettes
 #### Page principale de connexion
-![Home page](./img/home_component.svg)
+
+{{ fig("/img/home_component.svg", " Home page", 85) }}
 La page d'accueil est le menu utilisé pour se connecter à session distante. Les sessions ouvertes sont ensuite ouvertes et affichées, accessibles depuis des onglets.
 Voici des explications pour les points associés sur l'image:
 
@@ -288,7 +286,7 @@ Voici des explications pour les points associés sur l'image:
     - 7B: Onglet Session X avec un bouton pour fermer et se déconnecter de la session
 
 #### Template de page de réglages
-![Settings page template](./img/settings_component_template.svg)
+{{ fig("/img/settings_component_template.svg", " Settings page template", 85) }}
 Le menu de réglages contient plusieurs sous-menus de configuration.
 Voici des explications pour les points associés sur l'image:
 
@@ -337,7 +335,7 @@ Une barre d'onglets est affichée sur le haut de l'écran contenant les onglets 
 
 ## Analyse organique
 ### Architecture
-![Analyse système](./img/blackrust-systems-analysis.svg)
+{{ fig("/img/blackrust-systems-analysis.svg", " Analyse système", 85) }}
 Le programme est décomposé en 5 modules principaux :
 
 - Main (DM): Point d'entrée du programme et aperçu graphique
@@ -353,18 +351,22 @@ Le programme est décomposé en 5 modules principaux :
 #### Main
 Le module main est le point d'entrée principale de l'application, lance l'aperçu WebView qui permet d'interfacer avec l'application et appeler les autres modules
 
-![Architecture crate Main](./img/main_crate.svg)
+{{ fig("/img/blackrust-systems-analysis.svg", " Analyse crate Main", 85) }}
 ##### Data flow
 Le diagramme suivant détaille le dataflow du crate Main et représente graphiquement l'interaction entre l'utilisateur et les différents modules.
 L'utilisateur final interagit avec l'interface Web mise à disposition par le moteur Webkit qui propose une sorte de navigateur appelé Webview. Cette interface Web communique ensuite bilatéralement avec le invoke handler de la partie "Backend" du Webview, qui est écrit en Rust. Le invoke handler expédié les différents appels vers les modules appropriés et rappel des fonctions JS avec le résultat si cela est nécessaire. Les modules Rust utilisent tous des modules de la librairie interne "BlackrustLib" représentée sur la droite du diagramme. Les modules de la librairie interne contiennent des définitions de types et des fonctions communes à tous les modules principales.
-![Data flow](./img/Main_data_flow.png)
-##### Fonctions
-- ```start_actix```: Instancie et démarre le Serveur web Actix
 
-    - **Type de retour**
-    - |Type|Description|
+{{ fig("/img/Main_data_flow.png", " Main data flow", 85) }}
+##### Fonctions
+```start_actix```: Instancie et démarre le Serveur web Actix
+
+<hr />
+
+Type de retour
+
+|Type|Description|
 |-|-|
-|std::io::Result<()>|Résultat qui rend une variante Ok vide|
+|io::Result<()>|Résultat qui rend une variante Ok vide|
 
 ##### Routes API Actix
 Le serveur web Actix propose la fonctionnalité de définir un API qui peut appeler des fonctions Rust. Je l'utilise pour mettre à disposition des fonctions des différents modules pour que les client Web puisse les appeler afin qu'il puisse interagir avec le backend Rust.
@@ -439,212 +441,366 @@ Le préfixe du scope NetMgr est ```/rs_mgr``` qui donne ```/rs_mgr/connect``` pa
 |-|-|
 |profile|Profile|
 
-##### ConfigMgr
+##### Tests unitaires
+
+#### ConfigMgr
 Le module ConfigMgr gère les profils de connexion de session distante avec des fonctions CRUD (Création, Lecture, Mise à Jour, Suppression). Ses fonctionnalités sont appelées depuis le Invoke Handler du WebView et donc depuis le JS de l'interface utilisateur.
 
-![Architecture module ConfigMgr](./img/config_mgr_module.svg)
-###### Data flow
-![Data flow](./img/ConfigMgr_data_flow.png)
-###### Fonctions
-- ```get_profils```: Récupère tous les profils de connexion répondant à une requête de recherche
-    - **Arguments**
+{{ fig("/img/config_mgr_module.svg", " Architecture module ConfigMgr", 85) }}
+##### Data flow
+{{ fig("/img/ConfigMgr_data_flow.png", " ConfigMgr data flow", 85) }}
+##### Fonctions
 
-    - | Nom | Type | Description |
+```get_profiles```: Récupère tous les profils de connexion répondant à une requête de recherche
+
+<hr />
+
+Arguments
+
+| Nom | Type | Description |
 |-|-|-|
 |query|String|Nom/Addresse à utiliser pour filtrer les profils|
 
-    - **Type de retour**
-    - |Type|Description|
+<hr />
+
+Type de retour
+|Type|Description|
 |-|-|
 |Result<<Profiles\>, String>|Objet contentant une liste des profils ou message d'erreur|
-- ```get_profile_by_id```: Récupère un profil de connexion à partir de son identifiant
-    - **Arguments**
 
-    - | Nom | Type | Description |
+<hr class="tableSeperator" />
+
+```get_profile_by_id```: Récupère un profil de connexion à partir de son identifiant
+
+<hr />
+
+Arguments
+
+| Nom | Type | Description |
 |-|-|-|
 |id|String|Identifiant unique du profil demandé|
 
-    - **Type de retour**
-    - |Type|Description|
+<hr />
+
+Type de retour
+|Type|Description|
 |-|-|
 |Option<Profile\>|Profil avec l'identifiant unique demandé s'il existe|
-- ```load_all_profiles```: Instancie tous les profils depuis des enregistrements dans un fichier .toml
 
-    - **Type de retour**
-    - |Type|Description|
+<hr class="tableSeperator" />
+
+```load_all_profiles```: Instancie tous les profils depuis des enregistrements dans un fichier .toml
+
+<hr />
+
+Type de retour
+|Type|Description|
 |-|-|
 |Result<Profiles, String\>|Objet contentant une liste des profils ou message d'erreur|
-- ```save_profile```: Sauvegarde un profil modifié
-    - **Arguments**
 
-    - | Nom | Type | Description |
+<hr class="tableSeperator" />
+
+```save_profile```: Sauvegarde un profil modifié
+
+<hr />
+
+Arguments
+
+| Nom | Type | Description |
 |-|-|-|
 |profile|Profile|Profil à sauvegarder|
-- ```save_profiles```: Sauvegarde tous les profils dans un fichier .toml
-    - **Arguments**
 
-    - | Nom | Type | Description |
+<hr class="tableSeperator" />
+
+```save_profiles```: Sauvegarde tous les profils dans un fichier .toml
+
+<hr />
+
+Arguments
+
+| Nom | Type | Description |
 |-|-|-|
 |profiles|&Profiles|Référence d'objet contenant une liste de profils|
-- ```create_profile```: Instancie et sauvegarde un nouveau profil
-    - **Type de retour**
-    - |Type|Description|
+
+<hr class="tableSeperator" />
+
+```create_profile```: Instancie et sauvegarde un nouveau profil
+
+<hr />
+
+Type de retour
+|Type|Description|
 |-|-|
 |Result<String, String\>|Identifiant unique du profil crée ou message d'erreur|
-- ```delete_profile```: Supprime un profil de connexion 
-    - **Arguments**
 
-    - | Nom | Type | Description |
+<hr class="tableSeperator" />
+
+```delete_profile```: Supprime un profil de connexion
+
+<hr />
+
+Arguments
+
+| Nom | Type | Description |
 |-|-|-|
 |profile|Profile|Profil à supprimer|
-###### Tests unitaires
-##### NetworkMgr
+
+##### Tests unitaires
+
+<div style="page-break-after: always;"></div>
+
+#### NetworkMgr
 Le module NetworkMgr permet de faire des appels vers NetworkManager pour configurer les interfaces réseau afin de pouvoir se connecter au réseau local et éventuellement à un VPN.
 
-![Architecture module NetworkMgr](./img/network_mgr_module.svg)
-###### Data flow
-![Data flow](./img/NetworkMgr_data_flow.png)
-###### Fonctions
-- ```exec_command```: Exécute une commande de l'outil système de configuration réseau
-    - **Arguments**
+{{ fig("/img/network_mgr_module.svg", " Architecture module NetworkMgr", 85) }}
+##### Data flow
+{{ fig("/img/NetworkMgr_data_flow.png", " NetworkMgr data flow", 85) }}
 
-    - | Nom | Type | Description |
+<div style="page-break-after: always;"></div>
+
+##### Fonctions
+```exec_command```: Exécute une commande de l'outil système de configuration réseau
+
+<hr />
+Arguments
+
+| Nom | Type | Description |
 |-|-|-|
 |args|Vec<&str>|Liste d'arguments à passer à l'outil système de configuration réseau|
 
-    - **Type de retour**
-    - |Type|Description|
+<hr />
+
+Type de retour
+
+|Type|Description|
 |-|-|
 |Result<String, String\>|Sortie "stdout" contenant le retour de l'outil réseau ou "stderr" contentant l'erreur retourné par la commande
 |Result<String, String\>|Nom d'hôte du système ou message d'erreur|
-- ```set_hostname```: Affecte le nom d'hôte de la machine locale
-    - **Arguments**
 
-    - | Nom | Type | Description |
+<hr class="tableSeperator"/>
+
+```set_hostname```: Affecte le nom d'hôte de la machine locale
+
+<hr />
+
+Arguments
+
+| Nom | Type | Description |
 |-|-|-|
 |network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
 
-    - **Type de retour**
-    - |Type|Description|
+<hr />
+
+Type de retour
+
+|Type|Description|
 |-|-|
 |Result<String, String\>|Nom d'hôte du système ou message d'erreur|
-- ```get_all_interfaces```: Récupère les interfaces réseau de la machine locale
-    - **Arguments**
 
-    - | Nom | Type | Description |
+<hr class="tableSeperator"/>
+
+```get_all_interfaces```: Récupère les interfaces réseau de la machine locale
+
+<hr />
+
+Arguments
+
+| Nom | Type | Description |
 |-|-|-|
 |network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
 
-    - **Type de retour**
-    - |Type|Description|
+<hr />
+
+Type de retour
+
+|Type|Description|
 |-|-|
 |Result<Vec<Interface>, String\>|Liste d'interfaces réseau ou message d'erreur|
-- ```get_interface_by_name```: Récupère une interface selon son nom
-    - **Arguments**
 
-    - | Nom | Type | Description |
+<hr class="tableSeperator" />
+
+```get_interface_by_name```: Récupère une interface selon son nom
+
+<hr />
+
+Arguments
+
+| Nom | Type | Description |
 |-|-|-|
 |network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
 |name|String|Nom de l'interface réseau recherché|
-    - **Type de retour**
-    - |Type|Description|
+
+<hr />
+
+Type de retour
+
+|Type|Description|
 |-|-|
 |Option<Interface\>|L'interface réseau s'il existe|
-- ```get_interface_address```: Récupère l'adresse IP d'une interface
-    - **Arguments**
 
-    - | Nom | Type | Description |
+<hr class="tableSeperator" />
+
+```get_interface_address```: Récupère l'adresse IP d'une interface
+
+<hr />
+
+Arguments
+
+| Nom | Type | Description |
 |-|-|-|
 |network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
 |interface|Interface|Interface depuis laquelle récupérer les adresses IP|
-    - **Type de retour**
-    - |Type|Description|
+
+<hr />
+
+Type de retour
+
+|Type|Description|
 |-|-|
 |Result<Vec<IpAddr>, String>|Liste des adresses IP ou message d'erreur|
-- ```load_all_profiles```: Charge tous les profils réseau depuis l'outil de réseau
-    - **Arguments**
 
-    - | Nom | Type | Description |
+<hr class="tableSeperator" />
+
+```load_all_profiles```: Charge tous les profils réseau depuis l'outil de réseau
+
+<hr />
+
+Arguments
+
+| Nom | Type | Description |
 |-|-|-|
 |network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
-    - **Type de retour**
-    - |Type|Description|
+
+<hr />
+
+Type de retour
+
+|Type|Description|
 |-|-|
 |Result<Vec<NetworkManagerProfile\>, String>|Liste de profils réseau ou message d'erreur|
-- ```get_simple_profile_by_id```: Récupère des informations basiques sur un profil réseau à partir de son identifiant
-    - **Arguments**
 
-    - | Nom | Type | Description |
+<hr class="tableSeperator" />
+
+```get_simple_profile_by_id```: Récupère des informations basiques sur un profil réseau à partir de son identifiant
+
+<hr />
+
+Arguments
+
+| Nom | Type | Description |
 |-|-|-|
 |network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
 |id|String|Identifiant unique du profil recherché|
-    - **Type de retour**
-    - |Type|Description|
+
+<hr />
+
+Type de retour
+
+|Type|Description|
 |-|-|
 |Result<Vec<NetworkManagerProfile\>, String>|Liste de profils réseau ou message d'erreur|
-- ```get_detailed_profile_by_id```: Récupère des informations détaillées sur un profil réseau à partir de son identifiant
-    - **Arguments**
 
-    - | Nom | Type | Description |
+<hr class="tableSeperator" />
+
+```get_detailed_profile_by_id```: Récupère des informations détaillées sur un profil réseau à partir de son identifiant
+Arguments
+
+| Nom | Type | Description |
 |-|-|-|
 |network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
-    - **Type de retour**
-    - |Type|Description|
+
+<hr />
+
+Type de retour
+
+|Type|Description|
 |-|-|
 |Result<Vec<NetworkManagerProfile\>, String>|Liste de profils réseau ou message d'erreur|
-- ```create_profile```: Crée un nouveau profil réseau avec l'outil réseau
-    - **Arguments**
 
-    - | Nom | Type | Description |
+<hr class="tableSeperator" />
+
+```create_profile```: Crée un nouveau profil réseau avec l'outil réseau
+
+<hr />
+
+Arguments
+
+| Nom | Type | Description |
 |-|-|-|
 |network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
 |profile_type|NetworkManagerProfileType|Type de profil réseau à créer (Wifi, Ethernet, etc.)|
-    - **Type de retour**
-    - |Type|Description|
+
+<hr />
+
+Type de retour
+
+|Type|Description|
 |-|-|
 |Result<String, String\>|Identifiant unique du profil crée ou message d'erreur|
-- ```modify_profile```: Modifie un profil réseau avec l'outil réseau
-    - **Arguments**
 
-    - | Nom | Type | Description |
+<hr class="tableSeperator" />
+
+```modify_profile```: Modifie un profil réseau avec l'outil réseau
+
+<hr />
+
+Arguments
+
+| Nom | Type | Description |
 |-|-|-|
 |network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
 |profile|NetworkManagerProfile|Profil avec valeurs modifiées|
-    - **Type de retour**
-    - |Type|Description|
+
+<hr />
+
+Type de retour
+
+|Type|Description|
 |-|-|
 |Result<(), String>|Retour vide ou message d'erreur|
-- ```delete_profile```: Supprime un profil réseau avec l'outil 
-    - **Arguments**
 
-    - | Nom | Type | Description |
+<hr class="tableSeperator" />
+
+```delete_profile```: Supprime un profil réseau avec l'outil
+
+<hr />
+
+Arguments
+
+| Nom | Type | Description |
 |-|-|-|
 |network_tool|&NetworkTool|Référence vers l'instance de l'outil réseau|
 |profile|NetworkManagerProfile|Profil à supprimer|
-    - **Type de retour**
-    - |Type|Description|
+
+<hr />
+
+Type de retour
+
+|Type|Description|
 |-|-|
 |Result<(), String>|Retour vide ou message d'erreur|
-###### Tests unitaires
+
+
+##### Tests unitaires
 - ```test::get_hostname_test```: Test que la commande pour récupérer le nom d'hôte est correcte
 - ```test::set_hostname_test```: Test que la commande pour affecter le nom d'hôte est correcte
 - ```test::get_all_interfaces_test```: Test que la commande pour récupérer les interfaces est correcte
 - ```test::get_interface_by_name_test```: Test que la récupération d'interface réussit
 - ```test::get_interface_address_test```: Test que la récupération d'adresse réussit
-- ```test::load_all_profils_test```: Test que la récupération de profils réussit
-- ```test::get_simple_profil_by_id_test```: Test que la récupération de profil simple réussit
-- ```test::get_detailed_profil_by_id_test```: Test que la récupération de profil détaillée réussit
-- ```test::create_profil_test```: Test que la commande pour créer un profil est correcte
-- ```test::modify_profil_test```: Test que la commande pour modifier un profil est correcte
-- ```test::delete_profil_test```: Test que la commande pour supprimer un profil est correcte
+- ```test::load_all_profiles_test```: Test que la récupération de profils réussit
+- ```test::get_simple_profile_by_id_test```: Test que la récupération de profil simple réussit
+- ```test::get_detailed_profile_by_id_test```: Test que la récupération de profil détaillée réussit
+- ```test::create_profile_test```: Test que la commande pour créer un profil est correcte
+- ```test::modify_profile_test```: Test que la commande pour modifier un profil est correcte
+- ```test::delete_profile_test```: Test que la commande pour supprimer un profil est correcte
 - ```test::exec_command_test```: Test que l'outil réseau puisse accepter des commandes correctement
-##### RemoteSessionMgr
+#### RemoteSessionMgr
 Le module RemoteSessionMgr lance les sessions distantes en utilisant les options de connexion soit fournies par l'utilisateur soit par un profil chargé par l'utilisateur. Ce module fait appel aux commandes telles que xfreerdp, vncviewer, Xnest ou ssh. Le sous module ```remote_protocols::xdmcp``` prends en main la négociation XDMCP qui est fait manuellement par rapport aux autres protocoles disponibles.
 
-![Architecture module RemoteSessionMgr](./img/remote_session_mgr_module.svg)
-###### Data flow
-![Data flow](./img/RemoteSessionMgr_data_flow.png)
-###### Fonctions
+{{ fig("/img/remote_session_mgr_module.svg", " Architecture module RemoteSessionMgr", 85) }}
+##### Data flow
+{{ fig("/img/RemoteSessionMgr_data_flow.png", " RemoteSessionMgr data flow", 85) }}
+##### Fonctions
 - ```connect```: Se connecte à un protocole distant du profil de connexion fourni
 - ```remote_protocols::open_udp_socket```: Ouvre un canal de communication UDP entre un serveur distant et la machine actuelle
 - ```remote_protocols::xdmcp::send```: Envoie un packet du protocole XDMCP
@@ -667,7 +823,7 @@ Le module RemoteSessionMgr lance les sessions distantes en utilisant les options
 - ```remote_protocols::xdmcp::append_array_of_array_8```: Ajoute un array de array de valeurs 2 bytes de taille variable à la fin du buffer
 - ```remote_protocols::xdmcp::vec_u16_to_be_vec_u8```: Convertit un vecteur de valeurs de 2 bytes en vecteur de valeurs de 1 byte big-endian
 - ```remote_protocols::xdmcp::vec_u8_to_string``` Convertit un vecteur de valeurs 1 byte en string hexadécimale
-###### Tests unitaires
+##### Tests unitaires
 
 ## Tests
 ### Tests unitaires
@@ -689,6 +845,7 @@ Le format choisi pour décrire les tests unitaires est le suivant :
 ```md
 ###### fn_name_test
 Description de la fonction.
+
 | Propriété | Valeur |
 |-|-|
 | **Nom** | ```fn_name_test``` |
@@ -699,10 +856,12 @@ Description de la fonction.
 | *Type de résultat attendu* | Réussite/Échec |
 | *Critère(s) d'acceptation* ||
 | *Critère(s) d'échec* ||
+
 ```
 Ce qui donne le rendu suivant :
 ###### fn_name_test
 Description de la fonction.
+
 | Propriété | Valeur |
 |-|-|
 | **Nom** | ```fn_name_test``` |
@@ -715,37 +874,6 @@ Description de la fonction.
 | *Critère(s) d'échec* ||
 
 ##### Description des tests
-###### open_webview_test
-La fonction ```open_webview``` sert à instancier et lancer l'interface WebView depuis les sources HTML/CSS/JS.
-
-| Propriété | Valeur |
-|-|-|
-| **Nom** | ```open_webview_test``` |
-| **Nom de la fonction testée** | ```open_webview``` |
-| **Fichier** | ```dm.rs``` |
-| **Cas 1** ||
-| *Description* | Cas qui assure que la construction et l'affichage de l'interface WebView réussissent|
-| *Type de résultat attendu* | Réussite |
-| *Critère(s) d'acceptation* | Valeur de type Ok est émis par open_webview qui indique que l'objet s'est bien instancié |
-|| Le WebView se lance dans le serveur Xorg headless (mock d'interface/dummy)|
-| *Critère(s) d'échec* | Valeur de type Err est émis par open_webview avec un message d'erreur qui indique que l'objet s'est bien instancié |
-|| Le WebView lance une exception indiquant qu'il n'a pas pu se lancer dans le serveur Xorg headless (mock d'interface/dummy) |
-
-###### base64_encode_images_test
-La fonction ```base64_encode_images``` utilise une expression régulière (RegEx) dans un premier temps pour détecter des balises ```<img>``` avec un attribut ```src``` qui a comme valeur un chemin vers une image. Dans un deuxième temps, la fonction lit l'image et l'encode en format de chaîne de caractères base64, puis remplace le chemin avec la chaîne base64 avec la même expression régulière afin d'inclure l'image directement dans la page HTML.
-
-| Propriété | Valeur |
-|-|-|
-| **Nom** | ```base64_encode_images_test``` |
-| **Nom de la fonction testée** | ```base64_encode_images``` |
-| **Fichier** | ```dm.rs``` |
-| **Cas 1** ||
-| *Description* | Cas qui assure que la détection de balise, l'encodage d'image exemple de taille 8 pixels x 8 pixels et finalement le replacement de la valeur de l'attribut ```src``` sont réussis |
-| *Type de résultat attendu* | Réussite |
-| *Critère(s) d'acceptation* | String contenant le HTML encodé émis et conforme au résultat attendu |
-| *Critère(s) d'échec* | String contenant le HTML encodé émis, mais, non conforme au résultat attendu |
-|| Panique de la fonction base64_encode_images |
-
 ###### exec_command_test
 La fonction ```exec_command```, provenant du trait NetworkTool, exécute une commande shell avec les arguments fournis pour l'outil implémenté (dans ce cas ```nmcli``` de NetworkManager) et rend soit le stdout en valeur de type Ok(String) ou le stderr en valeur de type Err(String).
 
@@ -1023,14 +1151,9 @@ L'application peut utiliser plusieurs protocoles d'accès distant tels que le RD
 En fin de compte, j'ai pu faire un outil que j'utilise quotidiennement afin de me connecter à mes différentes machines virtuelles sur mon réseau local depuis chez moi ainsi qu'à distance. 
 
 Faire un programme de cette ampleur en Rust m'as vraiment plu, car j'ai pris beaucoup de plaisir à approfondir mes connaissances dans ce langage et de découvrir davantage de technologies, telles que le WebAssembly. J'ai également pu approfondir mes connaissances des différents protocoles d'accès distant utilisés comme le RDP, le XDMCP et le VNC.
+
+## Tableau des figures
+{{ figListing() }}
+
 ## Glossaire
-##### IHM
-IHM, ou Interface Homme-Machine, est la partie d'une application qui permet à l'utilisateur final d'interagir avec l'application.
-##### Protocole distant
-Un protocole distant dans le contexte de mon projet est une "langue" définie que les différents types de serveurs d'accès distant utilisent pour communiquer avec les programmes qui servent de client.
-##### Accès distant / Session distant / Desktop distant
-L'accès distant, aussi nommé session distante ou desktop distant, est la prise de contrôle du bureau d'un ordinateur dans un autre emplacement via le réseau.
-##### VDI
-VDI, ou Virtual Desktop Infrastructure est un type d'infrastructure compris de machines virtuelles qui servent d'espaces de travail à utiliser en accès distant.
-##### Crate
-Librairie ou paquet Rust externe au projet. Un crate peut provenir depuis crates.io ou depuis un repository git.
+{{ lexListing() }}
