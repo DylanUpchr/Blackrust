@@ -1,8 +1,9 @@
-use yew::{ prelude::*, html::Scope };
+use yew::{ prelude::*, html::Scope, NodeRef, events };
 use yew_feather::{ chevron_up::ChevronUp, chevron_down::ChevronDown };
 use stylist::css;
 use reqwasm::http::Request;
 use wasm_bindgen_futures::spawn_local;
+use web_sys::HtmlInputElement;
 
 mod profile_option;
 
@@ -11,23 +12,29 @@ use profile_option::ProfileOption;
 use crate::lib::*;
 use super::{ ConnectionForm, ConnectionFormMsg };
 
-pub struct SearchDropdown {
-    parent: Option<Scope<ConnectionForm>>,
-    is_open: bool,
-    queried_profiles: Vec<Profile>
+#[derive(Properties, PartialEq)]
+pub struct SearchDropdownProps {
+    pub selected_profile: Option<Profile>
 }
 
 pub enum SearchDropdownMsg {
     ChangeOpenState,
-    LoadProfile { id: String },
+    LoadProfile { profile: Profile },
     GetAllProfiles,
     QueryProfiles { query: String },
     UpdateProfiles { profiles: Profiles }
 }
 
+pub struct SearchDropdown {
+    parent: Option<Scope<ConnectionForm>>,
+    is_open: bool,
+    queried_profiles: Vec<Profile>,
+    input_ref: NodeRef,
+}
+
 impl Component for SearchDropdown {
     type Message = SearchDropdownMsg;
-    type Properties = ();
+    type Properties = SearchDropdownProps;
 
     fn create(ctx: &Context<Self>) -> Self {
         ctx.link().send_message(SearchDropdownMsg::GetAllProfiles);
@@ -43,7 +50,8 @@ impl Component for SearchDropdown {
         Self {
             parent: parent,
             is_open: false,
-            queried_profiles: vec![]
+            queried_profiles: vec![],
+            input_ref: NodeRef::default()
         }
     }
 
@@ -54,13 +62,12 @@ impl Component for SearchDropdown {
                     self.is_open = false;
                 } else {
                     self.is_open = true;
-                    ctx.link().send_message(SearchDropdownMsg::GetAllProfiles);
                 }
                 true
             }
-            SearchDropdownMsg::LoadProfile { id } => {
+            SearchDropdownMsg::LoadProfile { profile } => {
                 match &self.parent {
-                    Some(parent) => parent.send_message(ConnectionFormMsg::LoadProfile { id }),
+                    Some(parent) => parent.send_message(ConnectionFormMsg::LoadProfile { profile }),
                     None => ()
                 }
                 true
@@ -77,12 +84,20 @@ impl Component for SearchDropdown {
             },
             SearchDropdownMsg::QueryProfiles { query } => {
                 let link = ctx.link().clone();
-                spawn_local(async move {
-                    match query_profiles(query).await {
-                        Ok(profiles) => link.send_message(SearchDropdownMsg::UpdateProfiles { profiles }),
-                        Err(_) => ()
-                    } 
-                });
+                let dropdown_is_open = self.is_open;
+                if query != "" {
+                    spawn_local(async move {
+                        match query_profiles(query).await {
+                            Ok(profiles) => { 
+                                link.send_message(SearchDropdownMsg::UpdateProfiles { profiles });
+                                if !dropdown_is_open {
+                                    link.send_message(SearchDropdownMsg::ChangeOpenState);
+                                }
+                            },
+                            Err(_) => ()
+                        } 
+                    });
+                }
                 false
             }
             SearchDropdownMsg::UpdateProfiles { profiles } => {
@@ -119,16 +134,47 @@ impl Component for SearchDropdown {
             width: 500px;
         ");
 
-        let onclick = ctx.link().callback(|_| SearchDropdownMsg::ChangeOpenState);
+        let link = ctx.link();
+
+        let onclick = link.callback(|_| SearchDropdownMsg::ChangeOpenState);
 
         let icon = if self.is_open { html! {<ChevronUp size="20"/>} } else { html! {<ChevronDown size="20"/>}};
 
         let profiles = &self.queried_profiles;
 
+        let input_ref = self.input_ref.clone();
+
+        let parent = self.parent.clone();
+
+        let oninput = link.batch_callback(move |e: InputEvent| {
+            match &parent {
+                Some(parent) => parent.send_message(ConnectionFormMsg::DeselectProfile),
+                None => ()
+            }
+            let input = input_ref.cast::<HtmlInputElement>();
+            input.map(|input| SearchDropdownMsg::QueryProfiles { query: input.value() })
+        });
+
+        let value = match &ctx.props().selected_profile {
+            Some(profile) => format!("{}", profile.name.clone()),
+            None => {
+                let input_ref = self.input_ref.clone();
+                let input = input_ref.cast::<HtmlInputElement>();
+                match input.map(|input| input.value() ) {
+                    Some(value) => value,
+                    None => String::new()
+                }
+            }
+        };
+
         html! {
             <span>
                 <div class={input_container_class}>
-                    <input class={classes!(input_class.clone(), text_input_class)} type="text" />
+                    <input ref={self.input_ref.clone()}
+                        class={classes!(input_class.clone(), text_input_class)} type="text" 
+                        {oninput}
+                        {value}
+                    />
                     <button class={classes!(input_class, button_class)} {onclick}>
                         {icon}
                     </button>
@@ -136,7 +182,13 @@ impl Component for SearchDropdown {
                 <div class={profile_option_list_class}>
                     { 
                         profiles.into_iter().map(|profile| {
-                            html! { <ProfileOption {profile} />}
+                            let selected = match &ctx.props().selected_profile {
+                                Some(selected_profile) => {
+                                    profile == selected_profile
+                                },
+                                None => false
+                            };
+                            html! { <ProfileOption {profile} {selected} />}
                         }).collect::<Html>()
                     }
                 </div>
@@ -146,7 +198,7 @@ impl Component for SearchDropdown {
 }
 
 async fn query_profiles(query: String) -> Result<Profiles, ()>{
-    let call = Request::get(&format!("/cfg_mgr/profile/{}", query))
+    let call = Request::get(&format!("/cfg_mgr/profiles/{}", query))
     .send()
     .await;
 

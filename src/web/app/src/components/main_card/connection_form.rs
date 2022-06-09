@@ -5,6 +5,7 @@ use stylist::css;
 use reqwasm::http::Request;
 use wasm_bindgen_futures::spawn_local;
 
+use crate::lib::{ Profile };
 use crate::components::app::AppRoute;
 use crate::event_bus::{ EventBus, EventBusIOMsg };
 
@@ -14,11 +15,13 @@ use search_dropdown::SearchDropdown;
 
 pub struct ConnectionForm {
     event_bus: Dispatcher<EventBus>,
+    selected_profile: Option<Profile>
 }
 
 pub enum ConnectionFormMsg {
-    LoadProfile { id: String },
-    Connect
+    LoadProfile { profile: Profile },
+    Connect,
+    DeselectProfile
 }
 
 impl Component for ConnectionForm {
@@ -28,13 +31,19 @@ impl Component for ConnectionForm {
     fn create(_ctx: &Context<Self>) -> Self {
         Self {
             event_bus: EventBus::dispatcher(),
+            selected_profile: None
         }
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            ConnectionFormMsg::LoadProfile { id } => {
-                log::info!("Load profile: {:?}", id);
+            ConnectionFormMsg::LoadProfile { profile } => {
+                self.selected_profile = Some(profile);
+                true
+            },
+            ConnectionFormMsg::DeselectProfile => {
+                self.selected_profile = None;
+                true
             },
             ConnectionFormMsg::Connect => {
                 /*let link = ctx.link().clone();
@@ -44,9 +53,16 @@ impl Component for ConnectionForm {
                         Err(_) => ()
                     } 
                 });*/
+                match &self.selected_profile {
+                    Some(profile) => {
+
+                    },
+                    None => ()
+                }
+                //self.event_bus.send(EventBusIOMsg::AddTab(0, "test".to_owned(), 0, AppRoute::Session { session_id: 0 }));
+                false
             }
         }
-        true
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
@@ -78,7 +94,7 @@ impl Component for ConnectionForm {
                     <option>{"VNC"}</option>
                     <option>{"SSH - X11 Forwarding"}</option>
                 </select>
-                <SearchDropdown />
+                <SearchDropdown selected_profile={self.selected_profile.clone()} />
                 <button {onclick}>{"Connect"}</button>
             </div>
         }
