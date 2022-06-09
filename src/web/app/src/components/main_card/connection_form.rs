@@ -69,7 +69,6 @@ impl Component for ConnectionForm {
                 false
             },
             ConnectionFormMsg::AddTab { session } => {
-                log::info!("{}", session.name);
                 self.event_bus.send(
                     EventBusIOMsg::AddTab(
                         session.id, 

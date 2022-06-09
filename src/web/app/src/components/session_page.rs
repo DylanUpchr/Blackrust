@@ -20,8 +20,14 @@ impl Component for SessionPage {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
+
+        let src = "/noVNC/vnc.html";
+
         html! {
+            <>
             <p>{format!("You are looking at Session {}", ctx.props().session_id)}</p>
+            <iframe {src} width="1500px" height="800px"></iframe>
+            </>
         }
     }
 }
