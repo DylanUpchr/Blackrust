@@ -21,7 +21,6 @@ impl RemoteSessionManager {
     }
 
     fn get_next_display_number(&self) -> u16 {
-        println!("nb sessions: {}", self.sessions.len());
         (self.sessions.len() as u16) + 1
     }
 
@@ -38,7 +37,6 @@ impl RemoteSessionManager {
                             Ok(()) => {
                                 let id = session.id();
                                 self.sessions.push(Box::new(session));
-                                println!("new nb sessions: {}", self.sessions.len());
                                 Ok(id)
                             },
                             Err(message) => Err(message)

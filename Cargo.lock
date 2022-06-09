@@ -426,6 +426,7 @@ dependencies = [
  "futures",
  "image-base64",
  "itertools",
+ "log",
  "mockall",
  "regex 1.5.5",
  "rstest",

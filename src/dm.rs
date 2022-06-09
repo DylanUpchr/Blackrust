@@ -12,7 +12,7 @@ use actix_web::{get, put, patch, post, delete, web, web::Data, App, HttpResponse
 mod config_mgr;
 mod network_mgr;
 mod remote_session_mgr;
-use blackrust_lib::profile::{NetworkManagerProfile, Profile, NetworkManagerProfileType};
+use blackrust_lib::profile::{NetworkManagerProfile, Profile, NetworkManagerProfileType, ConnectionSettings};
 use network_mgr::NetworkManager;
 use remote_session_mgr::RemoteSessionManager;
 use web_view::*;
@@ -29,7 +29,7 @@ macro_rules! result_http_response {
 macro_rules! option_http_response {
     ($e: expr) => {
         match $e {
-            Some(value) => HttpResponse::Found().body(serde_json::to_string(&value).unwrap()),
+            Some(value) => HttpResponse::Ok().body(serde_json::to_string(&value).unwrap()),
             None => HttpResponse::NotFound().body("Resource not found")
         }
     };
@@ -42,7 +42,7 @@ struct AppState {
 
 #[derive(Deserialize)]
 struct ProfileFormData {
-    profile: Profile
+    pub profile: Profile
 }
 
 #[derive(Deserialize)]
@@ -140,7 +140,8 @@ async fn create_conn_profile() -> HttpResponse {
 
 #[patch("/profile")]
 async fn update_conn_profile(data: web::Form<ProfileFormData>) -> HttpResponse {
-    result_http_response!(config_mgr::save_profile(data.profile.clone()))
+    //result_http_response!(config_mgr::save_profile(data.profile.clone()))
+    HttpResponse::Ok().body("0")
 }
 
 #[delete("/profile/{id}")]
@@ -156,7 +157,7 @@ async fn get_session(state: Data<Mutex<AppState>>, id: web::Path<u32>) -> HttpRe
     option_http_response!(result)
 }
 #[post("/connect")]
-async fn connect(state: Data<Mutex<AppState>>, data: web::Form<ProfileFormData>) -> HttpResponse {
+async fn connect(state: Data<Mutex<AppState>>, data: web::Json<ProfileFormData>) -> HttpResponse {
     let mut current_state = state.lock().unwrap();
     result_http_response!(&current_state.remote_session_mgr.create_session(data.profile.clone()))
 }

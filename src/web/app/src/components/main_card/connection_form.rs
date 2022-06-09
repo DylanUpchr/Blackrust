@@ -2,10 +2,10 @@ use yew::prelude::*;
 use yew_agent::{Dispatched, Dispatcher};
 use log::{info, trace, warn};
 use stylist::css;
-use reqwasm::http::Request;
+use reqwasm::http::{ Request, FormData };
 use wasm_bindgen_futures::spawn_local;
 
-use crate::lib::{ Profile };
+use crate::lib::{ Profile, Session, ProfileFormData };
 use crate::components::app::AppRoute;
 use crate::event_bus::{ EventBus, EventBusIOMsg };
 
@@ -21,7 +21,8 @@ pub struct ConnectionForm {
 pub enum ConnectionFormMsg {
     LoadProfile { profile: Profile },
     Connect,
-    DeselectProfile
+    DeselectProfile,
+    AddTab { session: Session }
 }
 
 impl Component for ConnectionForm {
@@ -46,20 +47,37 @@ impl Component for ConnectionForm {
                 true
             },
             ConnectionFormMsg::Connect => {
-                /*let link = ctx.link().clone();
-                spawn_local(async move {
-                    match connect().await {
-                        Ok(hostname) => (),
-                        Err(_) => ()
-                    } 
-                });*/
-                match &self.selected_profile {
+                let link = ctx.link().clone();
+                let event_bus = &self.event_bus;
+                let selected_profile = self.selected_profile.clone();
+                match selected_profile {
                     Some(profile) => {
-
+                        spawn_local(async move {
+                            match connect(profile.clone()).await {
+                                Ok(session_id) => {
+                                    match get_session_by_id(session_id).await {
+                                        Ok(session) => link.send_message(ConnectionFormMsg::AddTab { session }),
+                                        Err(message) => log::info!("{}", message)
+                                    }
+                                },
+                                Err(message) => log::info!("{}", message)
+                            } 
+                        });
                     },
                     None => ()
                 }
-                //self.event_bus.send(EventBusIOMsg::AddTab(0, "test".to_owned(), 0, AppRoute::Session { session_id: 0 }));
+                false
+            },
+            ConnectionFormMsg::AddTab { session } => {
+                log::info!("{}", session.name);
+                self.event_bus.send(
+                    EventBusIOMsg::AddTab(
+                        session.id, 
+                        session.name.to_owned(), 
+                        session.rfb_port, 
+                        AppRoute::Session { session_id: session.id }
+                    )
+                );
                 false
             }
         }
@@ -101,10 +119,8 @@ impl Component for ConnectionForm {
     }
 }
 
-async fn connect() -> Result<(), ()> {
-    let body = "";
-    let call = Request::post("/rs_mgr/connect")
-    .body(body)
+async fn get_session_by_id(id: u32) -> Result<Session, String> {
+    let call = Request::get(&format!("/rs_mgr/session/{}", id))
     .send()
     .await;
 
@@ -117,9 +133,34 @@ async fn connect() -> Result<(), ()> {
                     ).unwrap()
                 )
             } else {
-                Err(())
+                Err(String::from("Session not found"))
             }
         },
-        Err(_) => Err(())
+        Err(_) => Err(String::from("Could not send request"))
+    }
+}
+
+async fn connect(profile: Profile) -> Result<u32, String> {
+    let body = ProfileFormData { profile };
+
+    let call = Request::post("/rs_mgr/connect")
+    .body(body)
+    .header("Content-Type", "application/json")
+    .send()
+    .await;
+
+    match call {
+        Ok(resp) => {
+            if resp.ok() {
+                Ok(
+                    serde_json::from_str(
+                        &resp.text().await.unwrap()
+                    ).unwrap()
+                )
+            } else {
+               Err(String::from(format!("Could not create session from profile")))
+            }
+        },
+        Err(_) => Err(String::from("Could not send request"))
     }
 }
