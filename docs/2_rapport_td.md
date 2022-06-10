@@ -53,7 +53,6 @@ Tous ces modules fonctionnent en tandem afin de proposer un client d'accès dist
 Le planning prévisionnel a été établi avec la fonctionnalité Gantt de l'outil YouTrack que j'utilise pour la gestion du projet. J'ai choisi de faire avec cet outil, car, je peux générer de divers types de rapports sur les tâches accomplies et le temps que ces derniers ont pris.
 
 {{ fig("/img/planning_previsionnel.png", " Planning prévisionnel", 85) }}
-### Effectif
 
 <div style="page-break-after: always;"></div>
 
@@ -172,10 +171,6 @@ Les messages de commits s'agissent d'un commentaire descriptif bref en anglais q
 
 ### Outil de gestion
 La gestion du projet se fait avec l'outil YouTrack. Ce dernier propose des fonctionnalités Gantt, Kanban, relevée d'horaires et de génération de rapports sur ces derniers. 
-
-#### Gantt
-#### Kanban
-#### Rapports
 
 ## Environnement de travail
 L'environnement de travail utilisé lors du développement de ce projet consiste en :
@@ -374,19 +369,19 @@ Le serveur web Actix propose la fonctionnalité de définir un API qui peut appe
 Les routes sont groupées dans des scopes qui leur donne une préfixe à leur URL. J'ai choisi de les grouper par module concerné, donc NetMgr pour NetworkMgr, CfgMgr pour ConfigMgr et RsMgr pour RemoteSessionMgr.
 
 ###### NetMgr Scope
-Ce scope expose les routes qui concernent la gestion du configuration réseau.
-Le préfixe du scope NetMgr est ```/net_mgr``` qui donne ```/net_mgr/hostname``` par exemple.
+Ce scope expose les routes qui concernent la gestion de la configuration réseau. Le préfixe du scope NetMgr est ```/net_mgr``` qui donne ```/net_mgr/hostname``` par exemple.
+Le type de retour "OK" spécifée est le type rendu par la route quand la fonction backend appelé réussi.
 
-| Nom du service | Méthode | Route | Fonction appelé | Structure du payload (optionnel) |
+| Nom du service | Méthode | Route | Fonction appelé | Type de retour OK | Structure du payload (optionnel) |
 |-|-|-|-|-|
-|get_hostname| GET | ```/hostname``` | ```network_mgr::get_hostname``` |
-|set_hostname| PUT | ```/hostname``` | ```network_mgr::set_hostname``` | HostnameFormData |
-|get_net_profiles| GET | ```/profiles``` | ```network_mgr::load_all_profiles``` |
-|get_net_profile| GET | ```/profile/{id}``` | ```network_mgr::get_simple_profile_by_id``` |
-|create_net_profile| POST | ```/profile``` | ```network_mgr::create_profile``` | NetworkManagerProfileTypeFormData |
-|update_net_profile| PATCH | ```/profile``` | ```network_mgr::modify_profile``` | NetworkManagerProfileFormData |
-|delete_net_profile| DELETE | ```/profile``` | ```network_mgr::delete_profile``` | NetworkManagerProfileFormData |
-|get_net_interfaces| GET | ```/interfaces``` | ```network_mgr::get_all_interfaces``` |
+|get_hostname| GET | ```/hostname``` | ```network_mgr::get_hostname``` | String |
+|set_hostname| PUT | ```/hostname``` | ```network_mgr::set_hostname``` | String | HostnameFormData |
+|get_net_profiles| GET | ```/profiles``` | ```network_mgr::load_all_profiles``` |  | Vec<NetworkManagerProfile\>
+|get_net_profile| GET | ```/profile/{id}``` | ```network_mgr::get_simple_profile_by_id``` | NetworkManagerProfile |
+|create_net_profile| POST | ```/profile``` | ```network_mgr::create_profile``` | String |NetworkManagerProfileTypeFormData |
+|update_net_profile| PATCH | ```/profile``` | ```network_mgr::modify_profile``` | () | NetworkManagerProfileFormData |
+|delete_net_profile| DELETE | ```/profile``` | ```network_mgr::delete_profile``` | () | NetworkManagerProfileFormData |
+|get_net_interfaces| GET | ```/interfaces``` | ```network_mgr::get_all_interfaces``` | Vec<Interface\> |
 
 - Structure du payload HostnameFormData
 
@@ -407,17 +402,16 @@ Le préfixe du scope NetMgr est ```/net_mgr``` qui donne ```/net_mgr/hostname```
 |profile|NetworkManagerProfile|
 
 ###### CfgMgr Scope
-Ce scope expose les routes qui concernent la gestion des profils de connexion.
-Le préfixe du scope NetMgr est ```/cfg_mgr``` qui donne ```/cfg_mgr/profiles``` par exemple.
+Ce scope expose les routes qui concernent la gestion des profils de connexion. Le préfixe du scope NetMgr est ```/cfg_mgr``` qui donne ```/cfg_mgr/profiles``` par exemple. Le type de retour "OK" spécifée est le type rendu par la route quand la fonction backend appelé réussi.
 
-| Nom du service | Méthode | Route | Fonction appelé | Structure du payload (optionnel) |
+| Nom du service | Méthode | Route | Fonction appelé | Type de retour OK | Structure du payload (optionnel) |
 |-|-|-|-|-|
-|get_conn_profiles| GET | ```/profiles``` | ```config_mgr::load_all_profiles``` |
-|get_conn_profile| GET | ```/profile/{id}``` | ```config_mgr::get_profile_by_id``` |
-|query_conn_profiles| GET | ```/profiles/{query}``` | ```config_mgr::get_profiles``` |
-|create_conn_profile| POST | ```/profiles``` | ```config_mgr::create_profile``` |
-|update_conn_profile| PATCH | ```/profiles``` | ```config_mgr::save_profile``` | ProfileFormData |
-|delete_conn_profile| DELETE | ```/profile/{id}``` | ```config_mgr::delete_profile``` |
+|get_conn_profiles| GET | ```/profiles``` | ```config_mgr::load_all_profiles``` | Profiles |
+|get_conn_profile| GET | ```/profile/{id}``` | ```config_mgr::get_profile_by_id``` | Option<Profile\> |
+|query_conn_profiles| GET | ```/profiles/{query}``` | ```config_mgr::get_profiles``` | Profiles |
+|create_conn_profile| POST | ```/profiles``` | ```config_mgr::create_profile``` | String |
+|update_conn_profile| PATCH | ```/profiles``` | ```config_mgr::save_profile``` | () | ProfileFormData |
+|delete_conn_profile| DELETE | ```/profile/{id}``` | ```config_mgr::delete_profile``` | () |
 
 - Structure du payload ProfileFormData
 
@@ -426,14 +420,13 @@ Le préfixe du scope NetMgr est ```/cfg_mgr``` qui donne ```/cfg_mgr/profiles```
 |profile|Profile|
 
 ###### RsMgr Scope
-Ce scope expose les routes qui concernent la gestion du configuration réseau.
-Le préfixe du scope NetMgr est ```/rs_mgr``` qui donne ```/rs_mgr/connect``` par exemple.
+Ce scope expose les routes qui concernent la gestion du configuration réseau. Le préfixe du scope NetMgr est ```/rs_mgr``` qui donne ```/rs_mgr/connect``` par exemple. Le type de retour "OK" spécifée est le type rendu par la route quand la fonction backend appelé réussi.
 
-| Nom du service | Méthode | Route | Fonction appelé | Structure du payload (optionnel) |
+| Nom du service | Méthode | Route | Fonction appelé | Type de retour OK | Structure du payload (optionnel) |
 |-|-|-|-|-|
-|connect| POST | ```/connect``` | ```remote_session_mgr.create_session``` | ProfileFormData |
-|disconnect| POST | ```/disconnect/{id}``` | ```remote_session_mgr.disconnect_session``` |
-|get_session| GET | ```/session/{id}``` | ```remote_session_mgr.get_session_by_id``` |
+|connect| POST | ```/connect``` | ```remote_session_mgr.create_session``` | u32 | ProfileFormData |
+|disconnect| POST | ```/disconnect/{id}``` | ```remote_session_mgr.disconnect_session``` | () |
+|get_session| GET | ```/session/{id}``` | ```remote_session_mgr.get_session_by_id``` | Option<Box\<Session>>
 
 - Structure du payload ProfileFormData
 
@@ -782,6 +775,8 @@ Type de retour
 
 
 ##### Tests unitaires
+Voici une liste des tests unitaires pour ce module. Le détail des cas de tests pour chaque fonction de test se retrouve dans le chapitre Tests.
+
 - ```test::get_hostname_test```: Test que la commande pour récupérer le nom d'hôte est correcte
 - ```test::set_hostname_test```: Test que la commande pour affecter le nom d'hôte est correcte
 - ```test::get_all_interfaces_test```: Test que la commande pour récupérer les interfaces est correcte
@@ -801,29 +796,152 @@ Le module RemoteSessionMgr lance les sessions distantes en utilisant les options
 ##### Data flow
 {{ fig("/img/RemoteSessionMgr_data_flow.png", " RemoteSessionMgr data flow", 85) }}
 ##### Fonctions
-- ```connect```: Se connecte à un protocole distant du profil de connexion fourni
-- ```remote_protocols::open_udp_socket```: Ouvre un canal de communication UDP entre un serveur distant et la machine actuelle
-- ```remote_protocols::xdmcp::send```: Envoie un packet du protocole XDMCP
-- ```remote_protocols::xdmcp::recv```: Attend la réception d'un packet du protocole XDMCP
-- ```remote_protocols::xdmcp::open_display```: Ouvre un écran virtuel X11
-- ```remote_protocols::xdmcp::open_session```: Négocie une session XDMCP avec un serveur XDMCP distant
-- ```remote_protocols::xdmcp::build_request_packet```: Construit un packet de l'opération Request du protocole XDMCP
-- ```remote_protocols::xdmcp::build_manage_packet```: Construit un packet de l'opération Manage du protocole XDMCP
-- ```remote_protocols::xdmcp::add_xauth_cookie```: Ajoute un cookie d'authentification MIT_MAGIC_COOKIE-1 au XAuthority du système
-- ```remote_protocols::xdmcp::read_card```: Lit un nombre de bytes d'un buffer à un offset donné depuis le buffer
-- ```remote_protocols::xdmcp::read_card_8```: Lit une valeur de taille 1 byte à un offset donné depuis le buffer
-- ```remote_protocols::xdmcp::read_card_16```: Lit une valeur de taille 2 bytes à un offset donné depuis le buffer
-- ```remote_protocols::xdmcp::read_card_32```: Lit une valeur de taille 4 bytes à un offset donné depuis le buffer
-- ```remote_protocols::xdmcp::read_array_8```: Lit un array de valeurs 1 byte de taille variable à un offset donné depuis le buffer
-- ```remote_protocols::xdmcp::append_card_8```: Ajoute une valeur de taille 1 byte à la fin du buffer
-- ```remote_protocols::xdmcp::append_card_16```: Ajoute une valeur de taille 2 bytes à la fin du buffer
-- ```remote_protocols::xdmcp::append_card_32```: Ajoute une valeur de taille 4 bytes à la fin du buffer
-- ```remote_protocols::xdmcp::append_array_8```: Ajoute un array de valeurs 1 byte de taille variable à la fin du buffer
-- ```remote_protocols::xdmcp::append_array_16```: Ajoute un array de valeurs 2 bytes de taille variable à la fin du buffer
-- ```remote_protocols::xdmcp::append_array_of_array_8```: Ajoute un array de array de valeurs 2 bytes de taille variable à la fin du buffer
-- ```remote_protocols::xdmcp::vec_u16_to_be_vec_u8```: Convertit un vecteur de valeurs de 2 bytes en vecteur de valeurs de 1 byte big-endian
-- ```remote_protocols::xdmcp::vec_u8_to_string``` Convertit un vecteur de valeurs 1 byte en string hexadécimale
-##### Tests unitaires
+
+```new```: Instancie une un objet RemoteSessionManager 
+
+<hr />
+
+Type de retour
+
+|Type|Description|
+|-|-|
+|RemoteSessionManager|Instance de RemoteSessionManager |
+
+<hr class="tableSeperator" />
+
+```create_session```: Se connecte à un protocole distant du profil de connexion fourni
+
+<hr />
+
+Arguments
+
+| Nom | Type | Description |
+|-|-|-|
+|profile|Profile|Profil de connexion qui sert de base pour créer la session|
+
+<hr />
+
+Type de retour
+
+|Type|Description|
+|-|-|
+|Result<u32, String>|Identifiant de la session ou message d'erreur|
+
+<hr class="tableSeperator" />
+
+```disconnect_session```: Se connecte à un protocole distant du profil de connexion fourni
+
+<hr />
+
+Arguments
+
+| Nom | Type | Description |
+|-|-|-|
+|session_id|u32|Identifiant de la session|
+
+<hr />
+
+Type de retour
+
+|Type|Description|
+|-|-|
+|Result<(), String>|Retour vide ou message d'erreur|
+
+<hr class="tableSeperator" />
+
+```get_session_by_id```: Se connecte à un protocole distant du profil de connexion fourni
+
+<hr />
+
+Arguments
+
+| Nom | Type | Description |
+|-|-|-|
+|session_id|u32|Identifiant de la session|
+
+<hr />
+
+Type de retour
+
+|Type|Description|
+|-|-|
+|Option<&mut Box<dyn Session>>|Réference vers la session comportant l'identifiant specifiée|
+
+<hr class="tableSeperator" />
+
+```get_next_display_number```: Renvoi le prochain numéro d'affichage disponible
+
+<hr />
+
+Type de retour
+
+|Type|Description|
+|-|-|
+|u16|Numéro d'affichage disponible|
+
+<hr class="tableSeperator" />
+
+```remote_protocols::open_udp_socket```: Ouvre un canal de communication UDP entre un serveur distant et la machine actuelle
+
+<hr />
+
+Arguments
+
+| Nom | Type | Description |
+|-|-|-|
+|src_addr|IpAddr|Addresse locale|
+|dst_addr|IpAddr|Addresse distant|
+|dst_port|u16|Addresse distant|
+
+<hr />
+
+Type de retour
+
+|Type|Description|
+|-|-|
+|Result<UdpSocket, String>|Chaîne de communication UDP ou message d'erreur|
+
+<hr class="tableSeperator" />
+
+```remote_protocols::open_display```: Crée un affichage X11 pour l'outil de session distante, démarre un serveur VNC locale liée à cette affichage, puis expose un WebSocket au client pour pouvoir se connecter
+
+<hr />
+
+Arguments
+
+| Nom | Type | Description |
+|-|-|-|
+|display_number|u16|Numéro de l'affichage X11 de la session|
+
+<hr />
+
+Type de retour
+
+|Type|Description|
+|-|-|
+|Result<UdpSocket, String>|Chaîne de communication UDP ou message d'erreur|
+
+<hr class="tableSeperator" />
+
+```remote_protocols::xdmcp::send```: Envoie un packet du protocole XDMCP
+```remote_protocols::xdmcp::recv```: Attend la réception d'un packet du protocole XDMCP
+```remote_protocols::xdmcp::open_session```: Négocie une session XDMCP avec un serveur XDMCP distant
+```remote_protocols::xdmcp::build_request_packet```: Construit un packet de l'opération Request du protocole XDMCP
+```remote_protocols::xdmcp::build_manage_packet```: Construit un packet de l'opération Manage du protocole XDMCP
+```remote_protocols::xdmcp::add_xauth_cookie```: Ajoute un cookie d'authentification MIT_MAGIC_COOKIE-1 au XAuthority du système
+```remote_protocols::xdmcp::read_card```: Lit un nombre de bytes d'un buffer à un offset donné depuis le buffer
+```remote_protocols::xdmcp::read_card_8```: Lit une valeur de taille 1 byte à un offset donné depuis le buffer
+```remote_protocols::xdmcp::read_card_16```: Lit une valeur de taille 2 bytes à un offset donné depuis le buffer
+```remote_protocols::xdmcp::read_card_32```: Lit une valeur de taille 4 bytes à un offset donné depuis le buffer
+```remote_protocols::xdmcp::read_array_8```: Lit un array de valeurs 1 byte de taille variable à un offset donné depuis le buffer
+```remote_protocols::xdmcp::append_card_8```: Ajoute une valeur de taille 1 byte à la fin du buffer
+```remote_protocols::xdmcp::append_card_16```: Ajoute une valeur de taille 2 bytes à la fin du buffer
+```remote_protocols::xdmcp::append_card_32```: Ajoute une valeur de taille 4 bytes à la fin du buffer
+```remote_protocols::xdmcp::append_array_8```: Ajoute un array de valeurs 1 byte de taille variable à la fin du buffer
+```remote_protocols::xdmcp::append_array_16```: Ajoute un array de valeurs 2 bytes de taille variable à la fin du buffer
+```remote_protocols::xdmcp::append_array_of_array_8```: Ajoute un array de array de valeurs 2 bytes de taille variable à la fin du buffer
+```remote_protocols::xdmcp::vec_u16_to_be_vec_u8```: Convertit un vecteur de valeurs de 2 bytes en vecteur de valeurs de 1 byte big-endian
+```remote_protocols::xdmcp::vec_u8_to_string``` Convertit un vecteur de valeurs 1 byte en string hexadécimale
 
 ## Tests
 ### Tests unitaires
@@ -1138,10 +1256,27 @@ Lors du test unitaire open_webview_test qui vérifie que le WebView peut être c
 - Programme
     - Paquet avec scripts d'installation (PKGBUILD)
     - Code source ([Github](https://github.com/DylanUpchr/Blackrust))
-## Améliorations possibles
+## Améliorations à apporter
 ### Tests unitaires / fonctionnels
-Plus de tests unitaires, surtout sur la construction de l'API Actix ou l'application Yew, ainsi que des tests fonctionnels sur l'interface Yew.
+Une amélioration en termes de fiabilité de code serait l'ajout de tests unitaires pour les modules RemoteSessionMgr (ainsi que ses sous modules concernant les protocoles) et ConfigMgr. Des tests Postman sur l'API Actix pourrait également assurer que ce dernier fonctionne correctement.
 
+### Prise en charge de l'IPv6 et les nom d'hôtes
+Pour l'instant unqiuement l'IPv4 est pris en charge et donc des adresses de IPv6 ou de nom DNS de serveur distant, l'application rentre dans un cas de bord non géré. La structure pour acceuillir ces changement est en place, mais il faut gérer ces cas.
+
+### Documenter l'interface Web
+Afin d'offrir une meilleure réutilisabilité, la partie interface Web fait avec Yew devrait être documenté en montrant tout les composants et leurs propriétés/fonctions/évenements/champs et comment ces derniers s'imbriquent.
+
+### Ajout des systèmes de internationalisation et de thèmes
+Une autre amélioration possible serait d'ajouter des modules de internationalisation (Région, langue, timezone, format horaire, etc.) et un système de thème qui permet de personnaliser l'interface (Fond d'écran, bannière, couleurs). Ces modules ont été prévu dans l'interface de réglages mais malheureusement n'ont pas été implémentées à cause d'une limite de temps.
+
+### Implémenter les objets RDPSession, VNCSession, SSHX11Session et LocalSession
+Comme indiqué dans le cahier des charges, l'application est sensé être multiprotocole, mais à cause d'une manque de temps je n'ai pû seulement implémenter manuellement le XDMCPSession. Les autres sont sous traitées à des outils externes comme vncviewer ou xfreerdp donc ceci est assez rapide à faire.
+
+### Faire un PKGBUILD
+Afin de permettre des déploiements rapides et facile, un des livrables listées était un fichier PKGBUILD permettant de télécharger et installer le programme avec une commande. Ceci n'as pas été fait à cause des délais causées par l'interface Web.
+
+### Compilation de deux versions (client local ou serveur web uniquement) selon un flag
+Une dernière amélioration que j'aimerais apporter est la possibilité de compiler un de deux binaires du même code source, un comportant un navigateur WebView qui permet d'accèder directement à l'application en localhost sans passer par le réseau, et une autre version qui est uniquement un serveur Web avec le backend pour utilisation avec des navigateurs communs sur un réseau.
 
 ## Conclusion
 En conclusion, j'ai développé un programme Rust pour Linux, qui permet de se connecter à plusieurs types de VDI ou serveur distant à travers des connexions sécurisées.

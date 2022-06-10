@@ -184,9 +184,3 @@ Un Window Manager est un programme qui affiche des applications graphiques dans 
 
 #### Display Manager
 Un Display Manager est un programme qui, après le lancement du serveur d'affichage (tel X11 ou Wayland), se charge de l'authentification PAM et de lancer un Window Manager.
-
-#### GTK
-
-#### EULA
-
-#### Protocoles distant

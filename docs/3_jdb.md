@@ -267,10 +267,115 @@ Ajout de nouveaux logos pour le projet trouvés sur looka.com qui propose plein 
 Design du poster
 
 ## 2022-05-05
-Visite de Mme. Geneau pour donner du feedback et des conseils sur les posters, redesign du poster en fonction du feedback
+Visite de l'enseignante de marketing, Mme. Geneau, pour donner du feedback et des conseils sur les posters, redesign du poster en fonction du feedback
 
 ## 2022-05-06
 Retours de la part de M. Bonvin et M. Zeltner concernant le schéma explicatif sur le poster et redesign du schéma en fonction du feedback
 
 ## 2022-05-08
 Travail sur l'analyse organique dans la documentation technique ainsi que sur le schéma explicatif du poster
+
+## 2022-05-09
+Mise à jour de l'abstract en anticipation de la remise de ce dernier pour évaluation par notre enseignant d'anglais, M. Puig
+
+Ajout des maquettes, les librairies externes / technologies utilisées par l'application à la documentation technique
+
+## 2022-05-10
+J'ai restructuré le code de négociation de session XDMCP pour être étatique afin de faciliter la gestion des réponses attendus et d'erreurs traités
+
+Ajout du crate tokio pour avoir plus de fonctionnalités asynchrone, tel que les futures et les délais d'attentes pour les futures
+## 2022-05-11
+Ajout de un délai d'attente pour le dernier message d'erreur de la part du serveur XDMCP. Si cet erreur n'est pas reçu au bout d'un certains temps, la session est bien ouverte et est prêt à être affiché
+
+## 2022-05-12
+Passage des fonctions de communication UDP de synchrone à asynchrone ave tokio::net
+
+## 2022-05-13
+Restructuration des structures de données concernant les sessions. J'ai ajouté des traits, qui sont comme les interfaces en C# afin de standardiser les implémentations et avoir des types génériques pour toutes les types de sessions
+
+Amélioration de la gestion d'erreur avec la négociation XDMCP pour prendre en compte tout les états d'erreur possible
+
+## 2022-05-16
+Ajout des appels entre le système WebView et le backend Rust pour l'affichage des onglets de sessions
+
+Continuation de la restructuration des structures de données concernant les sessions et l'implémentation des traits génériques
+
+## 2022-05-17
+Ajout du système d'onglets au WebView pour pouvoir choisiri entre la page de départ et les différents sessions ouvertes
+
+## 2022-05-18
+Implémentation du fonction keepalive dans les sessions XDMCP afin d'avoir la possibilité de vérifier si la session est toujours active sur le serveur distant
+
+## 2022-05-19
+Restructuration de la documentation technique
+
+## 2022-05-20
+Ajout des diagrammes de data flow à la documentation technique
+Documentation envoyée a M. Zeltner pour son retour
+
+## 2022-05-23
+Selon le feedback de M. Zeltner, j'ai travaillé sur les style CSS du document PDF ainsi que modifié les schémas de data flow. J'ai également rajouter des schémas et des explications de fonction
+
+Le type de retour Result du fonction get_profile_by_id du module ConfigMgr était mieux adapté en tant que Option, donc j'ai changé le type de retour pour avoir un gestion d'erreur plus logique.
+
+## 2022-05-24
+Ajout d'explications supplémentaires dans l'introduction pour les différents parties de l'application
+
+Modification de style du PDF
+
+## 2022-05-25
+Ajout de Yew et Actix au programme afin de remplacer le WebView avec un servur Web et framework Web pour avoir un meilleur interface et reésoudre des problèmes de gestion d'états de sessions. Je n'arrivais pas a garden en mémoire les séssions d'une manière statique avec le WebView, donc je vais passer à un serveur Web qui peut gérer une classe instancié qui mémorise les sessions.
+
+## 2022-05-26
+Jour férié Acension
+
+## 2022-05-27
+Ajout d'explications supplémentaires dans l'introduction pour les différents parties de l'application, mise à jour des technologies utilisées. Ajout des maquettes avec des explications de tous les composants visibles.
+
+## 2022-05-30
+Ajout des composants App, TabBar et Tab dans l'application Yew
+
+Ajout de l'api Actix pour remplcaer les invokes de WebView
+
+Correction des fautes d'orthographe et de grammaire dans la documentation technique
+
+## 2022-05-31
+Implémentation des différents composants, système d'onglets, icônes, styles CSS dans Yew.
+
+## 2022-06-01
+Implémentation des styles CSS dans Yew
+
+## 2022-06-02
+Ajout des composants des pages home, settings et session, ainsi que l'ajout du routeur qui permet de switcher dynamiquement entre les pages ajoutées
+Ajout du composant TopBar et les 3 sous composants (Hostname, Time, SettingsButton)
+## 2022-06-03
+Implémentation des composants Settings, SettingsButton, Time et des styles CSS
+
+## 2022-06-06
+Jour férié Pentecôte
+
+## 2022-06-07
+Ajout du EventBus permettant de passer des messages entre des composants n'importe la position dans hiérarchie
+
+Ajout des composoants ConnectionForm, SearchDropdown, modification du CSS et des icônes
+
+Correction des fautes d'orthographe et de grammaire dans la documentation technique avec Antidote
+
+Ajout d'une route API pour récuperer tous les profils de connexion
+
+Doc envoyé a M. Zeltner
+
+## 2022-06-08
+Selon le retour de M. Zeltner, j'ai refait des corrections des fautes d'orthographe et de grammaire dans la documentation technique avec Antidote
+
+J'ai également implementé le template Markdown CFPT pour avoir un style plus homogène et soigné dans a documentation
+
+J'ai refait les schémas de data flow afin de les rendre plus lisibles dans le PDF generé
+
+## 2022-06-09
+Ajout du projet noVNC pour avoir un client VNC parametrable dans la page session de l'interface web
+
+## 2022-06-10
+Jour du rendu finale
+
+Mises à jour de la documentation technique

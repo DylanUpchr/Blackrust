@@ -140,8 +140,7 @@ async fn create_conn_profile() -> HttpResponse {
 
 #[patch("/profile")]
 async fn update_conn_profile(data: web::Form<ProfileFormData>) -> HttpResponse {
-    //result_http_response!(config_mgr::save_profile(data.profile.clone()))
-    HttpResponse::Ok().body("0")
+    result_http_response!(config_mgr::save_profile(data.profile.clone()))
 }
 
 #[delete("/profile/{id}")]
