@@ -46,6 +46,7 @@ fn switch(routes: &AppRoute) -> Html {
             html! { <SettingsCard /> }
         },
         AppRoute::Session { session_id } => {
+            log::info!("{}", session_id);
             html! { <SessionPage session_id={session_id.clone()} /> }
         }
     }

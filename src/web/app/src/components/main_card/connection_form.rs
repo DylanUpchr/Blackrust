@@ -2,7 +2,7 @@ use yew::prelude::*;
 use yew_agent::{Dispatched, Dispatcher};
 use log::{info, trace, warn};
 use stylist::css;
-use reqwasm::http::{ Request, FormData };
+use reqwasm::http::Request;
 use wasm_bindgen_futures::spawn_local;
 
 use crate::lib::{ Profile, Session, ProfileFormData };

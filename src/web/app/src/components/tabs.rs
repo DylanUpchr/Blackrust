@@ -1,7 +1,10 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
 use stylist::css;
+use yew_feather::x::X;
 use yew_agent::{Bridge, Bridged};
+use reqwasm::http::Request;
+use wasm_bindgen_futures::spawn_local;
 
 use crate::event_bus::{ EventBus, EventBusIOMsg };
 use crate::components::app::AppRoute;
@@ -35,7 +38,8 @@ pub struct TabProps {
     name: String,
     rfb_port: u16,
     route: AppRoute,
-    is_active_tab: bool
+    is_active_tab: bool,
+    closable: bool
 }
 
 pub struct TabBar {
@@ -43,12 +47,17 @@ pub struct TabBar {
     _producer: Box<dyn Bridge<EventBus>>
 }
 
+pub enum TabMsg {
+    Disconnect
+}
+
 pub struct Tab {
     id: u32,
     name: String,
     rfb_port: u16,
     route: AppRoute,
-    is_active_tab: bool
+    is_active_tab: bool,
+    closable: bool
 }
 
 impl Component for TabBar {
@@ -63,7 +72,8 @@ impl Component for TabBar {
                     name: "Home".to_string(),
                     rfb_port: 0,
                     route: AppRoute::Index,
-                    is_active_tab: true
+                    is_active_tab: true,
+                    closable: false
                 }
             ],
             _producer: EventBus::bridge(ctx.link().callback(|val: EventBusIOMsg| val)),
@@ -78,13 +88,16 @@ impl Component for TabBar {
                     name: String::from(name),
                     rfb_port: 0,
                     route: AppRoute::Session {session_id: id},
-                    is_active_tab: true
+                    is_active_tab: true,
+                    closable: true
                 };
                 self.tabs.iter_mut().for_each(|tab| tab.is_active_tab = false);
                 self.tabs.push(tab);
                 true
             },
             TabBarMsg::RemoveTab(id) => {
+                self.tabs.retain(|tab| tab.id != id);
+                
                 true
             },
             TabBarMsg::ChangeTab(id) => {                
@@ -121,7 +134,8 @@ impl Component for TabBar {
                                 name={ tab.name.clone() } 
                                 rfb_port={ tab.rfb_port } 
                                 route={ tab.route.clone() }
-                                is_active_tab = { tab.is_active_tab }
+                                is_active_tab={ tab.is_active_tab }
+                                closable={ tab.closable }
                             />
                         }
                     }).collect::<Html>()
@@ -132,20 +146,33 @@ impl Component for TabBar {
 }
 
 impl Component for Tab {
-    type Message = ();
+    type Message = TabMsg;
     type Properties = TabProps;
     
-    fn create(_ctx: &Context<Self>) -> Self {
+    fn create(ctx: &Context<Self>) -> Self {
         Self {
-            id: 0,
-            name: String::from("Session tab"),
-            rfb_port: 0,
-            route: AppRoute::Index,
-            is_active_tab: false
+            id: ctx.props().id,
+            name: ctx.props().name.clone(),
+            rfb_port: ctx.props().rfb_port,
+            route: ctx.props().route.clone(),
+            is_active_tab: ctx.props().is_active_tab,
+            closable: ctx.props().closable
         }
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
+    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
+        match msg {
+            TabMsg::Disconnect => {
+                let parent_link = ctx.link().get_parent();
+                match parent_link {
+                    Some(parent_scope) => {
+                        let parent = parent_scope.clone().downcast::<TabBar>();
+                        parent.send_message(TabBarMsg::RemoveTab(self.id))
+                    },
+                    None => ()
+                }
+            }
+        }
         true
     }
 
@@ -156,19 +183,35 @@ impl Component for Tab {
             border: 1px solid ${accent};
             border-radius: 5px;
             margin: 10px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
 
             a {
                 text-decoration: none;
                 color: black;
                 
             }
+
+            span:hover {
+                cursor: pointer;
+            }
             "#, 
             accent = if ctx.props().is_active_tab { "blue" } else { "black" }
         );
+
+        let onclick = ctx.link().callback(|_| TabMsg::Disconnect);
+
         html! {
             <div {class}>
                 <Link<AppRoute> to={ctx.props().route.clone()}>{ ctx.props().name.clone() }</Link<AppRoute>>
+                { if self.closable { html! { <span {onclick}><X size="20" /></span> } } else { html! {}} }
             </div>
         }
     }
+}
+
+async fn disconnect_session(id: u32) {
+
 }

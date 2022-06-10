@@ -224,7 +224,7 @@ impl XDMCPSession {
                                     ) {
                                         Ok(_) => {
                                             {
-                                                match open_display(self.display_number) {
+                                                match super::open_display(self.display_number) {
                                                     Ok(child) => {
                                                         self.xvnc_process = Some(child);
                                                         state = ProtocolState::AwaitManageResponse
@@ -444,33 +444,6 @@ fn add_xauth_cookie(
         }
         Err(_) => {
             Err(format!("Could not find .Xauthority file. Stopping negotiation.").to_string())
-        }
-    }
-}
-
-fn open_display(display_number: u16) -> Result<Child, String> {
-    let authfile_var = env::var("XAUTHORITY");
-    let display_string: &str = &format!(":{}", display_number);
-    match authfile_var {
-        Ok(authfile_path) => {
-                let xvnc_args = vec![
-                    display_string,
-                    "-listen",
-                    "tcp",
-                    "-auth",
-                    &authfile_path,
-                    "SecurityTypes=None",
-                ];
-                let xvnc_command = Command::new("Xvnc").args(xvnc_args).spawn();
-                match xvnc_command {
-                    Ok(child) => (Ok(child)),
-                    Err(err) => (Err(err.to_string())),
-                }
-        },
-        Err(_) => {
-            Err(String::from(
-                "Could not find ~/.Xauthority file. Stopping negotiation.",
-            ))
         }
     }
 }
