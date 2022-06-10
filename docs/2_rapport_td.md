@@ -1,6 +1,6 @@
 # Rapport du Travail de diplôme
 ## Résumé / Abstract
-Blackrust est un logiciel multiarchitecture pour Linux qui, au lancement de la machine, propose des sessions d'{{ lex("accès distant", "L'accès distant, aussi nommé session distante ou desktop distant, est la prise de contrôle du bureau d'un ordinateur dans un autre emplacement via le réseau.") }} sécurisées utilisant de divers {{ lex("protocoles", "Un protocole distant dans le contexte de mon projet est un langage définie que les différents types de serveurs d'accès distant utilisent pour communiquer avec les programmes qui servent de client.") }} ainsi qu'une session locale hors-ligne.
+Blackrust est un logiciel multiarchitecture pour Linux qui, au lancement de la machine, propose des sessions d'{{ lex("accès distant", "L'accès distant, aussi nommé session distante ou desktop distant, est la prise de contrôle du bureau d'un ordinateur dans un autre emplacement via le réseau.") }} sécurisées utilisant de divers {{ lex("protocoles", "Un protocole distant dans le contexte de mon projet est un langage défini que les différents types de serveurs d'accès distant utilisent pour communiquer avec les programmes qui servent de client.") }} ainsi qu'une session locale hors-ligne.
 
 Ce projet est un client léger qui a pour but de réduire la taille et le coût de moult machines données aux employés dans une entreprise avec de l'infrastructure VDI (virtualisation du poste de travail). Ces clients légers se connecteront à un serveur central où résideront les espaces de travail des utilisateurs avec davantage de puissance de calcul que sur la machine locale.
 
@@ -25,13 +25,13 @@ Cette interopérabilité avec les différents environnements distants est due à
 - XDMCP spécifiquement pour les hôtes Linux avec un serveur d'affichage X11. 
 - SSH X11-Forwarding pour une connexion limitée à une application graphique distante via le SSH
 
-Ces protocoles sont tous multi-utilisateur, donc adaptés à l'utilisation dans un environnement de VDI
+Ces protocoles sont tous multi-utilisateurs, donc adaptés à l'utilisation dans un environnement de VDI
 
-Le frontend de l'application est une page Web, soit afficheé en local uniquement soit mise à disposition sur un réseau en tant que serveur Web. La page Web peut ensuite communiquer avec le backend Rust par le biais des routes API mises à disposition par le serveur Web. Ceci permet d'avoir un seul backend pour un ou plusieurs clients et de séparer "l'intelligence" entre le backend et le front-end. Ainsi une application web dans n'importe quel langage pourrait interfacer avec le backend de l'application qui augmente l'extensibilité de l'application.
+Le frontend de l'application est une page Web, soit affichée en local uniquement soit mise à disposition sur un réseau en tant que serveur Web. La page Web peut ensuite communiquer avec le backend Rust par le biais des routes API mises à disposition par le serveur Web. Ceci permet d'avoir un seul backend pour un ou plusieurs clients et de séparer "l'intelligence" entre le backend et le front-end. Ainsi une application web dans n'importe quel langage pourrait interfacer avec le backend de l'application qui augmente l'extensibilité de l'application.
 
 L'application Web du frontend est une application Yew, qui est un framework Web qui utilise un système de composants comme React ou Elm en Javascript. La principale différence est que Yew compile entre deux langages (ou transpile) du code Rust vers le WebAssembly. Ceci permet de gros gains de performances par rapport au JS, ainsi que des gains de sécurité grâce à la sûreté de la mémoire en Rust. Le code WebAssembly transpilé depuis le Rust est fourni au serveur Actix Web qui gère aussi les routes API. L'API et l'application peuvent être hébergés uniquement sur la machine en local ainsi que sur un réseau pour que plusieurs machines puissent utiliser une instance de l'application.
 
-Le backend Rust est composé d'un système de sauvegarde/modification de configuration de connexion, un système de configuration réseau et un système de gestion de connexion. Voici un diagramme démontrant cela. Le backend utilise une librairie interne nommée BlackrustLib, qui met à disposition à tous le modules des fonctions ou structures de données.
+Le backend Rust est composé d'un système de sauvegarde/modification de configuration de connexion, un système de configuration réseau et un système de gestion de connexion. Voici un diagramme démontrant cela. Le backend utilise une librairie interne nommée BlackrustLib, qui met à disposition à tous les modules des fonctions ou structures de données.
 
 {{ fig("/img/Main_data_flow.png", " Main data flow", 85) }}
 
@@ -103,14 +103,16 @@ Actix Web est une librairie de serveur web. Elle permet de créer et héberger u
 Yew est un framework Web qui permet de créer une application Web composée de fichiers HTML/JS/CSS/WASM. L'intelligence et la logique métier dans l'application est exécuté en WebAssembly, qui est un nouveau type d'exécutable haute-performance conçu pour le navigateur.
 
 Yew ressemble à des frameworks JS tels que React ou Elm, avec leurs systèmes de composants. La principale différence est que Yew compile entre deux langages (ou transpile) du code Rust vers le WebAssembly.
+#### Websockify
+Websockify est un éxécutable python permettant d'exposer un port en local en tant que port WebSocket publique. Ceci est utilisé par noVNC, le client noVNC integré dans l'application Web Yew
 
 ### Protocoles
 #### XDMCP
-Le protocole X Display Manager Control Protocol (XDMCP) est un protocole d'accès distant qui permet de recevoir la sortie d'un affichage X11, ainsi qu'envoyer des touches clavier vers cette même session X11 distante. XDMCP est un protocole très simple et bien documenté, qui fait que c'est très faisable de faire sa propre client pour négocier une session avec.
+Le protocole X Display Manager Control Protocol (XDMCP) est un protocole d'accès distant qui permet de recevoir la sortie d'un affichage X11, ainsi qu'envoyer des touches clavier vers cette même session X11 distante. XDMCP est un protocole très simple et bien documenté, qui fait que c'est très faisable de faire son propre client pour négocier une session avec.
 #### RDP
-Le protocole Remote Desktop Protocol (RDP) est un protocole d'accès distant pour Windows fait par Microsoft. Ce dernier est très riche en fonctionnalités, mais propriétaire et closed source, qui signifie que nous n'avons pas le code source derrière et hors des outils officiels ou reverse-engineered, il n'existe pas de documentation pour l'implémenter manuellement dans l'application et la négociation de ceci doit être délégué à un outil existant. 
+Le protocole Remote Desktop Protocol (RDP) est un protocole d'accès distant pour Windows fait par Microsoft. Ce dernier est très riche en fonctionnalités, mais propriétaire et closed source, qui signifie que nous n'avons pas le code source derrière et hors des outils officiels ou reverse-engineered, il n'existe pas de documentation pour l'implémenter manuellement dans l'application et la négociation de ceci doit être déléguée à un outil existant. 
 #### VNC
-Le protocole Virtual Network Computing (VNC) est un protocole d'accès distant multiplateforme et open source. C'est un protocole très polyvalent et bien documenté qui fait qu'il existe plusieurs dérivés en plus de la version officielle de RealVNC. Il existe plein d'outils déjà faits ainsi que la documentation et code source nécessaire pour le réimplémenter manuellement.
+Le protocole Virtual Network Computing (VNC) est un protocole d'accès distant, multiplateforme et open source. C'est un protocole très polyvalent et bien documenté qui fait qu'il existe plusieurs dérivés en plus de la version officielle de RealVNC. Il existe plein d'outils déjà faits ainsi que la documentation et code source nécessaire pour le réimplémenter manuellement.
 #### SSH X11-Forwarding
 Le protocole SSH X11-Forwarding permet de faire tourner une application graphique sur une session X11 distante et récupérer l'affichage / interagir avec l'application via une connexion SSH. Ceci est utile quand on souhaite uniquement avoir accès à une application distante en ayant accès sur le bureau actuel.
 
@@ -127,7 +129,7 @@ Les fichiers ont comme entête le suivant :
  */ 
 ```
 #### RustDoc
-RustDoc permet de générer des pages html de documentation automatiquement selon les commentaires mises dans les fichiers. Un site est généré à partir du code ainsi que des entêtes markdown mises dans le code à coté de ce qu'il documente.
+RustDoc permet de générer des pages HTML de documentation automatiquement selon les commentaires mis dans les fichiers. Un site est généré à partir du code ainsi que des entêtes markdown mises dans le code à côté de ce qu'il documente.
 
 Les fonctions sont précédées par un entête comme le suivant :
 ```
@@ -146,7 +148,7 @@ Les structs sont précédés par un entête comme le suivant :
 ```
 /// A quoi sert le struct
 ```
-Les champs des structs sont ensuite précedés par un commentaire comme le suivant :
+Les champs des structs sont ensuite précédés par un commentaire comme le suivant :
 ```
 /// A quoi sert le champs
 ```
@@ -211,7 +213,7 @@ Les messages d'erreurs de cargo sont assez riches comparés aux autres langages.
 ### Sécurité / Fiabilité
 De base, le langage Rust est assez sécure et fiable grâce aux faites suivantes :
 - Rust est "memory-safe", qui signifie qu'il ne permet pas d'avoir des pointeurs null ou invalide
-- Les courses de données sont également impossibles, grâce au système d'appartenance, qui impose qu'une instance ou référence variable ne puisse être modifiée dans dans un endroit à la fois, afin d'éviter des "courses de données".
+- Les courses de données sont également impossibles, grâce au système d'appartenance, qui impose qu'une instance ou référence variable ne puisse être modifiée dans un endroit à la fois, afin d'éviter des "courses de données".
 - La gestion d'erreur est très avancée et devrait être au cœur de la conception d'une fonction. Cette approche permet d'être toujours certain que le déroulement se passe comme prévu et les cas de bords qui pourraient compromettre la sécurité de l'application sont évités.
 - Fonctionnalités de tests unitaires intégrées
 
@@ -229,10 +231,6 @@ Rust est un langage avec un compilateur portable comme le langage C, donc qui pe
     - Exemples : Apple tvOS, Nintendo 3DS, CUDA, EFI
 
 #### Technologies utilisées
-##### WebView
-Webkit est un moteur de navigateur développé par Apple parmi d'autres. Le moteur est utilisé par de diverses applications grâce à son API C++ qui propose des fonctionnalités pour afficher du contenu web dans une fenêtre avec des fonctionnalités de navigateur commun comme un historique ou la possibilité de retourner en arrière / aller en avant dans la navigation.
-
-Je l'utilise pour l'interface utilisateur qui est une interface Web qui peut communiquer avec le programme Rust.
 ##### TOML
 TOML, ou Tom's Obvious Markdown Language est le langage de markdown pour la sérialisation de données choisi par les développeurs de Rust.
 
@@ -344,12 +342,12 @@ Le programme est décomposé en 5 modules principaux :
         - SSH
 - BlackrustLib: Fonctions communes à plusieurs modules, librairie interne
 #### Main
-Le module main est le point d'entrée principale de l'application, lance l'aperçu WebView qui permet d'interfacer avec l'application et appeler les autres modules
+Le module main est le point d'entrée principale de l'application, lance le serveur Actix qui héberge l'application Web Yew et l'API qui permet d'interagir avec les modules backend contenant les fonctionnalités.
 
 {{ fig("/img/blackrust-systems-analysis.svg", " Analyse crate Main", 85) }}
 ##### Data flow
 Le diagramme suivant détaille le dataflow du crate Main et représente graphiquement l'interaction entre l'utilisateur et les différents modules.
-L'utilisateur final interagit avec l'interface Web mise à disposition par le moteur Webkit qui propose une sorte de navigateur appelé Webview. Cette interface Web communique ensuite bilatéralement avec le invoke handler de la partie "Backend" du Webview, qui est écrit en Rust. Le invoke handler expédié les différents appels vers les modules appropriés et rappel des fonctions JS avec le résultat si cela est nécessaire. Les modules Rust utilisent tous des modules de la librairie interne "BlackrustLib" représentée sur la droite du diagramme. Les modules de la librairie interne contiennent des définitions de types et des fonctions communes à tous les modules principales.
+L'utilisateur final interagit avec l'application Web Yew mise à disposition par le serveur Actix Web. Cette interface Web communique ensuite avec l'API REST également proposé par Actix, qui est écrit en Rust. L'API Actix expédie les différents appels vers les modules appropriés et réponds avec le résultat en format JSON. Les modules Rust utilisent tous des modules de la librairie interne "BlackrustLib" représentée sur la droite du diagramme. Les modules de la librairie interne contiennent des définitions de types et des fonctions communes à tous les modules principales.
 
 {{ fig("/img/Main_data_flow.png", " Main data flow", 85) }}
 ##### Fonctions
@@ -361,18 +359,18 @@ Type de retour
 
 |Type|Description|
 |-|-|
-|io::Result<()>|Résultat qui rend une variante Ok vide|
+|io::Result<()>|Résultat qui rend une variante OK vide|
 
 ##### Routes API Actix
-Le serveur web Actix propose la fonctionnalité de définir un API qui peut appeler des fonctions Rust. Je l'utilise pour mettre à disposition des fonctions des différents modules pour que les client Web puisse les appeler afin qu'il puisse interagir avec le backend Rust.
+Le serveur web Actix propose la fonctionnalité de définir un API qui peut appeler des fonctions Rust. Je l'utilise pour mettre à disposition des fonctions des différents modules pour que les clients Web puissent les appeler afin qu'il puisse interagir avec le backend Rust.
 
-Les routes sont groupées dans des scopes qui leur donne une préfixe à leur URL. J'ai choisi de les grouper par module concerné, donc NetMgr pour NetworkMgr, CfgMgr pour ConfigMgr et RsMgr pour RemoteSessionMgr.
+Les routes sont groupées dans des scopes qui leur donnent un préfixe à leur URL. J'ai choisi de les grouper par module concerné, donc NetMgr pour NetworkMgr, CfgMgr pour ConfigMgr et RsMgr pour RemoteSessionMgr.
 
 ###### NetMgr Scope
 Ce scope expose les routes qui concernent la gestion de la configuration réseau. Le préfixe du scope NetMgr est ```/net_mgr``` qui donne ```/net_mgr/hostname``` par exemple.
-Le type de retour "OK" spécifée est le type rendu par la route quand la fonction backend appelé réussi.
+Le type de retour "OK" spécifié est le type rendu par la route quand la fonction backend appelée réussit.
 
-| Nom du service | Méthode | Route | Fonction appelé | Type de retour OK | Structure du payload (optionnel) |
+| Nom du service | Méthode | Route | Fonction appelée | Type de retour OK | Structure du payload (optionnel) |
 |-|-|-|-|-|
 |get_hostname| GET | ```/hostname``` | ```network_mgr::get_hostname``` | String |
 |set_hostname| PUT | ```/hostname``` | ```network_mgr::set_hostname``` | String | HostnameFormData |
@@ -385,26 +383,26 @@ Le type de retour "OK" spécifée est le type rendu par la route quand la foncti
 
 - Structure du payload HostnameFormData
 
-| Nom du champs | Type |
+| Nom du champ | Type |
 |-|-|
 |hostname|String|
 
 - Structure du payload NetworkManagerProfileTypeFormData
 
-| Nom du champs | Type |
+| Nom du champ | Type |
 |-|-|
 |profile_type|NetworkManagerProfileType|
 
 - Structure du payload NetworkManagerProfileFormData
 
-| Nom du champs | Type |
+| Nom du champ | Type |
 |-|-|
 |profile|NetworkManagerProfile|
 
 ###### CfgMgr Scope
-Ce scope expose les routes qui concernent la gestion des profils de connexion. Le préfixe du scope NetMgr est ```/cfg_mgr``` qui donne ```/cfg_mgr/profiles``` par exemple. Le type de retour "OK" spécifée est le type rendu par la route quand la fonction backend appelé réussi.
+Ce scope expose les routes qui concernent la gestion des profils de connexion. Le préfixe du scope NetMgr est ```/cfg_mgr``` qui donne ```/cfg_mgr/profiles``` par exemple. Le type de retour "OK" spécifié est le type rendu par la route quand la fonction backend appelée réussit.
 
-| Nom du service | Méthode | Route | Fonction appelé | Type de retour OK | Structure du payload (optionnel) |
+| Nom du service | Méthode | Route | Fonction appelée | Type de retour OK | Structure du payload (optionnel) |
 |-|-|-|-|-|
 |get_conn_profiles| GET | ```/profiles``` | ```config_mgr::load_all_profiles``` | Profiles |
 |get_conn_profile| GET | ```/profile/{id}``` | ```config_mgr::get_profile_by_id``` | Option<Profile\> |
@@ -415,14 +413,14 @@ Ce scope expose les routes qui concernent la gestion des profils de connexion. L
 
 - Structure du payload ProfileFormData
 
-| Nom du champs | Type |
+| Nom du champ | Type |
 |-|-|
 |profile|Profile|
 
 ###### RsMgr Scope
-Ce scope expose les routes qui concernent la gestion du configuration réseau. Le préfixe du scope NetMgr est ```/rs_mgr``` qui donne ```/rs_mgr/connect``` par exemple. Le type de retour "OK" spécifée est le type rendu par la route quand la fonction backend appelé réussi.
+Ce scope expose les routes qui concernent la gestion de la configuration réseau. Le préfixe du scope NetMgr est ```/rs_mgr``` qui donne ```/rs_mgr/connect``` par exemple. Le type de retour "OK" spécifié est le type rendu par la route quand la fonction backend appelée réussit.
 
-| Nom du service | Méthode | Route | Fonction appelé | Type de retour OK | Structure du payload (optionnel) |
+| Nom du service | Méthode | Route | Fonction appelée | Type de retour OK | Structure du payload (optionnel) |
 |-|-|-|-|-|
 |connect| POST | ```/connect``` | ```remote_session_mgr.create_session``` | u32 | ProfileFormData |
 |disconnect| POST | ```/disconnect/{id}``` | ```remote_session_mgr.disconnect_session``` | () |
@@ -430,14 +428,14 @@ Ce scope expose les routes qui concernent la gestion du configuration réseau. L
 
 - Structure du payload ProfileFormData
 
-| Nom du champs | Type |
+| Nom du champ | Type |
 |-|-|
 |profile|Profile|
 
 ##### Tests unitaires
 
 #### ConfigMgr
-Le module ConfigMgr gère les profils de connexion de session distante avec des fonctions CRUD (Création, Lecture, Mise à Jour, Suppression). Ses fonctionnalités sont appelées depuis le Invoke Handler du WebView et donc depuis le JS de l'interface utilisateur.
+Le module ConfigMgr gère les profils de connexion de session distante avec des fonctions CRUD (Création, Lecture, Mise à Jour, Suppression). Ses fonctionnalités sont appelées depuis l'API Actix qui lui est appelé par l'application Web Yew
 
 {{ fig("/img/config_mgr_module.svg", " Architecture module ConfigMgr", 85) }}
 ##### Data flow
@@ -790,7 +788,7 @@ Voici une liste des tests unitaires pour ce module. Le détail des cas de tests 
 - ```test::delete_profile_test```: Test que la commande pour supprimer un profil est correcte
 - ```test::exec_command_test```: Test que l'outil réseau puisse accepter des commandes correctement
 #### RemoteSessionMgr
-Le module RemoteSessionMgr lance les sessions distantes en utilisant les options de connexion soit fournies par l'utilisateur soit par un profil chargé par l'utilisateur. Ce module fait appel aux commandes telles que xfreerdp, vncviewer, Xnest ou ssh. Le sous module ```remote_protocols::xdmcp``` prends en main la négociation XDMCP qui est fait manuellement par rapport aux autres protocoles disponibles.
+Le module RemoteSessionMgr lance les sessions distantes en utilisant les options de connexion soit fournies par l'utilisateur soit par un profil chargé par l'utilisateur. Ce module fait appel aux commandes telles que xfreerdp, vncviewer, Xnest ou ssh. Le sous module ```remote_protocols::xdmcp``` prends en main la négociation XDMCP qui est faite manuellement par rapport aux autres protocoles disponibles.
 
 {{ fig("/img/remote_session_mgr_module.svg", " Architecture module RemoteSessionMgr", 85) }}
 ##### Data flow
@@ -865,7 +863,7 @@ Type de retour
 
 |Type|Description|
 |-|-|
-|Option<&mut Box<dyn Session>>|Réference vers la session comportant l'identifiant specifiée|
+|Option<&mut Box<dyn Session>>|Référence vers la session comportant l'identifiant spécifié|
 
 <hr class="tableSeperator" />
 
@@ -889,9 +887,9 @@ Arguments
 
 | Nom | Type | Description |
 |-|-|-|
-|src_addr|IpAddr|Addresse locale|
-|dst_addr|IpAddr|Addresse distant|
-|dst_port|u16|Addresse distant|
+|src_addr|IpAddr|Adresse locale|
+|dst_addr|IpAddr|Adresse distant|
+|dst_port|u16|Adresse distant|
 
 <hr />
 
@@ -903,7 +901,7 @@ Type de retour
 
 <hr class="tableSeperator" />
 
-```remote_protocols::open_display```: Crée un affichage X11 pour l'outil de session distante, démarre un serveur VNC locale liée à cette affichage, puis expose un WebSocket au client pour pouvoir se connecter
+```remote_protocols::open_display```: Crée un affichage X11 pour l'outil de session distante, démarre un serveur VNC locale liée à cet affichage, puis expose un WebSocket au client pour pouvoir se connecter
 
 <hr />
 
@@ -941,22 +939,13 @@ Type de retour
 ```remote_protocols::xdmcp::append_array_16```: Ajoute un array de valeurs 2 bytes de taille variable à la fin du buffer
 ```remote_protocols::xdmcp::append_array_of_array_8```: Ajoute un array de array de valeurs 2 bytes de taille variable à la fin du buffer
 ```remote_protocols::xdmcp::vec_u16_to_be_vec_u8```: Convertit un vecteur de valeurs de 2 bytes en vecteur de valeurs de 1 byte big-endian
-```remote_protocols::xdmcp::vec_u8_to_string``` Convertit un vecteur de valeurs 1 byte en string hexadécimale
+```remote_protocols::xdmcp::vec_u8_to_string``` Convertis un vecteur de valeurs 1 byte en string hexadécimale
 
 ## Tests
 ### Tests unitaires
 Rust propose des tests unitaires parallélisés intégrés dans les outils de base. L'outil en ligne de commande est ```cargo test```. De plus, les tests peuvent être étendus avec des crates prévues à cet effet comme rstest ou mockall, qui sont des crates qui proposent des tests data-driven et du mocking automatique pour des traits/structs. 
 
-Les tests sont exécutés lors du développement sur la machine locale, ainsi que sur Github grâce à Github Actions à chacun des push vers le repo. Les tests de Github Actions sont exécutés dans un containeur sain où les étapes de setup nécessaire sont refait à chaque push pour s'assurer que le build peut être déployé et utilisé sur un système vierge et qu'il n'y a pas de problèmes d'état entre deux builds liée à la machine de test.
-#### Périmètre des tests
-Les scénarios suivants sont testés :
-
-- Les paniques
-- Lancement du WebView
-- La génération de la page web réussit
-- Que la génération de profil se crée, lit, modifie, et supprime
-- Que la génération de configuration réseau se crée, lit, modifie et supprime
-- Que l'envoi et la réception de packet TCP/UDP s'effectue
+Les tests sont exécutés lors du développement sur la machine locale, ainsi que sur Github grâce à Github Actions à chacun des push vers le repo. Les tests de Github Actions sont exécutés dans un containeur sain où les étapes de setup nécessaire sont refait à chaque push pour s'assurer que le build peut être déployé et utilisé sur un système vierge et qu'il n'y a pas de problèmes d'état entre deux builds liées à la machine de test.
 
 ##### Format description des tests
 Le format choisi pour décrire les tests unitaires est le suivant :
@@ -993,7 +982,7 @@ Description de la fonction.
 
 ##### Description des tests
 ###### exec_command_test
-La fonction ```exec_command```, provenant du trait NetworkTool, exécute une commande shell avec les arguments fournis pour l'outil implémenté (dans ce cas ```nmcli``` de NetworkManager) et rend soit le stdout en valeur de type Ok(String) ou le stderr en valeur de type Err(String).
+La fonction ```exec_command```, provenant du trait NetworkTool, exécute une commande shell avec les arguments fournis pour l'outil implémenté (dans ce cas ```nmcli``` de NetworkManager) et rend soit le stdout en valeur de type OK(String) ou le stderr en valeur de type Err(String).
 
 | Propriété | Valeur |
 |-|-|
@@ -1001,15 +990,15 @@ La fonction ```exec_command```, provenant du trait NetworkTool, exécute une com
 | **Nom de la fonction testée** | ```exec_command``` |
 | **Fichier** | ```network_mgr.rs``` |
 | **Cas 1** ||
-| *Description* | Cas qui assure que la commande ```nmcli``` avec les arguments ```connection show``` rend une valeur de type Ok(String). Ceci vérifie qu'une commande valide émet une valeur Ok avec le stdout de la commande. |
+| *Description* | Cas qui assure que la commande ```nmcli``` avec les arguments ```connection show``` rend une valeur de type OK(String). Ceci vérifie qu'une commande valide émet une valeur OK avec le stdout de la commande. |
 | *Type de résultat attendu* | Réussite |
-| *Critère(s) d'acceptation* | Valeur de type Ok(String) avec stdout comme contenu émis |
+| *Critère(s) d'acceptation* | Valeur de type OK(String) avec stdout comme contenu émis |
 | *Critère(s) d'échec* | Valeur de type Err(String) avec stderr comme contenu émis |
 | **Cas 2** ||
-| *Description* | Cas qui assure que la commande ```nmcli``` avec les arguments ```show``` rend une valeur de type Ok(String). Ceci vérifie qu'une commande invalide émet une valeur Err avec le stderr de la commande. |
+| *Description* | Cas qui assure que la commande ```nmcli``` avec les arguments ```show``` rend une valeur de type OK(String). Ceci vérifie qu'une commande invalide émet une valeur Err avec le stderr de la commande. |
 | *Type de résultat attendu* | Échec |
 | *Critère(s) d'acceptation* | Valeur de type Err(String) avec stderr comme contenu est émis |
-| *Critère(s) d'échec* | Valeur de type Ok(String) avec stdout comme contenu est émis |
+| *Critère(s) d'échec* | Valeur de type OK(String) avec stdout comme contenu est émis |
 
 ###### get_hostname_test
 La fonction ```get_hostname``` utilise le NetworkTool fourni pour récupérer le nom d'hôte de la machine.
@@ -1022,13 +1011,13 @@ La fonction ```get_hostname``` utilise le NetworkTool fourni pour récupérer le
 | **Cas 1** ||
 | *Description* | Cas qui assure avec un MockNetworkTool que la récupération du nom d'hôte de la machine réussit |
 | *Type de résultat attendu* | Réussite |
-| *Critère(s) d'acceptation* | Valeur de type Ok(String) contenant le nom d'hôte est émis |
+| *Critère(s) d'acceptation* | Valeur de type OK(String) contenant le nom d'hôte est émis |
 | *Critère(s) d'échec* | Valeur de type Err(String) contenant un message d'erreur est émis |
 | **Cas 2** ||
 | *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exécutée émet une erreur. |
 | *Type de résultat attendu* | Échec |
 | *Critère(s) d'acceptation* | Valeur de type Err(String) contenant un message d'erreur est émis |
-| *Critère(s) d'échec* | Valeur de type Ok(String) contenant le nom d'hôte est émis |
+| *Critère(s) d'échec* | Valeur de type OK(String) contenant le nom d'hôte est émis |
 
 ###### set_hostname_test
 La fonction ```set_hostname``` utilise le NetworkTool fourni pour affecter le nom d'hôte de la machine.
@@ -1041,13 +1030,13 @@ La fonction ```set_hostname``` utilise le NetworkTool fourni pour affecter le no
 | **Cas 1** ||
 | *Description* | Cas qui assure avec un MockNetworkTool que l'affectation de nom d'hôte réussit. |
 | *Type de résultat attendu* | Réussite |
-| *Critère(s) d'acceptation* | Valeur de type Ok(String) émis |
+| *Critère(s) d'acceptation* | Valeur de type OK(String) émis |
 | *Critère(s) d'échec* | Valeur de type Err(String) contenant un message d'erreur est émis |
 | **Cas 2** ||
 | *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exécutée émet une erreur. |
 | *Type de résultat attendu* | Échec |
 | *Critère(s) d'acceptation* | Valeur de type Err(String) contenant un message d'erreur est émis |
-| *Critère(s) d'échec* | Valeur de type Ok(String) émis |
+| *Critère(s) d'échec* | Valeur de type OK(String) émis |
 
 ###### get_all_interfaces_test
 La fonction ```get_all_interfaces``` utilise le NetworkTool fourni pour récupérer les interfaces réseau de la machine.
@@ -1060,13 +1049,13 @@ La fonction ```get_all_interfaces``` utilise le NetworkTool fourni pour récupé
 | **Cas 1** ||
 | *Description* | Cas qui assure avec un MockNetworkTool que la récupération de la liste d'interfaces réseau réussit |
 | *Type de résultat attendu* | Réussite |
-| *Critère(s) d'acceptation* | Valeur de type Ok(Vec<Interface\>) non vide émis |
+| *Critère(s) d'acceptation* | Valeur de type OK(Vec<Interface\>) non vide émis |
 | *Critère(s) d'échec* | Valeur de type Err(String) contenant un message d'erreur est émis |
 | **Cas 2** ||
 | *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exécutée émet une erreur. |
 | *Type de résultat attendu* | Échec |
 | *Critère(s) d'acceptation* | Valeur de type Err(String) contenant un message d'erreur est émis |
-| *Critère(s) d'échec* | Valeur de type Ok(Vec<Interface\>) émis |
+| *Critère(s) d'échec* | Valeur de type OK(Vec<Interface\>) émis |
 
 ###### get_interface_by_name_test
 La fonction ```get_interface_by_name``` utilise le NetworkTool fourni pour récupérer une interface réseau de la machine depuis son nom.
@@ -1103,13 +1092,13 @@ La fonction ```load_all_profiles``` charge et instancie tous les profils de conn
 | **Cas 1** ||
 | *Description* | Cas qui assure avec un MockNetworkTool que la récupération de profil fonctionne |
 | *Type de résultat attendu* | Réussite |
-| *Critère(s) d'acceptation* | Valeur de type Ok(Vec<Interface\>) contenant un profil avec les propriétés renseignées est émis|
+| *Critère(s) d'acceptation* | Valeur de type OK(Vec<Interface\>) contenant un profil avec les propriétés renseignées est émis|
 | *Critère(s) d'échec* | Valeur de type Err(String) contenant un message d'erreur est émis |
 | **Cas 2** ||
 | *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exécutée émet une erreur. |
 | *Type de résultat attendu* | Échec |
 | *Critère(s) d'acceptation* | Valeur de type Err(String) contenant un message d'erreur est émis |
-| *Critère(s) d'échec* |Valeur de type Ok(Vec<Interface\>) est émis |
+| *Critère(s) d'échec* |Valeur de type OK(Vec<Interface\>) est émis |
 
 ###### create_profil_test
 La fonction ```create_profile``` crée un profil de connexion réseau avec le NetworkTool fourni.
@@ -1122,13 +1111,13 @@ La fonction ```create_profile``` crée un profil de connexion réseau avec le Ne
 | **Cas 1** ||
 | *Description* | Cas qui assure avec un MockNetworkTool que la création de profils de connexion réseau fonctionne. |
 | *Type de résultat attendu* | Réussite |
-| *Critère(s) d'acceptation* | Valeur de type Ok(String) contenant l'identifiant du nouveau profil est émis |
+| *Critère(s) d'acceptation* | Valeur de type OK(String) contenant l'identifiant du nouveau profil est émis |
 | *Critère(s) d'échec* | Valeur de type Err(String) contenant un message d'erreur est émis |
 | **Cas 2** ||
 | *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exécutée émet une erreur. |
 | *Type de résultat attendu* | Échec |
 | *Critère(s) d'acceptation* | Valeur de type Err(String) contenant un message d'erreur est émis |
-| *Critère(s) d'échec* | Valeur de type Ok(String) est émis|
+| *Critère(s) d'échec* | Valeur de type OK(String) est émis|
 
 ###### get_simple_profil_by_id_test
 La fonction ```get_simple_profile_by_id``` récupère un profil avec des informations basiques par son identifiant unique.
@@ -1141,13 +1130,13 @@ La fonction ```get_simple_profile_by_id``` récupère un profil avec des informa
 | **Cas 1** ||
 | *Description* | Cas qui assure avec un MockNetworkTool que la récupération des informations basique depuis un identifiant fonctionne. |
 | *Type de résultat attendu* | Réussite |
-| *Critère(s) d'acceptation* | Valeur de type Ok(NetworkManagerProfil) contenant le profil demandé est émis |
+| *Critère(s) d'acceptation* | Valeur de type OK(NetworkManagerProfil) contenant le profil demandé est émis |
 | *Critère(s) d'échec* | Valeur de type Err(String) contenant un message d'erreur est émis  |
 | **Cas 2** ||
 | *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exécutée émet une erreur ou que le profil demandé n'a pas été trouvé.  |
 | *Type de résultat attendu* | Échec |
 | *Critère(s) d'acceptation* | Valeur de type Err(String) contenant un message d'erreur est émis |
-| *Critère(s) d'échec* | Valeur de type Ok(NetworkManagerProfil) est émis |
+| *Critère(s) d'échec* | Valeur de type OK(NetworkManagerProfil) est émis |
 
 ###### get_detailed_profil_by_id_test
 La fonction ```get_detailed_profile_by_id``` récupère un profil avec des informations détaillées par son identifiant unique.
@@ -1160,13 +1149,13 @@ La fonction ```get_detailed_profile_by_id``` récupère un profil avec des infor
 | **Cas 1** ||
 | *Description* | Cas qui assure avec un MockNetworkTool que la récupération des informations détaillées depuis un identifiant fonctionne. |
 | *Type de résultat attendu* | Réussite |
-| *Critère(s) d'acceptation* | Valeur de type Ok(NetworkManagerProfil) contenant le profil demandé est émis |
+| *Critère(s) d'acceptation* | Valeur de type OK(NetworkManagerProfil) contenant le profil demandé est émis |
 | *Critère(s) d'échec* | Valeur de type Err(String) contenant un message d'erreur est émis |
 | **Cas 2** ||
 | *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exécutée émet une erreur ou que le profil demandé n'a pas été trouvé. |
 | *Type de résultat attendu* | Échec |
 | *Critère(s) d'acceptation* | Valeur de type Err(String) contenant un message d'erreur est émis |
-| *Critère(s) d'échec* | Valeur de type Ok(NetworkManagerProfil) est émis |
+| *Critère(s) d'échec* | Valeur de type OK(NetworkManagerProfil) est émis |
 
 ###### modify_profil_test
 La fonction ```modify_profile``` modifie un profil avec le NetworkTool fourni.
@@ -1193,13 +1182,13 @@ La fonction ```delete_profile``` supprime un profil avec le NetworkTool fourni.
 | **Cas 1** ||
 | *Description* | Cas qui assure avec un MockNetworkTool que la suppression d'un profil fonctionne.  |
 | *Type de résultat attendu* | Réussite |
-| *Critère(s) d'acceptation* | Valeur de type Ok(()) est émis |
+| *Critère(s) d'acceptation* | Valeur de type OK(()) est émis |
 | *Critère(s) d'échec* | Valeur de type Err(String) contenant un message d'erreur est émis |
 | **Cas 1** ||
 | *Description* | Cas qui assure avec un MockNetworkTool que la gestion d'erreur fonctionne. Ceci est dans le cas que la commande exécutée émet une erreur. |
 | *Type de résultat attendu* | Échec |
 | *Critère(s) d'acceptation* | Valeur de type Err(String) contenant un message d'erreur est émis  |
-| *Critère(s) d'échec* | Valeur de type Ok(()) est émis |
+| *Critère(s) d'échec* | Valeur de type OK(()) est émis |
 
 ### Tests de compatibilité hardware (Intégration)
 Les tests d'intégration hardware servent à informer la portée possible de déploiement du programme. Rust est conçu pour être multiplateforme, mais il y a certaines dépendances qui auront besoin d'être vérifiées avant d'être sûr de la compatibilité avec les architectures système visées.
@@ -1258,25 +1247,25 @@ Lors du test unitaire open_webview_test qui vérifie que le WebView peut être c
     - Code source ([Github](https://github.com/DylanUpchr/Blackrust))
 ## Améliorations à apporter
 ### Tests unitaires / fonctionnels
-Une amélioration en termes de fiabilité de code serait l'ajout de tests unitaires pour les modules RemoteSessionMgr (ainsi que ses sous modules concernant les protocoles) et ConfigMgr. Des tests Postman sur l'API Actix pourrait également assurer que ce dernier fonctionne correctement.
+Une amélioration en termes de fiabilité de code serait l'ajout de tests unitaires pour les modules RemoteSessionMgr (ainsi que ses sous-modules concernant les protocoles) et ConfigMgr. Des tests Postman sur l'API Actix pourraient également assurer que ce dernier fonctionne correctement.
 
-### Prise en charge de l'IPv6 et les nom d'hôtes
-Pour l'instant unqiuement l'IPv4 est pris en charge et donc des adresses de IPv6 ou de nom DNS de serveur distant, l'application rentre dans un cas de bord non géré. La structure pour acceuillir ces changement est en place, mais il faut gérer ces cas.
+### Prise en charge de l'IPv6 et les noms d'hôtes
+Pour l'instant uniquement l'IPv4 est pris en charge et donc des adresses de IPv6 ou de nom DNS de serveur distant, l'application rentre dans un cas de bord non géré. La structure pour accueillir ces changements est en place, mais il faut gérer ces cas.
 
 ### Documenter l'interface Web
-Afin d'offrir une meilleure réutilisabilité, la partie interface Web fait avec Yew devrait être documenté en montrant tout les composants et leurs propriétés/fonctions/évenements/champs et comment ces derniers s'imbriquent.
+Afin d'offrir une meilleure réutilisabilité, la partie interface Web faite avec Yew devrait être documenté en montrant toutes les composants et leurs propriétés/fonctions/évènements/champs et comment ces derniers s'imbriquent. Il serait également intéressant de faire un manuel utilisateur pour cette application afin d'assurer que les utilisateurs finaux sont formés au mieux pour utiliser l'application Web.
 
-### Ajout des systèmes de internationalisation et de thèmes
-Une autre amélioration possible serait d'ajouter des modules de internationalisation (Région, langue, timezone, format horaire, etc.) et un système de thème qui permet de personnaliser l'interface (Fond d'écran, bannière, couleurs). Ces modules ont été prévu dans l'interface de réglages mais malheureusement n'ont pas été implémentées à cause d'une limite de temps.
+### Ajout des systèmes d’internationalisation et de thèmes
+Une autre amélioration possible serait d'ajouter des modules d’internationalisation (Région, langue, timezone, format horaire, etc.) et un système de thème qui permet de personnaliser l'interface (Fond d'écran, bannière, couleurs). Ces modules ont été prévus dans l'interface de réglages mais malheureusement n'ont pas été implémentés à cause d'une limite de temps.
 
 ### Implémenter les objets RDPSession, VNCSession, SSHX11Session et LocalSession
-Comme indiqué dans le cahier des charges, l'application est sensé être multiprotocole, mais à cause d'une manque de temps je n'ai pû seulement implémenter manuellement le XDMCPSession. Les autres sont sous traitées à des outils externes comme vncviewer ou xfreerdp donc ceci est assez rapide à faire.
+Comme indiqué dans le cahier des charges, l'application est censée être multiprotocole, mais à cause d'un manque de temps je n'ai pu seulement implémenter manuellement le XDMCPSession. Les autres sont délégués à des outils externes comme vncviewer ou xfreerdp donc ceci est assez rapide à faire.
 
 ### Faire un PKGBUILD
-Afin de permettre des déploiements rapides et facile, un des livrables listées était un fichier PKGBUILD permettant de télécharger et installer le programme avec une commande. Ceci n'as pas été fait à cause des délais causées par l'interface Web.
+Afin de permettre des déploiements rapides et faciles, un des livrables listés était un fichier PKGBUILD permettant de télécharger et installer le programme avec une commande. Ceci n'a pas été fait à cause des délais causés par l'interface Web.
 
 ### Compilation de deux versions (client local ou serveur web uniquement) selon un flag
-Une dernière amélioration que j'aimerais apporter est la possibilité de compiler un de deux binaires du même code source, un comportant un navigateur WebView qui permet d'accèder directement à l'application en localhost sans passer par le réseau, et une autre version qui est uniquement un serveur Web avec le backend pour utilisation avec des navigateurs communs sur un réseau.
+Une dernière amélioration que j'aimerais apporter est la possibilité de compiler un de deux binaires du même code source, un comportant un navigateur WebView qui permet d'accéder directement à l'application en localhost sans passer par le réseau, et une autre version qui est uniquement un serveur Web avec le backend pour utilisation avec des navigateurs communs sur un réseau.
 
 ## Conclusion
 En conclusion, j'ai développé un programme Rust pour Linux, qui permet de se connecter à plusieurs types de VDI ou serveur distant à travers des connexions sécurisées.
