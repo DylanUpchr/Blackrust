@@ -80,7 +80,7 @@ impl Component for TabBar {
         }
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             TabBarMsg::AddTab(id, name, rfb_port, route) => {
                 let tab = Tab {
@@ -97,7 +97,7 @@ impl Component for TabBar {
             },
             TabBarMsg::RemoveTab(id) => {
                 self.tabs.retain(|tab| tab.id != id);
-                
+                ctx.link().send_message(TabBarMsg::ChangeTab(0));
                 true
             },
             TabBarMsg::ChangeTab(id) => {                
@@ -123,7 +123,7 @@ impl Component for TabBar {
         ");
 
         let tabs = &self.tabs;
-        
+
         html! {
             <nav id="tabBar" {class}>
                 { 
@@ -163,14 +163,23 @@ impl Component for Tab {
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             TabMsg::Disconnect => {
-                let parent_link = ctx.link().get_parent();
-                match parent_link {
-                    Some(parent_scope) => {
-                        let parent = parent_scope.clone().downcast::<TabBar>();
-                        parent.send_message(TabBarMsg::RemoveTab(self.id))
-                    },
-                    None => ()
-                }
+                let link = ctx.link().clone();
+                let id = self.id;
+                spawn_local(async move {
+                    match disconnect_session(id).await {
+                        Ok(_) => {
+                            let parent_link = link.get_parent();
+                            match parent_link {
+                                Some(parent_scope) => {
+                                    let parent = parent_scope.clone().downcast::<TabBar>();
+                                    parent.send_message(TabBarMsg::RemoveTab(id));
+                                },
+                                None => ()
+                            }
+                        },
+                        Err(message) => log::info!("Could not disconnect: {}", message)
+                    }
+                })
             }
         }
         true
@@ -212,6 +221,21 @@ impl Component for Tab {
     }
 }
 
-async fn disconnect_session(id: u32) {
+async fn disconnect_session(id: u32) -> Result<(), String> {
+    let call = Request::post(&format!("/rs_mgr/disconnect/{}", id))
+    .send()
+    .await;
 
+    match call {
+        Ok(resp) => {
+            if resp.ok() {
+                Ok(())
+            } else {
+                Err(
+                    resp.text().await.unwrap()
+                )
+            }
+        },
+        Err(_) => Err(String::from("Could not send request"))
+    }
 }

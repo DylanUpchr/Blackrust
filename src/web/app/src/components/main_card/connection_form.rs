@@ -157,7 +157,8 @@ async fn connect(profile: Profile) -> Result<u32, String> {
                     ).unwrap()
                 )
             } else {
-               Err(String::from(format!("Could not create session from profile")))
+                let err = resp.text().await.unwrap();
+                Err(String::from(format!("Could not create session from profile: {}", err)))
             }
         },
         Err(_) => Err(String::from("Could not send request"))

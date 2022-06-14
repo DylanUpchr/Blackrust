@@ -15,8 +15,12 @@ else
 endif
 
 build:
-	cd ./src/web; \
+	git submodule update; \
+  cd ./src/web/app/noVNC; \
   npm install
+	cd ./src/web/app; \
+  trunk clean; \
+  trunk build
 	cd blackrust_lib; \
 	cargo build $(release)
 	cargo build $(release)
