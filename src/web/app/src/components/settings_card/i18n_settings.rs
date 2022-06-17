@@ -17,11 +17,15 @@ impl Component for I18nSettings {
 
     fn view(&self, _ctx: &Context<Self>) -> Html {
         let class = css!("
-            width: 100%;
+            display: inline-block;
+            width: 84%;
+            height: 100%;
             margin-top: 15px;
+            float: right;
         ");
         html! {
             <div {class}>
+                {"i18n"}
             </div>
         }
     }

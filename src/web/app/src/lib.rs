@@ -45,6 +45,8 @@ pub struct NetworkManagerProfile {
     pub interface: Option<Interface>
 }
 
+impl ImplicitClone for NetworkManagerProfile { }
+
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct Profile {
     pub id: String,
@@ -58,6 +60,14 @@ impl ImplicitClone for Profile { }
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Profiles {
     pub profile_vec: Vec<Profile>
+}
+
+impl Profiles {
+    pub fn new() -> Profiles{
+        return Profiles{
+            profile_vec: vec![]
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
