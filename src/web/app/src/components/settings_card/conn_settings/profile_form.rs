@@ -2,6 +2,7 @@ use yew::{ prelude::*, html::Scope };
 use stylist::css;
 
 use crate::lib::Profile;
+use crate::form_components::text_input::TextInput;
 use super::{ ConnSettings, ConnSettingsMsg };
 
 #[derive(Properties, PartialEq)]
@@ -10,13 +11,12 @@ pub struct ProfileFormProps {
 }
 
 pub enum ProfileFormMsg {
-    SaveProfile,
+    SaveProfile { profile: Profile },
     DeleteProfile
 }
 
 pub struct ProfileForm {
-    parent: Option<Scope<ConnSettings>>,
-    profile: Option<Profile>
+    parent: Option<Scope<ConnSettings>>
 }
 
 impl Component for ProfileForm {
@@ -33,21 +33,15 @@ impl Component for ProfileForm {
             None => parent = None
         }
         Self {
-            parent: parent,
-            profile: None
+            parent: parent
         }
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            ProfileFormMsg::SaveProfile => {
+            ProfileFormMsg::SaveProfile { profile } => {
                 match &self.parent {
-                    Some(parent) => {
-                        match &self.profile {
-                            Some(profile) => parent.send_message(ConnSettingsMsg::SaveProfile { profile: profile.clone() }),
-                            None => ()
-                        }
-                    },
+                    Some(parent) => parent.send_message(ConnSettingsMsg::SaveProfile { profile: profile.clone() }),
                     None => ()
                 }
             },
@@ -67,14 +61,32 @@ impl Component for ProfileForm {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
+
+        let disabled = &ctx.props().profile.is_none();
+
+        let profile = match &ctx.props().profile {
+            Some(profile) => profile.clone(),
+            None => Profile::default()
+        };
+
+        //let validator = || true;
+
+        let handle_onchange = Callback::from(|x| 
+            { 
+                log::info!("{}", x);
+            }
+        );
+
         html! { 
             <form>
-                { 
+                /*{ 
                     match &ctx.props().profile {
                         Some(profile) => profile.name.clone(),
                         None => String::new()
                     } 
-                } 
+                }*/
+                //<TextInput name="Profile ID" value={profile.id} disabled={true} {handle_onchange.clone()} />
+                <TextInput name="Profile Name" value={profile.name} disabled={disabled.clone()} {handle_onchange} />
             </form> 
         }
     }

@@ -9,7 +9,13 @@ pub enum PortProtocol {
     None
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
+impl Default for PortProtocol {
+    fn default() -> Self {
+        Self::None
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Default)]
 pub struct Protocol {
     pub name: String,
     pub port: u16,
@@ -23,21 +29,27 @@ pub enum NetworkManagerProfileType {
     Wireguard
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
+impl Default for NetworkManagerProfileType {
+    fn default() -> Self {
+        Self::Ethernet
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, Default)]
 pub struct Interface {
     pub name: String,
     pub mac_addr: String,
     pub interface_type: String
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Default)]
 pub struct ConnectionSettings {
     pub ip_fqdn: String,
     pub protocol: Protocol,
     pub extra_settings: String
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Default)]
 pub struct NetworkManagerProfile {
     pub name: String,
     pub uuid: String,
@@ -47,7 +59,7 @@ pub struct NetworkManagerProfile {
 
 impl ImplicitClone for NetworkManagerProfile { }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 pub struct Profile {
     pub id: String,
     pub name: String,

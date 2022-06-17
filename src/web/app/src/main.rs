@@ -3,6 +3,7 @@ use stylist::yew::styled_component;
 use wasm_logger;
 
 mod components;
+mod form_components;
 mod event_bus;
 mod lib;
 use components::app::App;
