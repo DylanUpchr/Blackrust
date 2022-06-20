@@ -128,7 +128,7 @@ impl Component for NetSettings {
     }
 }
 
-async fn get_all_profiles() -> Result<Vec<NetworkManagerProfile>, ()>{
+pub async fn get_all_profiles() -> Result<Vec<NetworkManagerProfile>, ()>{
     let call = Request::get("/net_mgr/profiles")
     .send()
     .await;

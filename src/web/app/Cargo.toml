@@ -13,7 +13,7 @@ stylist = { version = "*", features = ["yew_integration"]}
 yew-feather = "*"
 chrono = { version = "*", features = ["wasmbind"] }
 js-sys = "*"
-web-sys = "*"
+web-sys = { version = "0.3.58", features = ["HtmlSelectElement", "HtmlCollection", "Element", "FocusEvent", "HtmlFormElement"] }
 reqwasm = "0.5.0"
 wasm-bindgen-futures = "*"
 gloo-timers = "*"

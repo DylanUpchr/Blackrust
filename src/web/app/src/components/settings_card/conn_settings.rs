@@ -12,13 +12,13 @@ use profile_option::ProfileOption;
 use profile_form::ProfileForm;
 
 pub struct ConnSettings {
-    profiles: Profiles,
+    profiles: ( Profiles, Vec<NetworkManagerProfile> ),
     selected_profile: Option<Profile>
 }
 
 pub enum ConnSettingsMsg {
     GetAllProfiles,
-    UpdateProfiles { profiles: Profiles },
+    UpdateProfiles { profiles: ( Profiles, Vec<NetworkManagerProfile> ) },
     LoadProfile { id: String },
     SaveProfile { profile: Profile },
     CreateProfile,
@@ -32,7 +32,7 @@ impl Component for ConnSettings {
     fn create(ctx: &Context<Self>) -> Self {
         ctx.link().send_message(ConnSettingsMsg::GetAllProfiles);
         Self {
-            profiles: Profiles::new(),
+            profiles: (Profiles::new(), vec!()),
             selected_profile: None
         }
     }
@@ -54,7 +54,7 @@ impl Component for ConnSettings {
                 true
             },
             ConnSettingsMsg::LoadProfile { id } => {
-                self.selected_profile = self.profiles.profile_vec.iter().find(|profile| profile.id == id).cloned();
+                self.selected_profile = self.profiles.0.profile_vec.iter().find(|profile| profile.id == id).cloned();
                 true
             },
             ConnSettingsMsg::SaveProfile { profile } => {
@@ -99,7 +99,7 @@ impl Component for ConnSettings {
             border-radius: 5px;
         ");
 
-        let profiles = &self.profiles.profile_vec;
+        let profiles = &self.profiles.0.profile_vec;
         let onclick = ctx.link().callback(|_| ConnSettingsMsg::CreateProfile);
 
         html! {
@@ -119,26 +119,37 @@ impl Component for ConnSettings {
                     <button class={select_button_class} {onclick} >{"Create profile"}</button>
                 </div>
                 <div class={form_container_class}>
-                    <ProfileForm profile={ self.selected_profile.clone() } />
+                    <ProfileForm 
+                        profile={ self.selected_profile.clone() }
+                        net_profiles={ self.profiles.1.clone() }
+                    />
                 </div>
             </div>
         }
     }
 }
 
-async fn get_all_profiles() -> Result<Profiles, ()>{
-    let call = Request::get("/cfg_mgr/profiles")
+async fn get_all_profiles() -> Result<(Profiles, Vec<NetworkManagerProfile>), ()>{
+    let call_cfg_profiles = Request::get("/cfg_mgr/profiles")
     .send()
     .await;
 
-    match call {
-        Ok(resp) => {
-            if resp.ok() {
-                Ok(
-                    serde_json::from_str(
-                        &resp.text().await.unwrap()
-                    ).unwrap()
-                )
+    let call_net_profiles = super::net_settings::get_all_profiles().await;
+
+    match call_cfg_profiles {
+        Ok(resp_cfg_profiles) => {
+            if resp_cfg_profiles.ok() {
+                match call_net_profiles {
+                    Ok(resp_net_profiles) => Ok(
+                        (
+                            serde_json::from_str(
+                                &resp_cfg_profiles.text().await.unwrap()
+                            ).unwrap(),
+                            resp_net_profiles
+                        )
+                    ),
+                    Err(_) => Err(())
+                }
             } else {
                 Err(())
             }
